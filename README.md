@@ -30,7 +30,7 @@ To produce the new LUTs for the L1 EG Calibrations we need to follow the steps b
 cmsrel CMSSW_7_6_0
 cd CMSSW_7_6_0/src
 cmsenv
-girt clone git@github.com:ats2008/L1EGCalibrations.git
+git clone git@github.com:ats2008/L1EGCalibrations.git
 scram b -j 8
 cd L1EGCalibrations/Calibration/RegressionTraining/
 make -j 4  # To generate regression.exe file
