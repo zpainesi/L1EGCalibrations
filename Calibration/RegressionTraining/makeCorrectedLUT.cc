@@ -86,7 +86,7 @@ void write_calibrLUT(TString LUTfile_calib, TString LUTfile_shapeID, TString LUT
 
 }
 
-void test(){
+void makeCorrectedLUT(){
 
   TString LUTfile_calib="/grid_mnt/t3storage3/athachay/l1egamma/emulationstuff/CMSSW_7_6_0/src/EG_Calibrations/L1EGCalibrations/RegressionTraining/Run3MCRegression_corrections_Trimming10_compressedieta_compressedE_compressedshape_mode_PANTELIS_v2_v17.04.04.txt";
   

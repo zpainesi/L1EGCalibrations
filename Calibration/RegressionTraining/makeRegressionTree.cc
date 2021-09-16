@@ -13,7 +13,7 @@ using namespace std;
 #endif
 
 
-void calibrtree_maker(){ //vector<TString> input_names, TString output_name){
+void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
 
 /*
   TChain* intree = new TChain("produceNtuple/eIDSimpleTree");

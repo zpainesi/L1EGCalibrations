@@ -31,19 +31,19 @@ To produce the new LUTs for the L1 EG Calibrations we need to follow the steps b
 cmsrel CMSSW_7_6_0
 cd CMSSW_7_6_0/src
 cmsenv
-cp -r /afs/cern.ch/work/p/pakontax/public/forMarina/EG_Calibrations/ .
-rm -rf EG_Calibrations/HiggsAnalysis  # HiggsAnalysis must be under src
-cp -r /afs/cern.ch/work/p/pakontax/public/forMarina/EG_Calibrations/HiggsAnalysis .
-scram b -j 16
-cd L1EG_Calibrations_modified/RegressionTraining
-make -j 16                                                 # To generate regression.exe file
-cd ..
+girt clone git@github.com:ats2008/L1EGCalibrations.git
+scram b -j 8
+cd L1EGCalibrations/Calibration/RegressionTraining/
+make -j 4  # To generate regression.exe file
+
 ```
+## Preprocessing of data files for training
+1. Make the reduced tree with relevant branches. Modify  `L1EGCalibrations/Calibration/RegressionTraining/makeRegressionTree.cc` to point to the TagAndProbe Ntuple toi train on.
+   ```bash
+    $ root makeRegressionTree.cc
+   ```
 
-**Backup location of the files:**  /afs/cern.ch/user/m/mkolosov/public/forCharis/EG_Calibrations
-
-1. **Open EG_Calibrations/L1EG_Calibrations_modified/eletree_maker.C** and update the name of the input file to be used.
-2. **Run EG_Calibrations/L1EG_Calibrations_modified/eletree_maker.C** to produce a new root file with the L1 quantities needed for the regression training. These variables are:
+   This step will produce a new root file with the L1 quantities needed for the regression training. These variables stored in it are:
     * Run Number
     * Event Number
     * Lumi
@@ -55,43 +55,45 @@ cd ..
     * nTT  (l1tEmuNTT from the TagAndProbe tree)
     * Run2IdLevel  (isProbeLoose from the TagAndProbe tree)
 
-3. Use the script **produceTreeWithCompressedIetaEShape.py** to compress the variables. This file uses the following .txt files containing the compressions of each variable:
-    * compressedSortedShapes.txt
-    * egCompressShapesLUT_calibr_4bit_v4.txt
-    * egCompressELUT_4bit_v4.txt
-    * egCompressEtaLUT_4bit_v4.txt
+2. Use the script `produceTreeWithCompressedIetaEShape.py` to compress the variables. This file uses the following .txt files containing the compressions of each variable:
+    * data/compressedSortedShapes.txt
+    * data/egCompressShapesLUT_calibr_4bit_v4.txt
+    * data/egCompressELUT_4bit_v4.txt
+    * data/egCompressEtaLUT_4bit_v4.txt
     
+    This step will produce a new root file  which will be used for regression of caliberation LUT.
+
+3. Setup the `regressionConfig.cfg` for regression training 
+
 4. Derive the calibrations:
-
-
+```bash
+$ ./regression.exe regressionConfig.cfg
 ```
-cd RegressionTraining     # Create a new config file, similar to GBRLikelihood_Trigger_Stage2_Trimming20_Layer1_Pantelis_compressedInputs.config
-./regression.exe GBRLikelihood_Trigger_Stage2_Trimming20_Layer1_Pantelis_compressedInputs.config    # A root file with the results is saved
-python makeLUT_Stage2_GBRLikelihood_Trimming_compressed_PU40bx25_Pantelis_test_newcal.py    # Produce the calibration LUT without the shapes:
+    This step should make a *result* in the designated output directory in `regressionConfig.cfg`
+
+5. Use `produceCalibrationLUTwithoutShapes.py` to 
+```bash
+$ python produceCalibrationLUTwithoutShapes.py    # Produce the calibration LUT without the shapes:
 ```
 
-
-To produce the calibration LUT with the shapes use the script **corrections/write_calibrLUT3.C** to add the shape according to nTT, Et and Eta. 
-
+6. To produce the calibration LUT with the shapes use the script `makeCorrectedLUT.cc` add the shape according to nTT, Et and Eta. 
+```
+$ root makeCorrectedLUT.cc
+```
 
 Compare the two LUTs, they should start from the same calibration value.
 
-
 Add some information on the output LUT file, similar to:
 
-
->  
->  #  
->
->              # Calibration vs |ieta|,shape,E. Derived from Run 283478 data, with semi-parametric regression
->              # The LUT output is (ET_off/ET_L1) between 0 and 2, encoded on 9 bits
->              # Index is compressedShape+compressedE<<4+compressedIeta<<8.
->              # Compression version is v4 
->              #anything after # is ignored with the exception of the header
->              #the header is first valid line starting with #<header> versionStr(unused but may be in future) nrBitsAddress nrBitsData </header>
->              #<header> V8 12 10 </header>
-
-
+```
+    # Calibration vs |ieta|,shape,E. Derived from Run 283478 data, with semi-parametric regression
+    # The LUT output is (ET_off/ET_L1) between 0 and 2, encoded on 9 bits
+    # Index is compressedShape+compressedE<<4+compressedIeta<<8.
+    # Compression version is v4 
+    #anything after # is ignored with the exception of the header
+    #the header is first valid line starting with #<header> versionStr(unused but may be in future) nrBitsAddress nrBitsData </header>
+    #<header> V8 12 10 </header>
+```
 
 Once you check that everything looks OK in the LUT with shapes, use it to produce a new emulated sample, and compare efficiencies and resolutions with the 
 previous emulated sample. 
