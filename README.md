@@ -10,16 +10,16 @@ To produce the new LUTs for the L1 EG Calibrations we need to follow the steps b
 ### Emulation of L1 to produse TagAndProbeNtuples
   See [EGTagAndProbe](https://github.com/ats2008/EGTagAndProbe) for making Ntuples with emulated data.
   Make sure the following variables are stored in the output ntuples : 
-    * RunNumber
-    * Event Number
-    * Lumi
-    * l1tEmuTowerIEta
-    * l1tEmuRawEt
-    * shape
-    * eleProbeSclEt
-    * TowerHoE
-    * l1tEmuNTT
-    * isProbeLoose
+  * RunNumber
+  * Event Number
+  * Lumi
+  * l1tEmuTowerIEta
+  * l1tEmuRawEt
+  * shape
+  * eleProbeSclEt
+  * TowerHoE
+  * l1tEmuNTT
+  * isProbeLoose
 
 
 3. Make sure you have updated the files with the new TPs and/or Layer-1 corrections (L1Trigger/L1TCalorimeter/python/caloParamsXX.cfi.py &  L1Trigger/L1TCalorimeter/data/)
