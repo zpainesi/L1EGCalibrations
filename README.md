@@ -8,9 +8,8 @@ To produce the new LUTs for the L1 EG Calibrations we need to follow the steps b
 3. Re-Emulating sample with new dataset
 
 ### Emulation of L1 to produse TagAndProbeNtuples
-    See [EGTagAndProbe](https://github.com/ats2008/EGTagAndProbe) for making Ntuples with emulated data.
-    
-    Make sure the following variables are stored in the output ntuples : 
+  See [EGTagAndProbe](https://github.com/ats2008/EGTagAndProbe) for making Ntuples with emulated data.
+  Make sure the following variables are stored in the output ntuples : 
     * RunNumber
     * Event Number
     * Lumi
@@ -23,7 +22,7 @@ To produce the new LUTs for the L1 EG Calibrations we need to follow the steps b
     * isProbeLoose
 
 
-3. Make sure you have updated the files with the new TPs and/or Layer-1 corrections (L1Trigger/L1TCalorimeter/python/caloParams\_/.cfi.py &  L1Trigger/L1TCalorimeter/data/)
+3. Make sure you have updated the files with the new TPs and/or Layer-1 corrections (L1Trigger/L1TCalorimeter/python/caloParamsXX.cfi.py &  L1Trigger/L1TCalorimeter/data/)
 
 
 ## Setting up the environment to run the regression training:
@@ -69,7 +68,7 @@ make -j 4  # To generate regression.exe file
 ```bash
 $ ./regression.exe regressionConfig.cfg
 ```
-    This step should make a *result* in the designated output directory in `regressionConfig.cfg`
+  This step should make a XXresultXX.root in the designated output directory in `regressionConfig.cfg`
 
 5. Use `produceCalibrationLUTwithoutShapes.py` to 
 ```bash
