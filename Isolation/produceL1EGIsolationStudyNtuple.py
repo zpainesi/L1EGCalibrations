@@ -7,7 +7,6 @@ import time
 
 compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
 compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
-compressedShapeFile = "data/egCompressShapesLUT_calibr_4bit_v4.txt"
 compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
 
 inputFileName       = "/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/sbaradia/NTuple_crab_4841files.root"
@@ -15,7 +14,7 @@ outputFileName      = "EGIsolationStudyNtuple.root"
 treeName = "Ntuplizer/TagAndProbe"
 maxEntries=-1*int(1e6)
 
-def readLUT(lutFileName):
+def readLUT(lutFileName,superCompressionFactor=1):
     lut = {}
     with open(lutFileName, 'r') as f:
         lines = f.readlines()
@@ -23,14 +22,13 @@ def readLUT(lutFileName):
             if line[0]=='#': continue
             tokens = line.split()
             if len(tokens)!=2: continue
-            lut[int(tokens[0])] = int(tokens[1])
+            lut[int(tokens[0])] = int(int(tokens[1])/superCompressionFactor)
     return lut
 
 ## Read Ieta,E,shape compression mapping
-compressedIeta  = readLUT(compressedIetaFile)
-compressedE     = readLUT(compressedEFile)
-compressedShape = readLUT(compressedShapeFile)
-compressedNTT   = readLUT(compressedNTTFile)
+compressedIeta  = readLUT(compressedIetaFile,8)
+compressedE     = readLUT(compressedEFile,1)
+compressedNTT   = readLUT(compressedNTTFile,2)
 
 ## Reading input trees 
 ## + filling compressed shape histo
@@ -38,7 +36,6 @@ inputFile = ROOT.TFile.Open(inputFileName)
 inputTree = inputFile.Get(treeName)
 inputTree.__class__ = ROOT.TTree
 
-shapeHisto = ROOT.TH1F("compressedShapeHisto", "compressedShapeHisto", 128, -0.5, 127.5)
 
 inputTree.SetBranchStatus("*",0);
 
@@ -104,7 +101,7 @@ for e in xrange(nentries):
     data["compressedieta"][0]  = int(math.copysign(compressedIeta[abs(data["ieta"][0])], data["ieta"][0]))
     data["compressedE"][0]     = compressedE[min(data["l1RawE"][0],255)]
     #data["compressedNTT"][0] = data["nTT"][0]
-    data["compressedNTT"][0] = compressedNTT[data["nTT"][0]]
+    data["compressedNTT"][0] = min(compressedNTT[data["nTT"][0]],11)
     outputTree.Fill()
 
 outputTree.Write()
