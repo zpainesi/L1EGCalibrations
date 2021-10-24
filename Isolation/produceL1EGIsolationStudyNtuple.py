@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 import ROOT
 import array
 import math
 import operator
 import time
-
+import sys
 
 compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
 compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
@@ -13,6 +14,13 @@ inputFileName       = "/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/s
 outputFileName      = "EGIsolationStudyNtuple.root"
 treeName = "Ntuplizer/TagAndProbe"
 maxEntries=-1*int(1e6)
+
+if len(sys.argv)>1:
+    inputFileName=sys.argv[1]
+if len(sys.argv)>2:
+    maxEntries=int(sys.argv[2])
+if len(sys.argv)>3:
+    outputFileName=sys.argv[3]
 
 def readLUT(lutFileName,superCompressionFactor=1):
     lut = {}
