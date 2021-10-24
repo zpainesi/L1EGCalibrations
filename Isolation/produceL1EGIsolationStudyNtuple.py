@@ -13,7 +13,7 @@ compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
 inputFileName       = "/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/sbaradia/NTuple_crab_4841files.root"
 outputFileName      = "EGIsolationStudyNtuple.root"
 treeName = "Ntuplizer/TagAndProbe"
-maxEntries=int(1e6)
+maxEntries=-1*int(1e6)
 
 def readLUT(lutFileName):
     lut = {}
@@ -72,7 +72,7 @@ data = {
 
 outputFile = ROOT.TFile.Open(outputFileName, "RECREATE")
 outputFile.cd()
-outputTree = ROOT.TTree(treeName, treeName)
+outputTree = ROOT.TTree("EGIsoCalibration","EGIsoCalibration")
 
 for name, a in data.items():
     outputTree.Branch(name, a, "{0}/{1}".format(name, a.typecode.upper()))
