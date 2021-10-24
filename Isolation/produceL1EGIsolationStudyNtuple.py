@@ -54,6 +54,7 @@ inputTree.SetBranchStatus("eleProbeEta",1);
 inputTree.SetBranchStatus("eleProbePhi",1);
 inputTree.SetBranchStatus("l1tEmuTowerIEta",1);
 inputTree.SetBranchStatus("l1tEmuRawEt",1);
+inputTree.SetBranchStatus("l1tEmuPt",1);
 inputTree.SetBranchStatus("l1tEmuNTT",1);
 inputTree.SetBranchStatus("l1tEmuIsoEt",1);
 inputTree.SetBranchStatus("l1tEmuIso",1);
@@ -66,6 +67,7 @@ data = {
         "offlineEta"   : array.array('f',[0]),
         "offlinePhi"   : array.array('f',[0]),
         "l1RawE"       : array.array('i',[0]),
+        "l1Et"         : array.array('f',[0]),
         "ieta"         : array.array('i',[0]),
         "nTT"          : array.array('i',[0]),
         "isoEt"        : array.array('i',[0]),
@@ -97,9 +99,10 @@ for e in xrange(nentries):
     data["Run"][0]         =  int(inputTree.RunNumber       )
     data["Event"][0]       =  int(inputTree.EventNumber     )
     data["offlineEt"][0]   =  int(inputTree.eleProbeSclEt   )
-    data["offlineEta"][0]  =  int(inputTree.eleProbeEta  )
-    data["offlinePhi"][0]  =  int(inputTree.eleProbePhi  )
+    data["offlineEta"][0]  =  int(inputTree.eleProbeEta     )
+    data["offlinePhi"][0]  =  int(inputTree.eleProbePhi     )
     data["l1RawE"][0]      =  int(inputTree.l1tEmuRawEt     )
+    data["l1Et"][0]        =  int(inputTree.l1tPt           )
     if inputTree.l1tEmuRawEt < 0 :
         continue
     data["ieta"][0]        =  int(inputTree.l1tEmuTowerIEta )
