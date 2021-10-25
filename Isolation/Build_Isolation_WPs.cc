@@ -40,13 +40,12 @@ const Int_t NbinsnTT2 = 32+1;
 
 using namespace std;
 
-void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.root")
+void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.root",Long64_t maxEvents=1000)
 {
   TChain data("EGIsoCalibration");
-  data.Add("superCompressedEGIsolationStudyNtuple.root");
+  data.Add(inFile);
   TFile* f_out = new TFile(oFile,"RECREATE");
   
-  Long64_t maxEvents = 1000;
   Long64_t nentries=-1;
   int   L1Tau_IEt      = -99;
   int   L1Tau_compressed_IEt      = -99;
@@ -67,18 +66,19 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
 
 
   data.SetBranchAddress("l1RawE", &L1Tau_IEt);
-  //data.SetBranchAddress("compressedE", &L1Tau_compressed_IEt);
   data.SetBranchAddress("ieta", &L1Tau_IEta);
   data.SetBranchAddress("compressedE", &supercompressedE);
   data.SetBranchAddress("compressedNTT", &supercompressednTT);
   data.SetBranchAddress("compressedieta", &L1Tau_compressed_IEta);
-  //data.SetBranchAddress("L1Tau_isMerged", &L1Tau_isMerged);
-  //data.SetBranchAddress("L1Tau_hasEM", &L1Tau_hasEM);
   data.SetBranchAddress("nTT", &L1Tau_nTT);
   data.SetBranchAddress("isoEt", &L1Tau_Iso);
   data.SetBranchAddress("offlineEta",&OfflineTau_pt);
-  //data.SetBranchAddress("OfflineTau_isMatched",&OfflineTau_isMatched);
   OfflineTau_isMatched = true;
+  
+  // data.SetBranchAddress("compressedE", &L1Tau_compressed_IEt);
+  // data.SetBranchAddress("L1Tau_isMerged", &L1Tau_isMerged);
+  // data.SetBranchAddress("L1Tau_hasEM", &L1Tau_hasEM);
+  // data.SetBranchAddress("OfflineTau_isMatched",&OfflineTau_isMatched);
   // data.SetBranchAddress("L1Tau_Calibrated_pt", &L1Tau_Calibrated_pt);
   // data.SetBranchAddress("L1Tau_CalibrationConstant",&L1Tau_CalibrationConstant);
 
@@ -91,34 +91,34 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
   for(UInt_t i = 0 ; i < NbinsIEta-1 ; ++i)
     {
       for(UInt_t j = 0 ; j < NbinsIEt-1 ; ++j)
-	{
-	  for(UInt_t k = 0 ; k < NbinsnTT-1 ; ++k)
 	    {
-	      TString Name_Histo = "Hist_";
+	      for(UInt_t k = 0 ; k < NbinsnTT-1 ; ++k)
+	        {
+	          TString Name_Histo = "Hist_";
 
-	      stringstream ss_i;
-	      ss_i << i;
-	      TString Appendix_i = TString(ss_i.str());
-	      Name_Histo += Appendix_i;
-	      Name_Histo += "_";
+	          stringstream ss_i;
+	          ss_i << i;
+	          TString Appendix_i = TString(ss_i.str());
+	          Name_Histo += Appendix_i;
+	          Name_Histo += "_";
 
-	      stringstream ss_j;
-	      ss_j << j;
-	      TString Appendix_j = TString(ss_j.str());
-	      Name_Histo += Appendix_j;
-	      Name_Histo += "_";
+	          stringstream ss_j;
+	          ss_j << j;
+	          TString Appendix_j = TString(ss_j.str());
+	          Name_Histo += Appendix_j;
+	          Name_Histo += "_";
 
-	      stringstream ss_k;
-	      ss_k << k;
-	      TString Appendix_k = TString(ss_k.str());
-	      Name_Histo += Appendix_k;
+	          stringstream ss_k;
+	          ss_k << k;
+	          TString Appendix_k = TString(ss_k.str());
+	          Name_Histo += Appendix_k;
 
-	      TH1F* temp_histo = new TH1F(Name_Histo.Data(),Name_Histo.Data(),100,0.,100.);
-	      Histos_PerBin.insert(make_pair(Name_Histo,temp_histo));
+	          TH1F* temp_histo = new TH1F(Name_Histo.Data(),Name_Histo.Data(),100,0.,100.);
+	          Histos_PerBin.insert(make_pair(Name_Histo,temp_histo));
 
-	     //  cout<<"Name_Histo = "<<Name_Histo<<endl;
-	    }
-	}
+	         //  cout<<"Name_Histo = "<<Name_Histo<<endl;
+	        }
+	   }
     }
   
   cout<<"entering loop"<<endl;
@@ -129,21 +129,27 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
 
   nentries = data.GetEntries();
   if(maxEvents >0 ) nentries = nentries>maxEvents ? maxEvents : nentries;
+  
+  auto t_start = std::chrono::high_resolution_clock::now();
+  auto t_end = std::chrono::high_resolution_clock::now();
 
   for(UInt_t i = 0 ; i < nentries ; ++i)
     {
       data.GetEntry(i);
       if(!OfflineTau_isMatched) continue;
-      
       L1Tau_compressed_IEta_offseted= L1Tau_compressed_IEta + IEtaOffset ;
-      if(i%500 == 0) {
-            cout<<"Doing Event  = "<<i<<endl;
-            cout<<"     supercompressedE = "<<supercompressedE<<endl;
-            cout<<"     L1Tau_compressed_IEta = "<<L1Tau_compressed_IEta_offseted<<endl;
-            cout<<"     supercompressednTT = "<<supercompressednTT<<endl;
-            cout<<"     L1Tau_nTT = "<<L1Tau_nTT<<endl;
-            
-            cout<<endl;
+      if(i%10000 == 0) {
+             t_end = std::chrono::high_resolution_clock::now();
+             cout<<"Processing Entry in event loop : "<<i<<" / "<<nentries<<"  [ "<<100.0*i/nentries<<"  % ]  "
+             << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+             <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nentries - i)/i* 0.001
+             <<endl;
+            //cout<<"     supercompressedE = "<<supercompressedE<<endl;
+            //cout<<"     L1Tau_compressed_IEta = "<<L1Tau_compressed_IEta_offseted<<endl;
+            //cout<<"     supercompressednTT = "<<supercompressednTT<<endl;
+            //cout<<"     L1Tau_nTT = "<<L1Tau_nTT<<endl;
+            //
+            //cout<<endl;
       }
 
       hprof_IEt->Fill(L1Tau_IEt,L1Tau_Iso,1);
@@ -178,7 +184,7 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
       Name_Histo += Appendix_k;
 
 
-      //cout<<"Name_Histo = "<<Name_Histo<<endl;
+     // cout<<"Name_Histo = "<<Name_Histo<<endl;
       Histos_PerBin[Name_Histo]->Fill(L1Tau_Iso);
     }
   
@@ -385,10 +391,23 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
   TH1F* pt = new TH1F("pt","pt",100,0,200);
   TH1F* eta = new TH1F("eta","eta",100,0,100);
   TH1F* nTT = new TH1F("nTT","nTT",100,0,100);
+  
+   t_start = std::chrono::high_resolution_clock::now();
+   t_end = std::chrono::high_resolution_clock::now();
 
   std::cout<<"Looing over events to fill up the Efficiecy Histograms based on the obtaied cuts "<<endl;
   for(UInt_t i = 0 ; i < nentries ; ++i)
     {
+      if(i%10000 == 0) 
+      {
+           t_end = std::chrono::high_resolution_clock::now();
+           cout<<"Processing Entry in event loop : "<<i<<" / "<<nentries<<"  [ "<<100.0*i/nentries<<"  % ]  "
+             << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+             <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nentries - i)/i* 0.001
+             <<endl;
+
+
+      }
       data.GetEntry(i);
       if(!OfflineTau_isMatched) continue;
 

@@ -7,7 +7,7 @@ import time
 import sys
 
 compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
-compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
+compressedEFile     = "data/egCompressELUT_4bit_v5.txt"
 compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
 
 inputFileName       = "/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/sbaradia/NTuple_crab_4841files.root"
@@ -34,7 +34,7 @@ def readLUT(lutFileName,superCompressionFactor=1):
     return lut
 
 ## Read Ieta,E,shape compression mapping
-compressedIeta  = readLUT(compressedIetaFile,8)
+compressedIeta  = readLUT(compressedIetaFile,2*4)
 compressedE     = readLUT(compressedEFile,1)
 compressedNTT   = readLUT(compressedNTTFile,2)
 
