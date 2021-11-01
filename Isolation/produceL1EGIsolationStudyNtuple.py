@@ -102,7 +102,8 @@ for e in xrange(nentries):
     data["offlineEta"][0]  =  int(inputTree.eleProbeEta     )
     data["offlinePhi"][0]  =  int(inputTree.eleProbePhi     )
     data["l1RawE"][0]      =  int(inputTree.l1tEmuRawEt     )
-    data["l1Et"][0]        =  int(inputTree.l1tPt           )
+    data["l1Et"][0]        =  int(inputTree.l1tEmuPt        )
+ #   print(data["l1Et"][0])
     if inputTree.l1tEmuRawEt < 0 :
         continue
     data["ieta"][0]        =  int(inputTree.l1tEmuTowerIEta )

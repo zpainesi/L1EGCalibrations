@@ -61,7 +61,6 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
       TH3F* current_Histo = (TH3F*)f_Isolation.Get(CurrentNameHisto.Data());
       histosIsolation.insert(make_pair(TString(convert.str()),current_Histo));
     }  
-
   TH3F* LUT_Progression_1  = new TH3F("LUT_Progression_1","LUT_Progression_1",NbinsIEta-1,0,NbinsIEta-1,NbinsIEt2-1,0,NbinsIEt2-1,NbinsnTT2-1,0,NbinsnTT2-1);
   TH3F* LUT_Progression_2  = new TH3F("LUT_Progression_2","LUT_Progression_2",NbinsIEta-1,0,NbinsIEta-1,NbinsIEt2-1,0,NbinsIEt2-1,NbinsnTT2-1,0,NbinsnTT2-1);
   TH3F* LUT_Progression_3  = new TH3F("LUT_Progression_3","LUT_Progression_3",NbinsIEta-1,0,NbinsIEta-1,NbinsIEt2-1,0,NbinsIEt2-1,NbinsnTT2-1,0,NbinsnTT2-1);
