@@ -370,7 +370,7 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      if(Int_Efficiency_Progression_21==100) IsoCut_Progression_21 = 1000;
 	      //	      cout<<"IsoCut_Progression_21 = "<<IsoCut_Progression_21<<endl;
 
-	      if(hardcodedIetBins2[j]/2.>30.&&hardcodedIetBins2[j]/2.<55. && k==10 && i==0)
+	     /* if(hardcodedIetBins2[j]/2.>30.&&hardcodedIetBins2[j]/2.<55. && k==10 && i==0)
 		{
 		  cout<<"ieta bin = "<<i<<endl;
 		  cout<<"pT bin = "<<j<<endl;
@@ -386,17 +386,17 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 		  cout<<"Target efficiency = "<<Efficiency_Progression_5<<endl;
 		  cout<<"Isolation cut = "<<IsoCut_Progression_5<<endl;
 		  cout<<"--"<<endl;
-		}
+		}*/
 	      
-	      if(IsoCut_Progression_21==0)
-		{
-		  cout<<"j compressed = "<<FindBinCorrespondenceIEt(hardcodedIetBins2[j])<<endl;
-		  cout<<"k compressed = "<<FindBinCorrespondencenTT(hardcodednTTBins2[k])<<endl;
-		}
+	//      if(IsoCut_Progression_21==0)
+	//	{
+	//	  cout<<"j compressed = "<<FindBinCorrespondenceIEt(hardcodedIetBins2[j])<<endl;
+	//	  cout<<"k compressed = "<<FindBinCorrespondencenTT(hardcodednTTBins2[k])<<endl;
+	//	}
 	      LUT_Progression_21->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_21);
 
 	      Double_t Efficiency_Progression_22 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.70, 70.);
-	      cout<<"Bin j = "<<j<<", TargetEfficiency = "<<Efficiency_Progression_22<<endl;
+	      //cout<<"Bin j = "<<j<<", TargetEfficiency = "<<Efficiency_Progression_22<<endl;
 	      // Double_t Efficiency_Progression_22 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.60, 80.);
 	      if(Efficiency_Progression_22>=0.9999) Efficiency_Progression_22 = 1.0001;
 	      Int_t Int_Efficiency_Progression_22 = int(Efficiency_Progression_22*100);

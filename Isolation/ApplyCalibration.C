@@ -30,12 +30,22 @@ using namespace std;
 const Int_t NbinsIEt =  16 + 1  ; 
 const Int_t hardcodedIetBins[NbinsIEt]  = {0 , 11 , 21 , 31 , 41 , 51 , 61 , 71 , 81 , 91 , 101 , 111 , 121 , 131 , 141 , 151, 255 };
 
+const Int_t NbinsIEt2 =  16 + 1  ; 
+const Int_t hardcodedIetBins2[NbinsIEt2]  = {0 , 11 , 21 , 31 , 41 , 51 , 61 , 71 , 81 , 91 , 101 , 111 , 121 , 131 , 141 , 151, 255 };
+
 const Int_t NbinsnTT =  12 + 1  ; 
 const Int_t hardcodednTTBins[NbinsnTT] = {  0 , 18 , 20 , 22 , 28 , 32 , 37 , 42 , 52 , 63 , 73 , 81 ,1024};
 
 const Int_t NbinsIEta =  3 +1 ; 
 const Int_t hardcodedIetaBins[NbinsIEta] = {-31, -17, 17 , 32};
 
+//const Int_t NbinsIEt2 = 32+1;
+//const Int_t hardcodedIetBins2[NbinsIEt2]  = {0, 15, 18, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 50, 53, 56, 59, 62, 65, 69, 73, 77, 82, 88, 95, 105, 120, 157, 255};
+//const Int_t NbinsnTT2 = 32+1;
+//const Double_t hardcodedIetBins2double[NbinsIEt2]  = {0, 15, 18, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 50, 53, 56, 59, 62, 65, 69, 73, 77, 82, 88, 95, 105, 120, 157, 255};
+const Double_t hardcodedIetBins2double[NbinsIEt2]  = {0 , 11 , 21 , 31 , 41 , 51 , 61 , 71 , 81 , 91 , 101 , 111 , 121 , 131 , 141 , 151, 255 };
+const Int_t NbinsnTT2 = 12+1;
+const Int_t hardcodednTTBins2[NbinsnTT2] ={  0 , 18 , 20 , 22 , 28 , 32 , 37 , 42 , 52 , 63 , 73 , 81 ,1024};
 
 //const Int_t NbinsIEt = 16+1;
 //const Int_t NbinsnTT = 11+1;//Acceptable LUT Thomas
@@ -50,11 +60,6 @@ const Int_t hardcodedIetaBins[NbinsIEta] = {-31, -17, 17 , 32};
 //const Int_t hardcodedIetBins[NbinsIEt]    = {0, 19, 23, 27, 31, 35, 39, 43, 47, 53, 59, 65, 73, 82, 95, 120, 157, 255};
 //const Int_t hardcodedIetBins[NbinsIEt]    = {0, 23, 27, 31, 35, 39, 43, 47, 53, 59, 65, 73, 82, 95, 120, 157, 255};
 
-const Int_t NbinsIEt2 = 32+1;
-const Int_t NbinsnTT2 = 32+1;
-const Int_t hardcodedIetBins2[NbinsIEt2]  = {0, 15, 18, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 50, 53, 56, 59, 62, 65, 69, 73, 77, 82, 88, 95, 105, 120, 157, 255};
-const Double_t hardcodedIetBins2double[NbinsIEt2]  = {0, 15, 18, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 50, 53, 56, 59, 62, 65, 69, 73, 77, 82, 88, 95, 105, 120, 157, 255};
-
 //const Int_t hardcodednTTBins[NbinsnTT] = {0,61,66,71,76,81,86,91,96,101,111,121,131,141,161,255};
 //const Int_t hardcodednTTBins[NbinsnTT] =   {0, 26, 31, 36, 41, 46, 51, 56, 61, 66, 76, 255};//Acceptable LUT Thomas
 //const Int_t hardcodednTTBins[NbinsnTT] = {0,26,31,36,41,46,51,56,61,66,71,76,81,86,91,96,101,106,111,131,151,171,201,255 }; //Cristina
@@ -62,7 +67,6 @@ const Double_t hardcodedIetBins2double[NbinsIEt2]  = {0, 15, 18, 21, 23, 25, 27,
 
 
 // const Int_t hardcodednTTBins[NbinsnTT] =   {0, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 255};//Acceptable LUT Thomas
-const Int_t hardcodednTTBins2[NbinsnTT2] = {0, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86, 91, 96, 101, 106, 111, 116, 121, 126, 131, 136, 141, 146, 161, 161, 255};//Acceptable LUThomas
 
 bool CheckBit (short int number, int bitpos)
 {
