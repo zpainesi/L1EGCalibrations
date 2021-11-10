@@ -6,8 +6,9 @@ import operator
 compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
 compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
 compressedShapeFile = "data/egCompressShapesLUT_calibr_4bit_v4.txt"
-inputFileName       = "test_mean.root"
-outputFileName      = "compressedRegressionTrainingData.root"
+inputFileName       = "low_pT_regressionTrainerFile.root"
+#outputFileName      = "compressed_low_pT_regressionTrainerFile.root"
+outputFileName      = "temp.root"
 treeName = "eIDSimpleTree"
 
 
@@ -91,6 +92,8 @@ data = {"Run"    :array.array('i',[0]),
 print "First pass: reading tree to build compressed shape histo"
 nentries = inputTree.GetEntriesFast()
 for e in xrange(nentries):
+    if e%2000==0:
+        print "\t entry = ",e," / ",nentries,"  [ ",100.0*e/nentries ," ] "
     inputTree.GetEntry(e)
     data["Run"][0]    = int(inputTree.Run)
     data["Event"][0]  =  int(inputTree.Event)
@@ -123,6 +126,8 @@ shapeHisto.Write()
 
 print "Second pass: reading tree for filling output tree"
 for e in xrange(nentries):
+    if e%2000==0:
+        print "\t entry = ",e," / ",nentries,"  [ ",100.0*e/nentries ," ] "
     inputTree.GetEntry(e)
     data["Run"][0]    = int(inputTree.Run)
     data["Event"][0]  =  int(inputTree.Event)
@@ -149,6 +154,4 @@ outputFile.cd()
 outputTree.Write()
 outputFile.Close()
 inputFile.Close()
-
-
 
