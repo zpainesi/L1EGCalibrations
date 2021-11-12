@@ -31,7 +31,6 @@ def readLUT(lutFileName,superCompressionFactor=1):
         for line in lines:
             if line[0]=='#': continue
             line=line.split("#")[0]
-            print(line)
             tokens = line.split()
             if len(tokens)!=2: continue
             lut[int(tokens[0])] = int(int(tokens[1])/superCompressionFactor)
@@ -114,7 +113,8 @@ for e in xrange(nentries):
     data["nTT"][0]         =  int(inputTree.l1tEmuNTT       )
     data["isoEt"][0]       =  int(inputTree.l1tEmuIsoEt     )
     data["isoCat"][0]      =  int(inputTree.l1tEmuIso       )
-    data["compressedieta"][0]  = int(math.copysign(compressedIeta[abs(data["ieta"][0])], data["ieta"][0]))
+    #data["compressedieta"][0] = int(math.copysign(compressedIeta[abs(data["ieta"][0])], data["ieta"][0]))
+    data["compressedieta"][0]  = compressedIeta[abs(data["ieta"][0])]
     data["compressedE"][0]     = compressedE[min(data["l1RawE"][0],255)]
     #data["compressedNTT"][0] = data["nTT"][0]
     data["compressedNTT"][0] = min(compressedNTT[data["nTT"][0]],11)
