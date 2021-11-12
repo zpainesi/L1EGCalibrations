@@ -5,25 +5,27 @@
 
 using namespace std;
 
-
-
-
+const int HeaderLines=8;
 
 vector<int> convert_LUT_calibr(TString LUTfile){
   std::ifstream infile(LUTfile);
   vector<int> converted_LUT;
-  int i=0;
+  int i=0,x=0;
   string line;
   while(getline(infile,line)){
     i++;
-    if(i>10){
+    
+    if (i<=HeaderLines) std::cout<<"skipping line ["<<i<<"] : "<<line<<"\n";
+    if(i>HeaderLines){
       std::istringstream iss(line);
       int a,b;
       iss>>a>>b;
       b &= (0x1ff);
       converted_LUT.push_back(b);
+       x++;
     }
   }
+  std::cout<<" Read "<<x<<" items from LUT : "<<LUTfile<<"\n";
 
   return converted_LUT;
 
@@ -40,17 +42,19 @@ vector<int> convert_shapeLUT(TString LUTfile){
 
   int i=0;
   string line;
+  int x=0;
   while(getline(infile,line)){
     i++;
-    if(i>8){
+    if(i>HeaderLines){
       std::istringstream iss(line);
       int a,b;
       iss>>a>>b;
       converted_LUT.push_back(b);
+      x++;
     }
   }
 
-
+  std::cout<<" Read "<<x<<" items from LUT : "<<LUTfile<<"\n";
   return converted_LUT;
 
 }
@@ -75,7 +79,6 @@ void write_calibrLUT(TString LUTfile_calib, TString LUTfile_shapeID, TString LUT
 	//cout<<"converted_shapeLUT[i]="<<converted_shapeLUT[i]<<endl;
 	if(converted_shapeLUT[i]==1)
 	  LUT_entry+=(1<<9);
-
 	out<<i<<" "<<LUT_entry<<" # compressedIeta="<<ieta<<",compressedE="<<iET<<",compressedShape="<<shape<<" shapeID="<<converted_shapeLUT[i]<<",calibr="<<converted_LUT[i]<<'\n';
 
 
@@ -86,13 +89,16 @@ void write_calibrLUT(TString LUTfile_calib, TString LUTfile_shapeID, TString LUT
 
 }
 
-void makeCorrectedLUT(){
-
-  TString LUTfile_calib="/grid_mnt/t3storage3/athachay/l1egamma/emulationstuff/CMSSW_7_6_0/src/EG_Calibrations/L1EGCalibrations/RegressionTraining/Run3MCRegression_corrections_Trimming10_compressedieta_compressedE_compressedshape_mode_PANTELIS_v2_v17.04.04.txt";
+void makeCorrectedLUT( TString LUTfile_calib  ="lowPtRegressionUncorrectedLUT_v17.04.04.txt" ,
+                       TString LUTfile_out    ="lowPtRun3RegressionLUT.txt",
+                       TString LUTfile_shapeID="data/shapeIdentification_adapt0.99_compressedieta_compressedE_compressedshape_v17.05.19.txt"
+                       ){
   
-  TString LUTfile_shapeID="data/shapeIdentification_adapt0.99_compressedieta_compressedE_compressedshape_v17.05.19.txt";
-  
-  TString LUTfile_out = "/grid_mnt/t3storage3/athachay/l1egamma/emulationstuff/CMSSW_7_6_0/src/EG_Calibrations/L1EGCalibrations/RegressionTraining/correctedRun3MCRegression_corrections_Trimming10_compressedieta_compressedE_compressedshape_mode_PANTELIS_v2_v17.04.04.txt";
+  //TString LUTfile_calib="lowPtRegressionUncorrectedLUT_v17.04.04.txt";
+  //TString LUTfile_out = "lowPtRegressionLUT.txt";
+  //
+  //LUTfile_calib="swetasRun3Rgression_v17.04.04.txt";
+  //LUTfile_out = "swetasRun3RegressionLUT.txt";
   
   write_calibrLUT(LUTfile_calib,LUTfile_shapeID,LUTfile_out);
 

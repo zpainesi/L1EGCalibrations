@@ -1,12 +1,32 @@
+#!/usr/bin/env python
+import sys
 import ROOT
 from GBR2LUT import GBR2LUT
 from GBR2LUTEmulator_test_newcal import GBR2LUTEmulator_test_newcal
 
-inputFile = "/grid_mnt/t3storage3/athachay/l1egamma/emulationstuff/CMSSW_7_6_0/src/EG_Calibrations/L1EGCalibrations/run3MCL1EtRegression_results.root"
+inputFile = "regressionLowPtForRun3MC_results.root"
 version = "v17.04.04"
-sortedShapesFile = "data/compressedSortedShapesForMakingLUT.txt"
+sortedShapesFile = "data/compressedSortedShapes.txt"
+regresionName ="lowPtRegressionUncorrectedLUT"
+outputDir="./"
+if len(sys.argv) < 2 :
+    print("Please provide the results file !! ")
+if len(sys.argv) > 1 :
+    inputFile=sys.argv[1]
+if len(sys.argv) > 2 :
+    regresionName=sys.argv[2]
+if len(sys.argv) > 3 :
+    outputDir=sys.argv[3]
 
-header = """# Calibration vs |ieta|,shape,E. Derived from Run 283478 data, with semi-parametric regression
+suffix="_{}.txt".format(version)
+
+print "Reading the Input Result file File as   :  ", inputFile
+print "Reading the Sorted Shapes File as       :  ", sortedShapesFile
+print "Setting the output file name as          :  ", outputDir+regresionName+suffix 
+
+
+header = """\
+# Calibration vs |ieta|,shape,E. Derived from Run 283478 data, with semi-parametric regression
 # The LUT output is (ET_off/ET_L1) between 0 and 2, encoded on 9 bits
 # Index is compressedShape+compressedE<<4+compressedIeta<<8. 
 # Compression version is v4
@@ -30,14 +50,13 @@ for i in range(0,16):
 gbr2luts = []
 
 gbr2luts.append(GBR2LUTEmulator_test_newcal())
-gbr2luts[-1].name = "Run3MCRegression_compressedsortedshape_results"
+gbr2luts[-1].name = regresionName
 gbr2luts[-1].inputFileName = inputFile
-gbr2luts[-1].outputFileName = "Run3MCRegression_corrections_Trimming10_compressedieta_compressedE_compressedshape_mode_PANTELIS_v2_{}.txt".format(version)
+gbr2luts[-1].outputFileName = outputDir+gbr2luts[-1].name+ suffix
 gbr2luts[-1].sortedShapes = sortedShapesFile
 gbr2luts[-1].variablePoints.append(("abs(compressedieta)",ietapoints))
 gbr2luts[-1].variablePoints.append(("compressedE",Epoints))
 gbr2luts[-1].variablePoints.append(("compressedsortedshape",shapepoints))
 gbr2luts[-1].retrieveForest()
 gbr2luts[-1].createLUT(header)
-
 
