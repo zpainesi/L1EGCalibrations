@@ -6,12 +6,14 @@ import operator
 import time
 import sys
 
-compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
-compressedEFile     = "data/egCompressELUT_4bit_v5.txt"
-compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
 
-inputFileName       = "/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/sbaradia/NTuple_crab_4841files.root"
-outputFileName      = "EGIsolationStudyNtuple.root"
+
+compressedIetaFile  = "compressionLuts/tauCompressEtaLUT_2bit_v8.txt"
+compressedEFile     = "compressionLuts/tauCompressELUT_5bit_v8.txt"
+compressedNTTFile   = "compressionLuts/tauCompressnTTLUT_5bit_v8.txt"
+
+inputFileName       = "/home/athachay/t3store3/l1egamma/data/run3MC/NTuple_crab_4841files_fromSweta.root"
+outputFileName      = "EGIsolationStudyNtuple_tauBasedCopressionLuts.root"
 treeName = "Ntuplizer/TagAndProbe"
 maxEntries=-1*int(1e6)
 
@@ -28,15 +30,17 @@ def readLUT(lutFileName,superCompressionFactor=1):
         lines = f.readlines()
         for line in lines:
             if line[0]=='#': continue
+            line=line.split("#")[0]
+            print(line)
             tokens = line.split()
             if len(tokens)!=2: continue
             lut[int(tokens[0])] = int(int(tokens[1])/superCompressionFactor)
     return lut
 
 ## Read Ieta,E,shape compression mapping
-compressedIeta  = readLUT(compressedIetaFile,2*4)
-compressedE     = readLUT(compressedEFile,1)
-compressedNTT   = readLUT(compressedNTTFile,2)
+compressedIeta  = readLUT(compressedIetaFile)
+compressedE     = readLUT(compressedEFile)
+compressedNTT   = readLUT(compressedNTTFile)
 
 ## Reading input trees 
 ## + filling compressed shape histo
