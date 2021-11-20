@@ -7,14 +7,15 @@ import time
 import sys
 
 
-compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
-compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
-compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
 
-inputFileName       = "/home/athachay/t3store3/l1egamma/data/run3MC/NTuple_crab_4841files_fromSweta.root"
-outputFileName      = "EGIsolationStudyNtuple_noSuperCompressionForEtAndNTT.root"
-treeName = "Ntuplizer/TagAndProbe"
-maxEntries=-1*int(1e6)
+compressedIetaFile  = "compressionLuts/tauCompressEtaLUT_2bit_v8.txt"
+compressedEFile     = "compressionLuts/tauCompressELUT_5bit_v8.txt"
+compressedNTTFile   = "compressionLuts/tauCompressnTTLUT_5bit_v8.txt"
+
+inputFileName       = "/grid_mnt/t3storage3/athachay/l1egamma/data/run3MC/L1Ntuple.root"
+outputFileName      = "EGIsolationStudyNtuple_tauBasedCopressionLutsForL1Ntuple.root"
+treeName = "L1UpgradeTree"
+maxEntries= 10+ 0*-1*int(1e6)
 
 if len(sys.argv)>1:
     inputFileName=sys.argv[1]
@@ -36,7 +37,7 @@ def readLUT(lutFileName,superCompressionFactor=1):
     return lut
 
 ## Read Ieta,E,shape compression mapping
-compressedIeta  = readLUT(compressedIetaFile,8)
+compressedIeta  = readLUT(compressedIetaFile)
 compressedE     = readLUT(compressedEFile)
 compressedNTT   = readLUT(compressedNTTFile)
 
@@ -47,19 +48,19 @@ inputTree = inputFile.Get(treeName)
 inputTree.__class__ = ROOT.TTree
 
 
-inputTree.SetBranchStatus("*",0);
-
-inputTree.SetBranchStatus("RunNumber",1);
-inputTree.SetBranchStatus("EventNumber",1);
-inputTree.SetBranchStatus("eleProbeSclEt",1);
-inputTree.SetBranchStatus("eleProbeEta",1);
-inputTree.SetBranchStatus("eleProbePhi",1);
-inputTree.SetBranchStatus("l1tEmuTowerIEta",1);
-inputTree.SetBranchStatus("l1tEmuRawEt",1);
-inputTree.SetBranchStatus("l1tEmuPt",1);
-inputTree.SetBranchStatus("l1tEmuNTT",1);
-inputTree.SetBranchStatus("l1tEmuIsoEt",1);
-inputTree.SetBranchStatus("l1tEmuIso",1);
+#inputTree.SetBranchStatus("*",0);
+#
+#inputTree.SetBranchStatus("RunNumber",1);
+#inputTree.SetBranchStatus("EventNumber",1);
+#inputTree.SetBranchStatus("eleProbeSclEt",1);
+#inputTree.SetBranchStatus("eleProbeEta",1);
+#inputTree.SetBranchStatus("eleProbePhi",1);
+#inputTree.SetBranchStatus("l1tEmuTowerIEta",1);
+#inputTree.SetBranchStatus("l1tEmuRawEt",1);
+#inputTree.SetBranchStatus("l1tEmuPt",1);
+#inputTree.SetBranchStatus("l1tEmuNTT",1);
+#inputTree.SetBranchStatus("l1tEmuIsoEt",1);
+#inputTree.SetBranchStatus("l1tEmuIso",1);
 
 
 data = {
@@ -98,26 +99,28 @@ for e in xrange(nentries):
         tLeft=(nentries-e)*deltaT/(e +1e-9)
         print "Processing event ",e," Elapsed time : ",deltaT ,' secs , Est. time left : ',tLeft
     inputTree.GetEntry(e)
-    data["Run"][0]         =  int(inputTree.RunNumber       )
-    data["Event"][0]       =  int(inputTree.EventNumber     )
-    data["offlineEt"][0]   =  int(inputTree.eleProbeSclEt   )
-    data["offlineEta"][0]  =  int(inputTree.eleProbeEta     )
-    data["offlinePhi"][0]  =  int(inputTree.eleProbePhi     )
-    data["l1RawE"][0]      =  int(inputTree.l1tEmuRawEt     )
-    data["l1Et"][0]        =  int(inputTree.l1tEmuPt        )
- #   print(data["l1Et"][0])
-    if inputTree.l1tEmuRawEt < 0 :
-        continue
-    data["ieta"][0]        =  int(inputTree.l1tEmuTowerIEta )
-    data["nTT"][0]         =  int(inputTree.l1tEmuNTT       )
-    data["isoEt"][0]       =  int(inputTree.l1tEmuIsoEt     )
-    data["isoCat"][0]      =  int(inputTree.l1tEmuIso       )
-    #data["compressedieta"][0] = int(math.copysign(compressedIeta[abs(data["ieta"][0])], data["ieta"][0]))
-    data["compressedieta"][0]  = compressedIeta[abs(data["ieta"][0])]
-    data["compressedE"][0]     = compressedE[min(data["l1RawE"][0],255)]
-    #data["compressedNTT"][0] = data["nTT"][0]
-    data["compressedNTT"][0] = min(compressedNTT[data["nTT"][0]],11)
-    outputTree.Fill()
+    print e
+    print inputTree.nEGs
+#    data["Run"][0]         =  int(inputTree.RunNumber       )
+#    data["Event"][0]       =  int(inputTree.EventNumber     )
+#    data["offlineEt"][0]   =  int(inputTree.eleProbeSclEt   )
+#    data["offlineEta"][0]  =  int(inputTree.eleProbeEta     )
+#    data["offlinePhi"][0]  =  int(inputTree.eleProbePhi     )
+#    data["l1RawE"][0]      =  int(inputTree.l1tEmuRawEt     )
+#    data["l1Et"][0]        =  int(inputTree.l1tEmuPt        )
+# #   print(data["l1Et"][0])
+#    if inputTree.l1tEmuRawEt < 0 :
+#        continue
+#    data["ieta"][0]        =  int(inputTree.l1tEmuTowerIEta )
+#    data["nTT"][0]         =  int(inputTree.l1tEmuNTT       )
+#    data["isoEt"][0]       =  int(inputTree.l1tEmuIsoEt     )
+#    data["isoCat"][0]      =  int(inputTree.l1tEmuIso       )
+#    #data["compressedieta"][0] = int(math.copysign(compressedIeta[abs(data["ieta"][0])], data["ieta"][0]))
+#    data["compressedieta"][0]  = compressedIeta[abs(data["ieta"][0])]
+#    data["compressedE"][0]     = compressedE[min(data["l1RawE"][0],255)]
+#    #data["compressedNTT"][0] = data["nTT"][0]
+#    data["compressedNTT"][0] = min(compressedNTT[data["nTT"][0]],11)
+#    outputTree.Fill()
 
 outputTree.Write()
 outputFile.Close()
