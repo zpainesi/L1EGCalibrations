@@ -28,6 +28,11 @@
 #include "TAxis.h"
 #include "L1UpgradeTree.h"
 
+//#define __DEBUG__
+//#define __DEBUG_SETF__
+
+//#define MAXEVENTS 50000
+
 #define N_OPTIONS 23 // 1 [ no Iso ] + 22
 #define ET_MAX 255
 
@@ -39,16 +44,22 @@ void SaveCanvas(TCanvas* c, TString PlotName = "myPlotName");
 void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);
 void readLUTTable(std::string& file_name, unsigned int& nbin, std::map<unsigned int, unsigned int>& lut_map);
 
-void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFile="", float Bunches=1.0)
+void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFile="", float Bunches=2544.0)
 {
-   // "calibFiles/data2018_EGIsoV2_Options.root"
+   #ifdef __DEBUG_SETF__
+   outFile="ratehists.root";
+   optionFile="calibFiles/data2018_EGIsoV2_Options.root";
+   #endif
+
    TFile f_Isolation(optionFile,"READ");
   
 
    std::map<TString,TH3F*> histosIsolation;
    TChain *treeChain = new TChain("L1UpgradeTree");
    
-   //"/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_7_6_0/src/Isolation/slimL1EmulatorTrees/L1Ntuple_ZeroBias_325170_reEmulation_11_2_0_run3Recalib.root";
+   #ifdef __DEBUG_SETF__
+   zeroBiasFile = "/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_7_6_0/src/Isolation/slimL1EmulatorTrees/L1Ntuple_ZeroBias_325170_reEmulation_11_2_0_run3Recalib.root";
+   #endif
    treeChain->Add(zeroBiasFile);
 
    cout << "Total Number of Events Available : " << treeChain->GetEntriesFast()  << endl;
@@ -59,6 +70,17 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
   std::map<unsigned int, unsigned int> lutMapEta;
   std::map<unsigned int, unsigned int> lutMapNTT;
   
+  unsigned int   nBinsIEt   ;
+  unsigned int   nBinsIEta  ;
+  unsigned int   nBinsNTT   ;
+
+  string ifname = "compressionLuts/tauCompressELUT_5bit_v8.txt"  ; 
+  readLUTTable(ifname ,  nBinsIEt  , lutMapEt );
+  ifname = "compressionLuts/tauCompressEtaLUT_2bit_v8.txt";
+  readLUTTable(ifname ,  nBinsIEta , lutMapEta);
+  ifname = "compressionLuts/tauCompressnTTLUT_5bit_v8.txt";
+  readLUTTable(ifname ,  nBinsNTT  , lutMapNTT);              
+ 
   for(UInt_t i = 1 ; i < N_OPTIONS ; ++i)
     {
       if(i == 0) continue ;
@@ -76,7 +98,7 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
    // Integrating the event pass distribution
     for(int i=0;i< N_OPTIONS ; i++)
     {
-        for(int j= 0 ; j < ET_MAX  ;j++)
+        for(int j= 0 ; j <= ET_MAX  ;j++)
         {
             optionsPtIsoMatrix[i][j]= 0 ;
        }
@@ -89,6 +111,7 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
 
    ntupleRawTree.fChain->SetBranchStatus("*",0);
    ntupleRawTree.fChain->SetBranchStatus("nEGs",1);
+   ntupleRawTree.fChain->SetBranchStatus("egEt",1);
    ntupleRawTree.fChain->SetBranchStatus("egIEt",1);
    ntupleRawTree.fChain->SetBranchStatus("egIEta",1);
    ntupleRawTree.fChain->SetBranchStatus("egIsoEt",1);
@@ -101,7 +124,8 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
    short clippedEta;
    short clippedEt;
 
-   int eTMax[N_OPTIONS];
+   float eTMax[N_OPTIONS],egEt;
+
 
    //inTree->Print();
    //inTree->Scan("nEGs");
@@ -116,6 +140,15 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
  cout << "Total Number of Events Available : " <<ntupleRawTree.fChain->GetEntries()  << endl;
  cout << "Total Number of Events to process : " << nentries  << endl;
  Long64_t nEventsConsidered=0;
+ #ifdef __DEBUG_SETF__
+    nentries = 20;
+ #endif
+ #ifdef __DEBUG__
+    nentries = 20;
+ #endif
+ #ifdef MAXEVENTS
+    nentries=MAXEVENTS;
+ #endif
  for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
       Long64_t ientry = ntupleRawTree.LoadTree(jentry);
@@ -134,10 +167,11 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
              <<std::endl;
         }
 
-         //std::cout<<"Entry #"<<jentry<<endl; 
-         //std::cout<<"\tnEGs = "<<ntupleRawTree.nEGs<<"\n";
-
-
+         #ifdef __DEBUG__
+         std::cout<<"Entry #"<<jentry<<endl; 
+         std::cout<<"\tnEGs = "<<ntupleRawTree.nEGs<<"\n";
+         #endif
+    
          // if(PU_per_LS.find(in_lumi)==PU_per_LS.end()) continue;
          // Float_t weight = PU_per_LS[48]/PU_per_LS[in_lumi];
          // if(weight<0.5) cout<<"lumi = "<<in_lumi<<", weight = "<<weight<<endl;
@@ -150,10 +184,13 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
          }
          for(auto  eg_idx=0 ; eg_idx < ntupleRawTree.nEGs ; eg_idx++)
          {
+             egEt = ntupleRawTree.egEt.at(eg_idx);
              clippedEt  = ntupleRawTree.egIEt.at(eg_idx) < ET_MAX ? ntupleRawTree.egIEt.at(eg_idx) : ET_MAX ;
-             //std::cout<<"\t eg_idx "<<eg_idx<<" = "<<ntupleRawTree.egIEt.at(eg_idx)<<" [ "<<clippedEt<<" ] isoEt : "<<ntupleRawTree.egIsoEt.at(eg_idx)<<" \n";
              
-             if( ntupleRawTree.egIEta.at(eg_idx) > 31 )
+             #ifdef __DEBUG__
+             std::cout<<"\t eg_idx "<<eg_idx<<" = "<<egEt<<" [ "<<clippedEt<<" ] isoEt : "<<ntupleRawTree.egIsoEt.at(eg_idx)<<" \n";
+             #endif
+            if( ntupleRawTree.egIEta.at(eg_idx) > 31 )
                 clippedEta = 31 ;
              else if ( ntupleRawTree.egIEta.at(eg_idx) < -31 )
                 clippedEta= -31 ;
@@ -166,9 +203,18 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
              in_compressedE    =  lutMapEta[clippedEt];
              in_compressednTT  =  lutMapNTT[ntupleRawTree.egNTT.at(eg_idx)];
 
-             if(clippedEt > eTMax[0]) eTMax[0] = clippedEt;
+             #ifdef __DEBUG__
+             std::cout<<"Compression scheme : "<<clippedEt<<" , "<<clippedEta<<" , "<<ntupleRawTree.egNTT.at(eg_idx)
+                      <<" -> "
+                      <<in_compressedE<<" , "<<in_compressedieta<<","<<in_compressednTT<<"\n";
+             #endif   
+    
+             if( egEt > eTMax[0]) eTMax[0] = egEt;
             
 
+                 #ifdef __DEBUG__
+                 std::cout<<"\t";
+                 #endif
              for(UInt_t i = 1 ; i < N_OPTIONS ; ++i)
                {
                  TString CurrentNameHisto = "LUT_Progression_";
@@ -176,20 +222,45 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
                  convert << i;
                  CurrentNameHisto += convert.str();
                  Int_t Cut_L1EG_Iso   = histosIsolation[CurrentNameHisto] ->GetBinContent(in_compressedieta+1,in_compressedE+1,in_compressednTT+1);
-                 
-                 //std::cout<<" option : "<<i<<" : cut : "<<Cut_L1EG_Iso<<"\n";
+                 //std::cout<<CurrentNameHisto<< " : ( "<<in_compressedieta<<" , "<<in_compressedE<<" , "<<in_compressednTT<<" )  -> "<<Cut_L1EG_Iso<<"\n";
 
+
+                 #ifdef __DEBUG__
+                 if(Cut_L1EG_Iso > 0) 
+                        std::cout<<" Non Zero Cut obtained for  : "
+                                 <<in_compressedieta<<" , "
+                                 <<in_compressedE<<" , "
+                                 <<in_compressednTT
+                                 <<" -> "<<Cut_L1EG_Iso
+                                 <<"\n";
+                    
+                 
+                 std::cout<<" [ option : "<<i<<" : cut : "<<Cut_L1EG_Iso<<" ] ";
+                 #endif   
                  if ( ntupleRawTree.egIsoEt.at(eg_idx) > Cut_L1EG_Iso ) continue ;
-                 if(clippedEt > eTMax[i]) eTMax[i] = clippedEt;
+                 if( egEt > eTMax[i]) eTMax[i] = egEt;
                } 
+                 #ifdef __DEBUG__
+                 std::cout<<"\n";
+                 #endif
           }
           
           for(UInt_t i=0 ;i < N_OPTIONS ; i++)
           {
-               if( eTMax[i] > 0  )
+               if( eTMax[i] >= 0.0  )
                {
-                   //std::cout<<" Pass for  "<<i<<" for "<<eTMax[i]<<"\n";
-                   optionsPtIsoMatrix[i][eTMax[i]] +=1;
+                 #ifdef __DEBUG__
+                   std::cout<<" Pass for  "<<i<<" for "<<eTMax[i]<<"\n";
+                 #endif  
+                   egEt = eTMax[i] > ET_MAX ? ET_MAX : eTMax[i];
+                   optionsPtIsoMatrix[i][int(eTMax[i])] +=1;
+               }
+               else
+               {
+                
+                 #ifdef __DEBUG__
+                   std::cout<<" Fail for  "<<i<<" for "<<eTMax[i]<<"\n";
+                 #endif
                }
           }
 
@@ -288,6 +359,7 @@ void readLUTTable(std::string& file_name, unsigned int& nbin,
       tokenize(line,tokens," ");
       unsigned int key   = std::atoi(tokens.at(0).c_str());
       unsigned int value = std::atoi(tokens.at(1).c_str()); 
+      //std::cout<<"Assigning "<<key<<" - > "<<value<<"\n";
       lut_map.insert({ key, value });
       if (nbin < value) nbin = value;
     }
