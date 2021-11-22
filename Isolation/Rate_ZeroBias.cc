@@ -39,17 +39,17 @@ void SaveCanvas(TCanvas* c, TString PlotName = "myPlotName");
 void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);
 void readLUTTable(std::string& file_name, unsigned int& nbin, std::map<unsigned int, unsigned int>& lut_map);
 
-void Rate_ZeroBias()
+void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFile="", float Bunches=1.0)
 {
+   // "calibFiles/data2018_EGIsoV2_Options.root"
+   TFile f_Isolation(optionFile,"READ");
   
-   TFile f_Isolation("calibFiles/data2018_EGIsoV2_Options.root","READ");
-   TString FileName_in = "/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_7_6_0/src/Isolation/slimL1EmulatorTrees/2018v3/Reduced_L1Ntuple_1.root";
 
    std::map<TString,TH3F*> histosIsolation;
-    
-   TFile f_in(FileName_in.Data(),"READ");
    TChain *treeChain = new TChain("L1UpgradeTree");
-   treeChain->Add(FileName_in);
+   
+   //"/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_7_6_0/src/Isolation/slimL1EmulatorTrees/L1Ntuple_ZeroBias_325170_reEmulation_11_2_0_run3Recalib.root";
+   treeChain->Add(zeroBiasFile);
 
    cout << "Total Number of Events Available : " << treeChain->GetEntriesFast()  << endl;
    L1UpgradeTree ntupleRawTree(treeChain);
@@ -71,7 +71,6 @@ void Rate_ZeroBias()
       histosIsolation.insert(make_pair(CurrentNameHisto,current_Histo));
     } 
 
-   float scaleFactor(1.0);
    int optionsPtIsoMatrix[100][ET_MAX+1];
  
    // Integrating the event pass distribution
@@ -87,6 +86,14 @@ void Rate_ZeroBias()
    std::vector<short>   egIEta;
    std::vector<short>   egIsoEt;
    std::vector<short>   egNTT;
+
+   ntupleRawTree.fChain->SetBranchStatus("*",0);
+   ntupleRawTree.fChain->SetBranchStatus("nEGs",1);
+   ntupleRawTree.fChain->SetBranchStatus("egIEt",1);
+   ntupleRawTree.fChain->SetBranchStatus("egIEta",1);
+   ntupleRawTree.fChain->SetBranchStatus("egIsoEt",1);
+   ntupleRawTree.fChain->SetBranchStatus("egNTT",1);
+
   
    short in_compressedieta;
    short in_compressedE;
@@ -108,14 +115,17 @@ void Rate_ZeroBias()
    
  cout << "Total Number of Events Available : " <<ntupleRawTree.fChain->GetEntries()  << endl;
  cout << "Total Number of Events to process : " << nentries  << endl;
+ Long64_t nEventsConsidered=0;
  for (Long64_t jentry=0; jentry<nentries;jentry++) {
 
       Long64_t ientry = ntupleRawTree.LoadTree(jentry);
       if (ientry < 0) break;
 
          nb = ntupleRawTree.fChain->GetEntry(jentry);   nbytes += nb;
- 
-        if(jentry%5000 == 0) 
+         
+         nEventsConsidered++;
+
+        if(jentry%12000 == 0) 
         {
              t_end = std::chrono::high_resolution_clock::now();
              std::cout<<"Processing Entry in event loop : "<<jentry<<" / "<<nentries<<"  [ "<<100.0*jentry/nentries<<"  % ]  "
@@ -138,12 +148,11 @@ void Rate_ZeroBias()
          {
                eTMax[i] = -1; 
          }
-
          for(auto  eg_idx=0 ; eg_idx < ntupleRawTree.nEGs ; eg_idx++)
          {
              clippedEt  = ntupleRawTree.egIEt.at(eg_idx) < ET_MAX ? ntupleRawTree.egIEt.at(eg_idx) : ET_MAX ;
-            // std::cout<<"\t eg_idx "<<eg_idx<<" = "<<ntupleRawTree.egIEt.at(eg_idx)<<" [ "<<clippedEt<<" ] isoEt : "<<ntupleRawTree.egIsoEt.at(eg_idx)<<" \n";
-
+             //std::cout<<"\t eg_idx "<<eg_idx<<" = "<<ntupleRawTree.egIEt.at(eg_idx)<<" [ "<<clippedEt<<" ] isoEt : "<<ntupleRawTree.egIsoEt.at(eg_idx)<<" \n";
+             
              if( ntupleRawTree.egIEta.at(eg_idx) > 31 )
                 clippedEta = 31 ;
              else if ( ntupleRawTree.egIEta.at(eg_idx) < -31 )
@@ -168,7 +177,7 @@ void Rate_ZeroBias()
                  CurrentNameHisto += convert.str();
                  Int_t Cut_L1EG_Iso   = histosIsolation[CurrentNameHisto] ->GetBinContent(in_compressedieta+1,in_compressedE+1,in_compressednTT+1);
                  
-                // std::cout<<" option : "<<i<<" : cut : "<<Cut_L1EG_Iso<<"\n";
+                 //std::cout<<" option : "<<i<<" : cut : "<<Cut_L1EG_Iso<<"\n";
 
                  if ( ntupleRawTree.egIsoEt.at(eg_idx) > Cut_L1EG_Iso ) continue ;
                  if(clippedEt > eTMax[i]) eTMax[i] = clippedEt;
@@ -179,7 +188,7 @@ void Rate_ZeroBias()
           {
                if( eTMax[i] > 0  )
                {
-                //   std::cout<<" Pass for  "<<i<<" for "<<eTMax[i]<<"\n";
+                   //std::cout<<" Pass for  "<<i<<" for "<<eTMax[i]<<"\n";
                    optionsPtIsoMatrix[i][eTMax[i]] +=1;
                }
           }
@@ -200,14 +209,27 @@ void Rate_ZeroBias()
   TFile *file =new TFile("L1EG_Rate_2018.root","RECREATE");
   file->cd();
 
+  double scaleFactor = 11.2456 * Bunches /nEventsConsidered  ;
+  // No Isolation
+      TString CurrentNameHisto = "pass_noIsolation";
+      TH1F* pass_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto , ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
+      CurrentNameHisto = "rate_noIsolation";
+      TH1F* rate_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto ,ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
+      
+      for(int j=1;j<=ET_MAX;j++)
+        {
+            pass_Histo->SetBinContent(j,optionsPtIsoMatrix[0][j-1])  ;
+            rate_Histo->SetBinContent(j,optionsPtIsoMatrix[0][j-1]*scaleFactor) ;
+        }
+
   for(UInt_t i = 1 ; i < N_OPTIONS ; ++i )
     {
-      TString CurrentNameHisto = "pass_LUT_Progression_";
+      CurrentNameHisto = "pass_LUT_Progression_";
       convert.clear();  convert << i;
       CurrentNameHisto += convert.str();
-      TH1F* pass_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto , ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
+      pass_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto , ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
       CurrentNameHisto = "rate_LUT_Progression_" + convert.str();
-      TH1F* rate_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto ,ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
+      rate_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto ,ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
 
       for(int j=1;j<=ET_MAX;j++)
         {
