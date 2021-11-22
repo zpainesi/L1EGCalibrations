@@ -205,8 +205,7 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
     }
 
   // Filling the hist
-  ostringstream convert;
-  TFile *file =new TFile("L1EG_Rate_2018.root","RECREATE");
+  TFile *file =new TFile(outFile,"RECREATE");
   file->cd();
 
   double scaleFactor = 11.2456 * Bunches /nEventsConsidered  ;
@@ -221,10 +220,13 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
             pass_Histo->SetBinContent(j,optionsPtIsoMatrix[0][j-1])  ;
             rate_Histo->SetBinContent(j,optionsPtIsoMatrix[0][j-1]*scaleFactor) ;
         }
+  pass_Histo->Write();
+  rate_Histo->Write();
 
   for(UInt_t i = 1 ; i < N_OPTIONS ; ++i )
     {
       CurrentNameHisto = "pass_LUT_Progression_";
+      ostringstream convert;
       convert.clear();  convert << i;
       CurrentNameHisto += convert.str();
       pass_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto , ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
