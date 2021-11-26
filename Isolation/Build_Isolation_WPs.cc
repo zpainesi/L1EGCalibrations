@@ -30,13 +30,24 @@
 // E   :  4 bit
 // nTT :  5 bit, max 12
 
-const Int_t NbinsIEta = 4+1;  const Int_t IEtaOffset=1;
-const Int_t NbinsIEt  = 16+1; const Int_t IEtOffset = 0;
-const Int_t NbinsnTT  = 12+1; const Int_t INTTOffset= 0;//Acceptable LUT Thomas
+// const Int_t NbinsIEta = 4+1;  const Int_t IEtaOffset=1;
+// const Int_t NbinsIEt  = 16+1; const Int_t IEtOffset = 0;
+// const Int_t NbinsnTT  = 12+1; const Int_t INTTOffset= 0;//Acceptable LUT Thomas
+// 
+// 
+// const Int_t NbinsIEt2 = 32+1;
+// const Int_t NbinsnTT2 = 32+1;
 
+ 
+// TAU LUT COMPRESSION SCHEME
+
+const Int_t NbinsIEta = 4+1;  const Int_t IEtaOffset= 0;                        
+const Int_t NbinsIEt = 32+1;  const Int_t IEtOffset = 0;
+const Int_t NbinsnTT = 32+1;  const Int_t INTTOffset= 0;//Acceptable LUT Thomas//Acceptable LUT Thomas
 
 const Int_t NbinsIEt2 = 32+1;
 const Int_t NbinsnTT2 = 32+1;
+
 
 using namespace std;
 
@@ -46,6 +57,7 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
   data.Add(inFile);
   TFile* f_out = new TFile(oFile,"RECREATE");
   
+
   Long64_t nentries=-1;
   int   L1Tau_IEt      = -99;
   int   L1Tau_compressed_IEt      = -99;
@@ -64,6 +76,8 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
   int supercompressedE = -99;
   int supercompressednTT = -99;
 
+   auto t_start = std::chrono::high_resolution_clock::now();
+   auto t_end = std::chrono::high_resolution_clock::now();
 
   data.SetBranchAddress("l1RawE", &L1Tau_IEt);
   data.SetBranchAddress("ieta", &L1Tau_IEta);
@@ -116,7 +130,7 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
 	          TH1F* temp_histo = new TH1F(Name_Histo.Data(),Name_Histo.Data(),100,0.,100.);
 	          Histos_PerBin.insert(make_pair(Name_Histo,temp_histo));
 
-	         //  cout<<"Name_Histo = "<<Name_Histo<<endl;
+	        //   cout<<"Name_Histo = "<<Name_Histo<<endl;
 	        }
 	   }
     }
@@ -130,8 +144,8 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
   nentries = data.GetEntries();
   if(maxEvents >0 ) nentries = nentries>maxEvents ? maxEvents : nentries;
   
-  auto t_start = std::chrono::high_resolution_clock::now();
-  auto t_end = std::chrono::high_resolution_clock::now();
+  t_start = std::chrono::high_resolution_clock::now();
+  t_end = std::chrono::high_resolution_clock::now();
 
   for(UInt_t i = 0 ; i < nentries ; ++i)
     {
@@ -198,10 +212,14 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
 
   Int_t NumberOfHistosWithLowStats = 0;
 
-  std::cout<<"Allocating IsoCutForEfficiency Maps for \n\t\t eff = ";
+  std::cout<<"Allocating IsoCutForEfficiency Maps ";
   for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff)
     {
-      if(iEff%5==0)      std::cout<<"\t"<<iEff<<endl;
+      if(iEff%20==0) {
+      
+      std::cout<<"\nAllocating IsoCutForEfficiency Maps for  eff = "<<iEff;
+      
+      }
       std::map<TString,Int_t> temp;
 
       for(UInt_t i = 0 ; i < NbinsIEta-1 ; ++i)
@@ -237,7 +255,7 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
       temp.clear();
     }
   
-    
+   std::cout<<"\n";
   std::cout<<"Allocating 3-D Histograms for  IsoCut_PerBin \n";
   for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff)
     {
@@ -254,13 +272,24 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
 
   int nMax = (NbinsIEta -1 )*(NbinsIEt -1)*(NbinsnTT -1) ;
   int currN=0;
+  
+  t_start = std::chrono::high_resolution_clock::now();
+  t_end = std::chrono::high_resolution_clock::now();
+
   for(UInt_t i = 0 ; i < NbinsIEta-1 ; ++i)
     {
       for(UInt_t j = 0 ; j < NbinsIEt-1 ; ++j)
 	{
 	  for(UInt_t k = 0 ; k < NbinsnTT-1 ; ++k)
 	    {
-          if(currN%200 == 0) std::cout<<"\t for eta,iEt,nTT : "<<i<<","<<j<<","<<k  <<" ( "<<currN<<" / "<<nMax <<" ) "<<endl;
+            if(currN%256 == 0) 
+            {
+                 t_end = std::chrono::high_resolution_clock::now();
+                 std::cout<<"\t for eta,iEt,nTT : "<<i<<","<<j<<","<<k  <<" ( "<<currN<<" / "<<nMax <<" ) "
+                   << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                   <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nMax - currN)/currN *  0.001
+                   <<endl;
+            } 
           currN++;
 
 	      TString Name_Histo = "Hist_";
@@ -405,8 +434,6 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
              << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
              <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nentries - i)/i* 0.001
              <<endl;
-
-
       }
       data.GetEntry(i);
       if(!OfflineTau_isMatched) continue;
