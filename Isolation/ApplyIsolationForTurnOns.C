@@ -23,7 +23,8 @@
 
 using namespace std;
 
-void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoOptionsFile ,Long64_t maxEntries = 100,TString CalibName="IsoCaliberation", Bool_t nTTRange = kTRUE)
+void ApplyIsolationForTurnOnsWithPtSet(TString InputEGIsoL1NtupleName , TString InputIsoOptionsFile ,Long64_t maxEntries = 100,
+        TString CalibName="IsoCaliberation", Bool_t nTTRange = kTRUE,Double_t eTThreshold = 30.0  )
 {
 
   //TFile f_2DShapeVetos("ShapeVeto/TwoDShapeVetos.root","READ");
@@ -151,29 +152,29 @@ void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoO
   //TH1F* pt_pass_Option22_ShapeVeto_0p2_25_60  = new TH1F("pt_pass_Option22_ShapeVeto_0p2_25_60" ,"pt_pass_Option22_ShapeVeto_0p2_25_60" ,21,binning);
   //TH1F* pt_pass_Option22_ShapeVeto_0p2_20_100  = new TH1F("pt_pass_Option22_ShapeVeto_0p2_20_100" ,"pt_pass_Option22_ShapeVeto_0p2_20_100" ,21,binning);
 
-  Double_t Threshold_NewLayer1_noIso   = 44.51;
-  Double_t Threshold_NewLayer1_Option1 = 20.51;
-  Double_t Threshold_NewLayer1_Option2 = 27.51;
-  Double_t Threshold_NewLayer1_Option3 = 29.51;
-  Double_t Threshold_NewLayer1_Option4 = 31.51;
-  Double_t Threshold_NewLayer1_Option5 = 33.51;
-  Double_t Threshold_NewLayer1_Option6 = 38.51;
-  Double_t Threshold_NewLayer1_Option7 = 38.51;
-  Double_t Threshold_NewLayer1_Option8 = 25.51;
-  Double_t Threshold_NewLayer1_Option9 = 39.51;
-  Double_t Threshold_NewLayer1_Option10 = 39.51;
-  Double_t Threshold_NewLayer1_Option11 = 39.51;
-  Double_t Threshold_NewLayer1_Option12 = 40.51;
-  Double_t Threshold_NewLayer1_Option13 = 40.51;
-  Double_t Threshold_NewLayer1_Option14 = 40.51;
-  Double_t Threshold_NewLayer1_Option15 = 33.51;
-  Double_t Threshold_NewLayer1_Option16 = 40.51;
-  Double_t Threshold_NewLayer1_Option17 = 40.51;
-  Double_t Threshold_NewLayer1_Option18 = 40.51;
-  Double_t Threshold_NewLayer1_Option19 = 40.51;
-  Double_t Threshold_NewLayer1_Option20 = 40.51;
-  Double_t Threshold_NewLayer1_Option21 = 35.51;
-  Double_t Threshold_NewLayer1_Option22 = 30.51;
+  Double_t Threshold_NewLayer1_noIso    =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option1  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option2  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option3  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option4  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option5  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option6  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option7  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option8  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option9  =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option10 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option11 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option12 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option13 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option14 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option15 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option16 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option17 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option18 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option19 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option20 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option21 =  eTThreshold;
+  Double_t Threshold_NewLayer1_Option22 =  eTThreshold;
   //Double_t Threshold_NewLayer1_noIso_unpacked = 41.51;
   //Double_t Threshold_NewLayer1_Iso_unpacked = 28.51;
  
@@ -232,33 +233,7 @@ void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoO
       Int_t Cut_L1Tau_Iso_Option20  = histosIsolation["LUT_Progression_20"] ->GetBinContent(in_compressedieta+1,in_compressedE+1,in_compressednTT+1);
       Int_t Cut_L1Tau_Iso_Option21  = histosIsolation["LUT_Progression_21"] ->GetBinContent(in_compressedieta+1,in_compressedE+1,in_compressednTT+1);
       Int_t Cut_L1Tau_Iso_Option22  = histosIsolation["LUT_Progression_22"]->GetBinContent(in_compressedieta+1,in_compressedE+1,in_compressednTT+1);
-      /*
-      std::cout<<" <= ( "<< in_compressedieta+1<<" , "<<in_compressedE+1<<" , "
-               <<in_compressednTT+1<<" ) => "<<in_L1Tau_CalibPt<<","<<in_L1Tau_Iso<<" \n";
-	  std::cout<<"("<<Threshold_NewLayer1_Option1 << " , " <<Cut_L1Tau_Iso_Option1 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option2 << " , " <<Cut_L1Tau_Iso_Option2 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option3 << " , " <<Cut_L1Tau_Iso_Option3 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option4 << " , " <<Cut_L1Tau_Iso_Option4 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option5 << " , " <<Cut_L1Tau_Iso_Option5 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option6 << " , " <<Cut_L1Tau_Iso_Option6 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option7 << " , " <<Cut_L1Tau_Iso_Option7 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option8 << " , " <<Cut_L1Tau_Iso_Option8 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option9 << " , " <<Cut_L1Tau_Iso_Option9 <<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option10<< " , " <<Cut_L1Tau_Iso_Option10<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option11<< " , " <<Cut_L1Tau_Iso_Option11<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option12<< " , " <<Cut_L1Tau_Iso_Option12<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option13<< " , " <<Cut_L1Tau_Iso_Option13<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option14<< " , " <<Cut_L1Tau_Iso_Option14<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option15<< " , " <<Cut_L1Tau_Iso_Option15<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option16<< " , " <<Cut_L1Tau_Iso_Option16<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option17<< " , " <<Cut_L1Tau_Iso_Option17<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option18<< " , " <<Cut_L1Tau_Iso_Option18<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option19<< " , " <<Cut_L1Tau_Iso_Option19<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option20<< " , " <<Cut_L1Tau_Iso_Option20<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option21<< " , " <<Cut_L1Tau_Iso_Option21<<")  ,  ";
-	  std::cout<<"("<<Threshold_NewLayer1_Option22<< " , " <<Cut_L1Tau_Iso_Option22<<")  ,  ";
-      std::cout<< "    [   "<<Threshold_NewLayer1_noIso<<"   ]  "<<"\n";
-       */ 
+
       if(in_L1Tau_CalibPt>=Threshold_NewLayer1_noIso) pt_pass_noIso->Fill(in_OfflineTau_pt);
       if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option1 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option1) pt_pass_Option1->Fill(in_OfflineTau_pt);
       if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option2 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option2) pt_pass_Option2->Fill(in_OfflineTau_pt);
@@ -282,29 +257,6 @@ void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoO
       if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option20 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option20) pt_pass_Option20->Fill(in_OfflineTau_pt);
       if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option21 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option21) pt_pass_Option21->Fill(in_OfflineTau_pt);
       if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option22 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option22) pt_pass_Option22->Fill(in_OfflineTau_pt);
-     
-	// if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option22 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option22 && in_L1Tau_PassShapeVeto==kTRUE) pt_pass_Option22_ShapeVeto->Fill(in_OfflineTau_pt);
-
-    //  short int symmShape = getSymmShape (in_L1Tau_Qual, remap);
-
-     // if(TwoDShapeVetos_0p6_10_50->GetBinContent(symmShape,in_compressedE)==1) L1Tau_PassShapeVeto_0p6_10_50 = true;
-     // else L1Tau_PassShapeVeto_0p6_10_50 = false;
-     // if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option22 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option22 && L1Tau_PassShapeVeto_0p6_10_50) pt_pass_Option22_ShapeVeto_0p6_10_50->Fill(in_OfflineTau_pt);
-
-      //if(TwoDShapeVetos_0p5_20_45->GetBinContent(symmShape,in_compressedE)==1) L1Tau_PassShapeVeto_0p5_20_45 = true;
-      //else L1Tau_PassShapeVeto_0p5_20_45 = false;
-     // if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option22 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option22 && L1Tau_PassShapeVeto_0p5_20_45) pt_pass_Option22_ShapeVeto_0p5_20_45->Fill(in_OfflineTau_pt);
-
-      //if(TwoDShapeVetos_0p2_25_60->GetBinContent(symmShape,in_compressedE)==1) L1Tau_PassShapeVeto_0p2_25_60 = true;
-      //else L1Tau_PassShapeVeto_0p2_25_60 = false;
-      //if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option22 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option22 && L1Tau_PassShapeVeto_0p2_25_60) pt_pass_Option22_ShapeVeto_0p2_25_60->Fill(in_OfflineTau_pt);
-
-      //if(TwoDShapeVetos_0p2_20_100->GetBinContent(symmShape,in_compressedE)==1) L1Tau_PassShapeVeto_0p2_20_100 = true;
-      //else L1Tau_PassShapeVeto_0p2_20_100 = false;
-      //if(in_L1Tau_CalibPt>=Threshold_NewLayer1_Option22 && in_L1Tau_Iso<=Cut_L1Tau_Iso_Option22 && L1Tau_PassShapeVeto_0p2_20_100) pt_pass_Option22_ShapeVeto_0p2_20_100->Fill(in_OfflineTau_pt);
-
-
-      
       
     }
   
@@ -417,4 +369,11 @@ void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoO
 
   //TGraphAsymmErrors* turnOn_Option22_ShapeVeto_0p2_20_100 = new TGraphAsymmErrors(pt_pass_Option22_ShapeVeto_0p2_20_100,pt,"cp");
   //turnOn_Option22_ShapeVeto_0p2_20_100->Write();
+  
+  turnOns.Write();
+  std::cout<<"\n";
+  std::cout<<"Saving turnons to file : "<<turnOns.GetName() <<"\n";
+  std::cout<<"\n";
+  turnOns.Close();
+
 }
