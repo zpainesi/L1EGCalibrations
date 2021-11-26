@@ -30,8 +30,7 @@
 
 //#define __DEBUG__
 //#define __DEBUG_SETF__
-
-//#define MAXEVENTS 50000
+//#define MAXEVENTS 100000
 
 #define N_OPTIONS 23 // 1 [ no Iso ] + 22
 #define ET_MAX 255
@@ -48,7 +47,7 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
 {
    #ifdef __DEBUG_SETF__
    outFile="ratehists.root";
-   optionFile="calibFiles/data2018_EGIsoV2_Options.root";
+   optionFile="../../calibFiles/data2018_EGIsoV2_Options.root";
    #endif
 
    TFile f_Isolation(optionFile,"READ");
@@ -107,10 +106,12 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
    std::vector<short>   egIEt;
    std::vector<short>   egIEta;
    std::vector<short>   egIsoEt;
+   std::vector<short>   egBx;
    std::vector<short>   egNTT;
 
    ntupleRawTree.fChain->SetBranchStatus("*",0);
    ntupleRawTree.fChain->SetBranchStatus("nEGs",1);
+   ntupleRawTree.fChain->SetBranchStatus("egBx",1);
    ntupleRawTree.fChain->SetBranchStatus("egEt",1);
    ntupleRawTree.fChain->SetBranchStatus("egIEt",1);
    ntupleRawTree.fChain->SetBranchStatus("egIEta",1);
@@ -140,12 +141,10 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
  cout << "Total Number of Events Available : " <<ntupleRawTree.fChain->GetEntries()  << endl;
  cout << "Total Number of Events to process : " << nentries  << endl;
  Long64_t nEventsConsidered=0;
- #ifdef __DEBUG_SETF__
-    nentries = 20;
- #endif
  #ifdef __DEBUG__
     nentries = 20;
  #endif
+
  #ifdef MAXEVENTS
     nentries=MAXEVENTS;
  #endif
@@ -184,6 +183,8 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
          }
          for(auto  eg_idx=0 ; eg_idx < ntupleRawTree.nEGs ; eg_idx++)
          {
+             if (ntupleRawTree.egBx.at(eg_idx)!=0) continue;
+
              egEt = ntupleRawTree.egEt.at(eg_idx);
              clippedEt  = ntupleRawTree.egIEt.at(eg_idx) < ET_MAX ? ntupleRawTree.egIEt.at(eg_idx) : ET_MAX ;
              
@@ -204,9 +205,9 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
              in_compressednTT  =  lutMapNTT[ntupleRawTree.egNTT.at(eg_idx)];
 
              #ifdef __DEBUG__
-             std::cout<<"Compression scheme : "<<clippedEt<<" , "<<clippedEta<<" , "<<ntupleRawTree.egNTT.at(eg_idx)
-                      <<" -> "
-                      <<in_compressedE<<" , "<<in_compressedieta<<","<<in_compressednTT<<"\n";
+             //std::cout<<"Compression scheme : "<<clippedEt<<" , "<<clippedEta<<" , "<<ntupleRawTree.egNTT.at(eg_idx)
+             //         <<" -> "
+             //         <<in_compressedE<<" , "<<in_compressedieta<<","<<in_compressednTT<<"\n";
              #endif   
     
              if( egEt > eTMax[0]) eTMax[0] = egEt;
@@ -233,9 +234,8 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
                                  <<in_compressednTT
                                  <<" -> "<<Cut_L1EG_Iso
                                  <<"\n";
-                    
-                 
                  std::cout<<" [ option : "<<i<<" : cut : "<<Cut_L1EG_Iso<<" ] ";
+
                  #endif   
                  if ( ntupleRawTree.egIsoEt.at(eg_idx) > Cut_L1EG_Iso ) continue ;
                  if( egEt > eTMax[i]) eTMax[i] = egEt;
@@ -249,11 +249,11 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
           {
                if( eTMax[i] >= 0.0  )
                {
-                 #ifdef __DEBUG__
-                   std::cout<<" Pass for  "<<i<<" for "<<eTMax[i]<<"\n";
-                 #endif  
                    egEt = eTMax[i] > ET_MAX ? ET_MAX : eTMax[i];
-                   optionsPtIsoMatrix[i][int(eTMax[i])] +=1;
+                 #ifdef __DEBUG__
+                   std::cout<<" Pass for  "<<i<<" for "<<int(egEt)<<"\n";
+                 #endif  
+                   optionsPtIsoMatrix[i][int(egEt)] +=1;
                }
                else
                {
@@ -269,11 +269,17 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
     // Integrating the event pass distribution
     for(int i=0;i< N_OPTIONS ; i++)
     {
+        std::cout<<"Summing for option : "<<i<<"\n";
         for(int j= ET_MAX  ; j > 0  ;j--)
         {
             optionsPtIsoMatrix[i][j-1]+=optionsPtIsoMatrix[i][j] ;
         }
     }
+    
+    #ifdef __DEBUG__
+    for(int j=  0 ; j<=ET_MAX ;j++)
+       std::cout<<"\tfor Et = "<<j<<" : "<<optionsPtIsoMatrix[0][j]<<"\n";
+    #endif
 
   // Filling the hist
   TFile *file =new TFile(outFile,"RECREATE");
@@ -282,9 +288,9 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
   double scaleFactor = 11.2456 * Bunches /nEventsConsidered  ;
   // No Isolation
       TString CurrentNameHisto = "pass_noIsolation";
-      TH1F* pass_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto , ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
+      TH1F* pass_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto , ET_MAX , 0.0-0.5 , ET_MAX -0.5);
       CurrentNameHisto = "rate_noIsolation";
-      TH1F* rate_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto ,ET_MAX , 0.0 - 0.5 , ET_MAX -0.5 );
+      TH1F* rate_Histo = new TH1F(CurrentNameHisto, CurrentNameHisto ,ET_MAX  , 0.0-0.5 , ET_MAX -0.5);
       
       for(int j=1;j<=ET_MAX;j++)
         {
@@ -306,8 +312,8 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
 
       for(int j=1;j<=ET_MAX;j++)
         {
-            pass_Histo->SetBinContent(j,optionsPtIsoMatrix[i][j])  ;
-            rate_Histo->SetBinContent(j,optionsPtIsoMatrix[i][j]*scaleFactor) ;
+            pass_Histo->SetBinContent(j,optionsPtIsoMatrix[i][j-1])  ;
+            rate_Histo->SetBinContent(j,optionsPtIsoMatrix[i][j-1]*scaleFactor) ;
         }
 
       pass_Histo->Write();
