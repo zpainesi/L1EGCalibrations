@@ -3,7 +3,6 @@
 #anything after # is ignored with the exception of the header
 #the header is first valid line starting with #<header> versionStr(unused but may be in future) nrBitsAddress nrBitsData </header>
 #<header> V4 9 4 </header>>
-
 0 0
 1 0
 2 0

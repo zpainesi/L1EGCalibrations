@@ -152,7 +152,7 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
       data.GetEntry(i);
       if(!OfflineTau_isMatched) continue;
       L1Tau_compressed_IEta_offseted= L1Tau_compressed_IEta + IEtaOffset ;
-      if(i%10000 == 0) {
+      if(i%80000 == 0) {
              t_end = std::chrono::high_resolution_clock::now();
              cout<<"Processing Entry in event loop : "<<i<<" / "<<nentries<<"  [ "<<100.0*i/nentries<<"  % ]  "
              << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0

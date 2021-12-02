@@ -6,14 +6,17 @@ import operator
 import time
 import sys
 
+compressedIetaFile   = "compressionLuts/tauCompressEtaLUT_2bit_v8.txt"
+compressedEFile      = "compressionLuts/tauCompressELUT_5bit_v8.txt"
+compressedNTTFile    = "compressionLuts/tauCompressnTTLUT_5bit_v8.txt"
 
-compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
-compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
-compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
+#compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
+#compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
+#compressedNTTFile   = "data/egCompressNTTLUT_4bit_v4.txt"
 
-inputFileName       = "/home/athachay/t3store3/l1egamma/data/run3MC/NTuple_crab_4841files_fromSweta.root"
-outputFileName      = "EGIsolationStudyNtuple_noSuperCompressionForEtAndNTT.root"
-treeName = "Ntuplizer/TagAndProbe"
+inputFileName       = "/grid_mnt/t3storage3/athachay/l1egamma/data/run3MC/ntuBasedReClib_DYtoLL_TandP_12_0_2_2120Files.root"
+outputFileName      = "EGIsolationStudyNtuple.root"
+treeName = "TagAndProbe"
 maxEntries=-1*int(1e6)
 
 if len(sys.argv)>1:

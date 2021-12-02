@@ -101,7 +101,7 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
   // TH3F* LUT_WP70 = new TH3F("LUT_WP70","LUT_WP70",NbinsIEta-1,0,NbinsIEta-1,NbinsIEt2-1,0,NbinsIEt2-1,NbinsnTT2-1,0,NbinsnTT2-1);
   // TH3F* LUT_WP80 = new TH3F("LUT_WP80","LUT_WP80",NbinsIEta-1,0,NbinsIEta-1,NbinsIEt2-1,0,NbinsIEt2-1,NbinsnTT2-1,0,NbinsnTT2-1);
   // TH3F* LUT_WP90 = new TH3F("LUT_WP90","LUT_WP90",NbinsIEta-1,0,NbinsIEta-1,NbinsIEt2-1,0,NbinsIEt2-1,NbinsnTT2-1,0,NbinsnTT2-1);
-  
+  int progressionCount=0;
   for(Int_t i = 0 ; i < NbinsIEta-1 ; ++i)
     {
       for(Int_t j = 0 ; j < NbinsIEt2-1 ; ++j)
@@ -110,6 +110,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	  // for(Int_t k = 0 ; k < NbinsnTT-1 ; ++k)
 	    {
 	      //Progression_1
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_1 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.1, 50.);
 	      if(Efficiency_Progression_1>=0.9999) Efficiency_Progression_1 = 1.0001;
 	      Int_t Int_Efficiency_Progression_1 = int(Efficiency_Progression_1*100);
@@ -120,9 +122,10 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      if(Int_Efficiency_Progression_1==100) IsoCut_Progression_1 = 1000;
 	      LUT_Progression_1->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_1);
 
-	      //	      cout<<"after progression 1"<<endl;
 
 	      //Progression_2
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_2 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.4, 50.);
 	      if(Efficiency_Progression_2>=0.9999) Efficiency_Progression_2 = 1.0001;
 	      Int_t Int_Efficiency_Progression_2 = int(Efficiency_Progression_2*100);
@@ -136,6 +139,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      //	      cout<<"after progression 2"<<endl;
 
 	      //Progression_3
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_3 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.5, 50.);
 	      if(Efficiency_Progression_3>=0.9999) Efficiency_Progression_3 = 1.0001;
 	      Int_t Int_Efficiency_Progression_3 = int(Efficiency_Progression_3*100);
@@ -148,6 +153,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 
 
 	      //Progression_4
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_4 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.6, 50.);
 	      if(Efficiency_Progression_4>=0.9999) Efficiency_Progression_4 = 1.0001;
 	      Int_t Int_Efficiency_Progression_4 = int(Efficiency_Progression_4*100);
@@ -168,6 +175,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      // 	}
 
 	      //Progression_5
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_5 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.7, 50.);
 	      if(Efficiency_Progression_5>=0.9999) Efficiency_Progression_5 = 1.0001;
 	      Int_t Int_Efficiency_Progression_5 = int(Efficiency_Progression_5*100);
@@ -179,6 +188,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_5->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_5);
 
 	      //Progression_6
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_6 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.5, 40.);
 	      if(Efficiency_Progression_6>=0.9999) Efficiency_Progression_6 = 1.0001;
 	      Int_t Int_Efficiency_Progression_6 = int(Efficiency_Progression_6*100);
@@ -192,6 +203,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      //	      cout<<"after progression 6"<<endl;
 
 	      //Progression_7
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_7 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.5, 40.);
 	      if(Efficiency_Progression_7>=0.9999) Efficiency_Progression_7 = 1.0001;
 	      Int_t Int_Efficiency_Progression_7 = int(Efficiency_Progression_7*100);
@@ -203,6 +216,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_7->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_7);
 
 	      //Progression_8
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_8 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.5, 60.);
 	      if(Efficiency_Progression_8>=0.9999) Efficiency_Progression_8 = 1.0001;
 	      Int_t Int_Efficiency_Progression_8 = int(Efficiency_Progression_8*100);
@@ -214,6 +229,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_8->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_8);
 
 	      //Progression_9
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_9 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.6, 40.);
 	      if(Efficiency_Progression_9>=0.9999) Efficiency_Progression_9 = 1.0001;
 	      Int_t Int_Efficiency_Progression_9 = int(Efficiency_Progression_9*100);
@@ -225,6 +242,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_9->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_9);
 
 	      //Progression_10
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_10 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.7, 40.);
 	      if(Efficiency_Progression_10>=0.9999) Efficiency_Progression_10 = 1.0001;
 	      Int_t Int_Efficiency_Progression_10 = int(Efficiency_Progression_10*100);
@@ -236,6 +255,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_10->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_10);
 
 	      //Progression_11
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_11 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.7, 40.);
 	      if(Efficiency_Progression_11>=0.9999) Efficiency_Progression_11 = 1.0001;
 	      Int_t Int_Efficiency_Progression_11 = int(Efficiency_Progression_11*100);
@@ -249,6 +270,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      //	      cout<<"after progression 11"<<endl;
 
 	      //Progression_12
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_12 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.7, 35.);
 	      if(Efficiency_Progression_12>=0.9999) Efficiency_Progression_12 = 1.0001;
 	      Int_t Int_Efficiency_Progression_12 = int(Efficiency_Progression_12*100);
@@ -260,6 +283,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_12->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_12);
 
 	      //Progression_13
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_13 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.6, 35.);
 	      if(Efficiency_Progression_13>=0.9999) Efficiency_Progression_13 = 1.0001;
 	      Int_t Int_Efficiency_Progression_13 = int(Efficiency_Progression_13*100);
@@ -271,6 +296,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_13->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_13);
 
 	      //Progression_14
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_14 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.5, 35.);
 	      if(Efficiency_Progression_14>=0.9999) Efficiency_Progression_14 = 1.0001;
 	      Int_t Int_Efficiency_Progression_14 = int(Efficiency_Progression_14*100);
@@ -282,6 +309,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_14->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_14);
 
 	      //Progression_15
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_15 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.7, 50.);
 	      if(Efficiency_Progression_15>=0.9999) Efficiency_Progression_15 = 1.0001;
 	      Int_t Int_Efficiency_Progression_15 = int(Efficiency_Progression_15*100);
@@ -295,6 +324,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      //	      cout<<"after progression 15"<<endl;
 
 	      //Progression_16
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_16 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 23., 0., 30.);
 	      // Double_t Efficiency_Progression_16 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0., 30.);
 	      //cout<<"Efficiency_Progression_16 = "<<Efficiency_Progression_16<<endl;
@@ -308,6 +339,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_16->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_16);
 
 	      //Progression_17
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_17 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 15., 0., 30.);
 	      if(Efficiency_Progression_17>=0.9999) Efficiency_Progression_17 = 1.0001;
 	      Int_t Int_Efficiency_Progression_17 = int(Efficiency_Progression_17*100);
@@ -319,6 +352,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      LUT_Progression_17->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_17);
 
 	      //Progression_18
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_18 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0., 35.);
 	      if(Efficiency_Progression_18>=0.9999) Efficiency_Progression_18 = 1.0001;
 	      Int_t Int_Efficiency_Progression_18 = int(Efficiency_Progression_18*100);
@@ -331,6 +366,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      
 	      
 	      //Progression_19
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_19 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 15., 0., 35.);
 	      //cout<<"Efficiency_Progression_19 = "<<Efficiency_Progression_19<<endl;
 	      if(Efficiency_Progression_19>=0.9999) Efficiency_Progression_19 = 1.0001;
@@ -359,6 +396,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	      //cout<<"i = "<<i<<endl;
 	      //	      cout<<"j = "<<j<<endl;
 	      //	      cout<<"k = "<<k<<endl;
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_21 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.80, 50.);
 	      if(Efficiency_Progression_21>=0.9999) Efficiency_Progression_21 = 1.0001;
 	      Int_t Int_Efficiency_Progression_21 = int(Efficiency_Progression_21*100);
@@ -395,6 +434,8 @@ void Fill_Isolation(TString inFile,TString oFileName="Iso_LUTs_Options.root")
 	//	}
 	      LUT_Progression_21->SetBinContent(i+1,j+1,k+1,IsoCut_Progression_21);
 
+          progressionCount++;
+	      //cout<<"Doing progression "<<progressionCount<<endl;
 	      Double_t Efficiency_Progression_22 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 25., 0.70, 70.);
 	      //cout<<"Bin j = "<<j<<", TargetEfficiency = "<<Efficiency_Progression_22<<endl;
 	      // Double_t Efficiency_Progression_22 = FindEfficiency_Progression((hardcodedIetBins2[j]+hardcodedIetBins2[j+1])/2., 20., 0.60, 80.);
