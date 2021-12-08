@@ -117,7 +117,7 @@ for e in xrange(nentries):
     data["isoCat"][0]      =  int(inputTree.l1tEmuIso       )
     #data["compressedieta"][0] = int(math.copysign(compressedIeta[abs(data["ieta"][0])], data["ieta"][0]))
     data["compressedieta"][0]  = compressedIeta[abs(data["ieta"][0])]
-    data["compressedE"][0]     = compressedE[min(data["l1RawE"][0],255)]
+    data["compressedE"][0]     = compressedE[min(int(data["l1Et"][0]),255)]
     #data["compressedNTT"][0] = data["nTT"][0]
     data["compressedNTT"][0] = min(compressedNTT[data["nTT"][0]],11)
     outputTree.Fill()
