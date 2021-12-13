@@ -23,7 +23,7 @@
 
 using namespace std;
 
-void ApplyIsolationForTurnOnsWithPtSet(TString InputEGIsoL1NtupleName , TString InputIsoOptionsFile ,Long64_t maxEntries = 100,
+void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoOptionsFile ,Long64_t maxEntries = 100,
         TString CalibName="IsoCaliberation", Bool_t nTTRange = kTRUE,Double_t eTThreshold = 30.0  )
 {
 

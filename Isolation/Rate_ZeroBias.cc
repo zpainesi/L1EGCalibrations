@@ -200,8 +200,8 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
                 clippedEta = ntupleRawTree.egIEta.at(eg_idx);
              }
 
-             in_compressedieta =  lutMapEta[clippedEta]; 
-             in_compressedE    =   lutMapEt[clippedEt];
+             in_compressedieta =  lutMapEta[abs(clippedEta)]; 
+             in_compressedE    =  lutMapEt[clippedEt];
              in_compressednTT  =  lutMapNTT[ntupleRawTree.egNTT.at(eg_idx)];
 
              #ifdef __DEBUG__
