@@ -355,6 +355,7 @@ void Build_Isolation_WPs(TString inFile,TString oFile="Iso_LUTs_Distributions.ro
 	      //if(Histos_PerBin[Name_Histo]->GetEntries()<20)
 	      if(Histos_PerBin[Name_Histo]->GetEntries()<40)
 		{
+          std::cout<<"Histos_PerBin["<<Name_Histo<<"]->GetEntries() : "<<Histos_PerBin[Name_Histo]->GetEntries()<<"\n";
 		  NumberOfHistosWithLowStats++;
 	//	  cout<<"Histo "<<Name_Histo<<" has low stat.: "<<Histos_PerBin[Name_Histo]->GetEntries()<<endl;
 		}

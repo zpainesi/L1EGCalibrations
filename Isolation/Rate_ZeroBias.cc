@@ -88,7 +88,7 @@ void Rate_ZeroBias(TString optionFile="",TString zeroBiasFile="", TString outFil
       convert << i;
       CurrentNameHisto += convert.str();
       std::cout<<"Reading Option  :  "<<CurrentNameHisto<<"\n";
-      TH3F* current_Histo = (TH3F*)f_Isolation.Get(CurrentNameHisto.Data());
+      TH3F* current_Histo = (TH3F*)f_Isolation.Get((CurrentNameHisto).Data());
       histosIsolation.insert(make_pair(CurrentNameHisto,current_Histo));
     } 
 

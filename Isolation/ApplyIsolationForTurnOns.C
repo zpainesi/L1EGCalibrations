@@ -44,7 +44,6 @@ void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoO
   if(nTTRange) FileNameOut += "_nTTRange";
   FileNameOut += ".root";
   TFile turnOns(FileNameOut.Data(),"RECREATE");
-
  for(UInt_t i = 0 ; i < 101 ; ++i)
     {
       TString CurrentNameHisto = "LUT_WP";
@@ -61,7 +60,8 @@ void ApplyIsolationForTurnOns(TString InputEGIsoL1NtupleName , TString InputIsoO
       ostringstream convert;
       convert << i;
       CurrentNameHisto += convert.str();
-      TH3F* current_Histo = (TH3F*)f_Isolation.Get(CurrentNameHisto.Data());
+      TH3F* current_Histo = (TH3F*)f_Isolation.Get((CurrentNameHisto).Data());
+      std::cout<<current_Histo->GetName()<<"\n";
       histosIsolation.insert(make_pair(CurrentNameHisto,current_Histo));
     }  
 
