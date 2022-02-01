@@ -1,0 +1,10 @@
+NtupleFileNameRate=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/config/Ntuple_rate.txt
+NtupleFileNameTurnOn=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/config/Ntuple_turnon.txt
+OptionsFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/baseHistograms.root
+OutputFileName=HistgramFile_step3step4_eg_et_pt.root
+EtLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/step1_step2/compressionLuts/egCompressELUT_4bit_v4.txt
+EtaLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/step1_step2/compressionLuts/egCompressEtaLUT_4bit_v4.txt
+NTTLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/step1_step2/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
+nTTRange=1
+MaxEntriesRate=10000
+MaxEntriesEfficiency=20000
