@@ -1,3 +1,4 @@
+#include "chrono"
 #include <string>
 #include <TH2.h>
 #include <TStyle.h>
@@ -9,10 +10,20 @@
 #include "IsolationAnalysis.h"
 
 IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName){
+  
+  doBuildWP=true;
+  workingPointFileName="";
+  doFillOptions=true;
+  reportEvery=1000;
+
   readParameters(inputFileName);
   if (ntupleFileName_.size() == 0) {
     std::cout << " Inputfile list missing !!!" << ntupleFileName_ << std::endl;
     return;
+  }
+  if(doBuildWP==false)
+  {
+        
   }
   accessTree(ntupleFileName_);
   
@@ -87,18 +98,30 @@ void IsolationAnalysis::accessTree(std::string & input_filelist) {
 
 void IsolationAnalysis::analyse() {
   
-  std::cout<<"In Analysis \n";
   if (fChain == 0) return;
 
-  Long64_t nentries = fChain->GetEntriesFast();
-  std::cout<<"entries:"<<nentries<<std::endl;
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<<"Total "<<nentries<<" Entries Available for procesing\n";
   Long64_t nbytes = 0, nb = 0;
-  for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    if(jentry%1000 == 0) std::cout << " Events1 # " << jentry << std::endl;
-    //    Long64_t ientry = LoadTree(jentry);
+  Long64_t maxEntries = nentries;
+  if(maxEntries_ > 0) maxEntries = maxEntries_ < nentries ? maxEntries_ :nentries ;
+
+  std::cout<<"Processing a total of "<<maxEntries<<" Entries \n";
+
+  auto t_start = std::chrono::high_resolution_clock::now();
+  auto t_end = std::chrono::high_resolution_clock::now();
+
+  for (Long64_t jentry=0; jentry<maxEntries;jentry++) {
     if (jentry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
-
+    if(jentry%reportEvery == 0 )
+       {
+             t_end = std::chrono::high_resolution_clock::now();
+             std::cout<<"Loop 1/3 : Processing Entry in event loop : "<<jentry<<" / "<<maxEntries<<"  [ "<<100.0*jentry/maxEntries<<"  % ]  "
+                      << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                      <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( maxEntries - jentry)/(1e-9 + jentry)* 0.001
+                      <<std::endl;
+       }
     hprof_IEt->Fill(et, iso);
     hprof_IEta->Fill(eta, iso);
     hprof_nTT->Fill(ntt, iso);
@@ -117,14 +140,19 @@ void IsolationAnalysis::analyse() {
   }
 
   std::cout << "  Total Number of Histograms " << Histos_PerBin.size() << std::endl;
+
   Int_t NumberOfHistosWithLowStats = 0;
+  Int_t c=0;
+  t_start = std::chrono::high_resolution_clock::now();
+  t_end = std::chrono::high_resolution_clock::now();
+
   for (auto it : Histos_PerBin) {
     TString Name_Histo = it.first;
     TH1F* th = it.second;
     
     short ibin_eta;
     short ibin_et;
-    short ibin_ntt;    
+    short ibin_ntt;  
     bool name_flag = getHistoBin(Name_Histo, ibin_eta, ibin_et, ibin_ntt);
     if (!name_flag) {
       std::cout << " ===> " <<  Name_Histo.Data() << ibin_eta << " " << ibin_et<<  " " << ibin_ntt << std::endl;
@@ -141,13 +169,31 @@ void IsolationAnalysis::analyse() {
 	  if (IsoCut_PerEfficiency_PerBin[iEff][Name_Histo] == -1) {
 	    IsoCut_PerEfficiency_PerBin[iEff][Name_Histo] =  iIso;
 	    IsoCut_PerBin[iEff]->SetBinContent(ibin_eta+1,ibin_et+1,ibin_ntt+1,iIso);
-	  }
+      }
 	}
       }
     }
+    c++;
+    if(c%200 == 0)
+       {
+             t_end = std::chrono::high_resolution_clock::now();
+             std::cout<<"Loop 2/3 : Processing Hist in event loop : "<<c<<" / "<<Histos_PerBin.size()<<"  [ "<<100.0*c/Histos_PerBin.size()<<"  % ]  "
+                      << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                      <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( Histos_PerBin.size() - c)/(1e-9 + c )* 0.001
+                      <<std::endl;
+       }
   }
-  for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    if(jentry%1000 == 0) std::cout << " Events2 # " << jentry << std::endl;    
+  t_start = std::chrono::high_resolution_clock::now();
+  t_end = std::chrono::high_resolution_clock::now();
+  for (Long64_t jentry=0; jentry<maxEntries;jentry++) {
+  if(jentry%reportEvery == 0 )
+       {
+             t_end = std::chrono::high_resolution_clock::now();
+             std::cout<<"Loop 3/3 : Processing Entry in event loop : "<<jentry<<" / "<<maxEntries<<"  [ "<<100.0*jentry/maxEntries<<"  % ]  "
+                      << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                      <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( maxEntries - jentry)/(1e-9 + jentry)* 0.001
+                      <<std::endl;
+       }
     if (jentry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     
@@ -214,18 +260,22 @@ void IsolationAnalysis::analyse() {
 
 void IsolationAnalysis::bookHistograms() 
 {  
+  if(not doBuildWP)
+  {
+        workingPointFile= new TFile(workingPointFileName,"READ");
+        if(not workingPointFile)
+        {
+            std::cout<<"\n workingPointFileName is not good !! Exiting \n";
+            exit(2);
+        }
+  }
   outputFile_ = new TFile(outputFileName_.c_str(), "RECREATE");
   outputFile_->cd();
   TDirectory* td_step1 =   outputFile_->mkdir("Step1Histos");
-  std::cout<<"Booking histograms ! Total count  = "<<nBinsnTT<<"*"<<nBinsIEt<<"*"<<nBinsIEta<<" : "<<nBinsnTT*nBinsIEt*nBinsIEta<<"\n";
-  Int_t c=0;
-
   if (td_step1) td_step1->cd();
   for(UInt_t i = 0 ; i < nBinsIEta ; ++i) {
     for(UInt_t j = 0 ; j < nBinsIEt ; ++j) {
       for(UInt_t k = 0 ; k < nBinsnTT ; ++k) {
-      c++;
-      if(c%5000==0) std::cout<<"\t Made histogram : "<<c<<" / "<<nBinsnTT*nBinsIEt*nBinsIEta<<"\n";
 	TString Name_Histo = "Hist_";
 	Name_Histo +=  i;
 	Name_Histo += "_";
@@ -243,7 +293,6 @@ void IsolationAnalysis::bookHistograms()
   hprof_nTT  = new TProfile("hprof_nTT","Profile L1_Iso vs. L1_IEta",180,20.,200.,0,20);
   std::map<TString, Int_t> tempMap;
   for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff){
-    
     for (auto it : Histos_PerBin) {
       tempMap.insert({it.first, -1});
     }      
@@ -251,9 +300,17 @@ void IsolationAnalysis::bookHistograms()
     
     TString NameEff = "Eff_";
     NameEff += iEff;
-    TH3F* temp = new TH3F(NameEff,NameEff,nBinsIEta,0,nBinsIEta,nBinsIEt,0,nBinsIEt,nBinsnTT,0,nBinsnTT);
-    IsoCut_PerBin.insert({iEff,temp});
-    
+    if(doBuildWP)
+    {
+      TH3F* temp = new TH3F(NameEff,NameEff,nBinsIEta,0,nBinsIEta,nBinsIEt,0,nBinsIEt,nBinsnTT,0,nBinsnTT);
+      IsoCut_PerBin.insert({iEff,temp});
+    }
+    else
+    {
+      TH3F* temp = (TH3F*) workingPointFile->Get(NameEff);
+      IsoCut_PerBin.insert({iEff,temp});
+    }
+
     TString nameHisto1 = "pt_pass_efficiency_";
     nameHisto1 += iEff;
     
@@ -298,6 +355,8 @@ void IsolationAnalysis::bookHistograms()
     
     TString hname = "LUT_Progression_";
     hname += options[0];
+    std::cout<<"\tRegistering Option : "<<hname<<"\n";
+
     TH3F* th3 = new TH3F(hname,hname,
  		       lutIEtaVec_.size()-1, 0, lutIEtaVec_.size()-1,
 			lutIEtVec_.size()-1, 0, lutIEtVec_.size()-1,
@@ -319,6 +378,8 @@ void IsolationAnalysis::bookHistograms()
 }
 void IsolationAnalysis::fillLUTProgression(){ 
   Double_t AvEt;
+
+  std::cout<<"Filling the progression options !! \n";
   for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
     {
       for(Int_t j = 0 ; j < lutIEtVec_.size()-1 ; j++)
@@ -400,8 +461,6 @@ void IsolationAnalysis::readLUTTable(std::string& file_name, unsigned int& nbin,
   std::ifstream lutFile(file_name.c_str());
   if (!lutFile) {
     std::cerr << "Input File: " << file_name << " could not be opened!" << std::endl;
-    nbin=0;
-    exit(0);
     return;
   }
   std::string line;
@@ -436,8 +495,25 @@ void IsolationAnalysis::saveHistograms() {
     /*    for (auto it : Histos_PerBin) {
       if (it.second) it.second->Delete();
     }*/
+    outputFile_->cd();
+   for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff){
+    TString NameEff = "Eff_";
+    NameEff += iEff;
+    IsoCut_PerBin[iEff]->Write();
+   }
+ 
+  if(doFillOptions)
+  for (auto it : lutProgOptVec_) {
+    std::string tmp_string = it;
+    std::vector<std::string> options;
+    tokenize(tmp_string,options,":");
     
-    outputFile_->Write();
+    TString hname = "LUT_Progression_";
+    hname += options[0];
+    std::cout<<"\tSaving Option : "<<hname<<"\n";
+    lutProgHistoMap_[it]->Write();
+  }
+
     outputFile_->Close();
   }
 }
@@ -448,7 +524,9 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
     std::cerr << "Input File: " << jfile << " could not be opened!" << std::endl;
     return;
   }
+
   std::string line;
+  Int_t tempInt;
   if(jobcardFile.is_open()) {
     while(std::getline(jobcardFile,line)) {
       // enable '#' and '//' style comments
@@ -463,6 +541,24 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
       else if (key=="EtLUTFileName")	readLUTTable(value,nBinsIEt, lutMapIEt_);
       else if (key=="EtaLUTFileName")	readLUTTable(value,nBinsIEta, lutMapIEta_);
       else if (key=="NTTLUTFileName")	readLUTTable(value,nBinsnTT, lutMapnTT_);
+      else if (key=="DoBulildWP")	    {
+                tempInt= atoi(value.c_str());
+                if( tempInt < 1 ) doBuildWP=false;
+      }
+      else if (key=="DoFillOptions")	    {
+                tempInt= atoi(value.c_str());
+                if( tempInt < 1 ) doFillOptions=false;
+      }
+      else if (key=="ReportEvery")	    {
+                reportEvery= atoi(value.c_str());
+      }
+      else if (key=="MaxEntries")	    {
+                maxEntries_= atoi(value.c_str());
+      }
+      else if (key=="WorkingPointFileName")	    {
+            workingPointFileName=value.c_str();
+            hasWorkingPointFile = true;
+      }
       else if (key=="LUTProgressionOptions")
 	{
 	  std::string tmp_string = value;
@@ -475,12 +571,20 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
       else 
 	std::cout << " unknown option " << " key " << key << std::endl;
     }
-
   }
-  std::cout<<" nTT : "<<nBinsnTT<<"\n";
   jobcardFile.close();
+
+  if(doBuildWP == false )
+  {
+        if( hasWorkingPointFile == false)
+        {
+            std::cout<<"Please provide working point file as \"WorkingPointFileName\" in config. Exiting !!  \n";
+            exit(1);
+        }
+  }
   
 }
+
 void IsolationAnalysis::readTree()
 {
   // The Init() function is called when the selector needs to initialize
@@ -597,21 +701,27 @@ void IsolationAnalysis::tokenize(const std::string& str, std::vector<std::string
   }
 }
 
+void IsolationAnalysis::process()
+{
+  if(doBuildWP) analyse();
+  if(doFillOptions) fillLUTProgression();
+}
+
 int main(int argc,char *argv[]) {
   if (argc == 1) {
     std::cout << " No option provided!!!" << std::endl;
     return 1;
   }
+
   std::string data_file = argv[1];
   IsolationAnalysis treeReader(data_file);
   treeReader.readTree();
   
   treeReader.bookHistograms();
-  std::cout << " Calling Analyse" << std::endl;
-  treeReader.analyse();
-  treeReader.fillLUTProgression();
-  
+  std::cout << " Calling process !" << std::endl;
+  treeReader.process();
   treeReader.saveHistograms();
+
   return 0;
   
 }

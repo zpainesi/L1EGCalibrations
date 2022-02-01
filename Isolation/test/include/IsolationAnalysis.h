@@ -72,7 +72,10 @@ public :
   Int_t          ntt;
   Float_t         eleProbeSclEt;
   Int_t          iso;
+  
+  Bool_t doBuildWP,doFillOptions,hasWorkingPointFile;
 
+  TString workingPointFileName;
 
 
   IsolationAnalysis(const std::string& inputFileName);
@@ -91,9 +94,12 @@ public :
   
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);
   
+  TFile* workingPointFile;
   TFile* outputFile_;
   
   Long64_t nEntries_;
+  Long64_t maxEntries_;
+  Int_t reportEvery;
   std::string ntupleFileName_;
   std::string outputFileName_;
   int etMax_;
@@ -105,11 +111,13 @@ public :
   Double_t findEfficiencyProgression(Double_t IEt, Double_t MinPt,
 				     Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at);
   void fillLUTProgression();
+  void process();
   short getUpdatedBin(short value, std::string type);
     
   UInt_t nBinsIEta;
   UInt_t nBinsIEt; 
   UInt_t nBinsnTT;
+
   
   TProfile* hprof_IEt;
   TProfile* hprof_IEta;
