@@ -23,6 +23,7 @@
 
 // Header file for the classes stored in the TTree if any.
 
+#define nBins_fine 100
 class ApplyIsolation {
  public :
   TChain          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -30,28 +31,32 @@ class ApplyIsolation {
   
   TChain          *fChain1;   //!pointer to the analyzed TTree or TChain                                             
   Int_t           fCurrent1; //!current Tree number in a TChain                                                                                                                                            
-  
+  float frate; 
   
   // Declaration of leaf types
   
   //Rate
   UShort_t        nEGs;
   std::vector<float>   egEt;
-  std::vector<short>   egIEt;
-  std::vector<short>   egIEta;
   std::vector<short>   egBx;
   std::vector<short>   egIsoEt;
   std::vector<short>   egNTT;
-  
+  std::vector<short> egRawEt;  
+  std::vector<short> egTowerIEta;
+    
+  std::map<TString,TH1F*> th1fStore;
+
   //Turn-On
    Float_t         l1tEmuPt;
-   Float_t         l1tEmuEta;
    Int_t           l1tEmuTowerIEta;
    Int_t           l1tEmuNTT;
    Int_t           l1tEmuRawEt;    
    Float_t         eleProbeSclEt;
-   Int_t          l1tEmuIsoEt;
-
+   Int_t           l1tEmuIsoEt;
+   
+   Int_t reportEvery;
+   Long64_t maxEntriesForRate;
+   Long64_t maxEntriesForEfficiency;
 
 
    ApplyIsolation(std::string& inputFileName);
@@ -73,6 +78,7 @@ class ApplyIsolation {
    std::string ntupleFileNameTurnOn_;
    std::string outputFileName_;
    std::string optionsFileName_;    
+   std::vector<std::string> lutProgOptVec_;
    
 
    TFile* optionsFile_;
@@ -86,11 +92,8 @@ class ApplyIsolation {
    UInt_t nBinsIEta;
    UInt_t nBinsIEt;
    UInt_t nBinsNTT;
-   UInt_t N_OPTIONS = 1;
    UInt_t ET_MAX = 255;
    UInt_t bunches =2544;
-   Long64_t maxEntriesRate_,maxEntriesEff_;
-   Int_t reportEvery;
    
    std::map<short, short> lutMapEt;
    std::map<short, short> lutMapEta;
@@ -113,6 +116,8 @@ class ApplyIsolation {
    TDirectory* td2;
    TDirectory* td3;
    Double_t binning[22] = {18,20,22,24,26,28,30,32,35,40,45,50,60,70,90,110,210,350,500,700,1000,2000};
+   
+   Double_t xEdges_fine[nBins_fine+1];
 };
 
 #endif
