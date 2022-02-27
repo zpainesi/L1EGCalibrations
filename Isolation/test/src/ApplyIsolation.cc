@@ -245,8 +245,8 @@ void ApplyIsolation::loops() {
     PtPassName_fr_=PtPassName_fr_ + std::to_string(et_option[n])  + "_fr";
     td2->cd();
     
-    TH1F*PtPass_fr= new TH1F(PtPassName_fr_, PtPassName_fr_, 21,binning);
-    //TH1F*PtPass_fr= new TH1F(PtPassName_fr_, PtPassName_fr_, nBins_fine,xEdges_fine);
+    //TH1F*PtPass_fr= new TH1F(PtPassName_fr_, PtPassName_fr_, 21,binning);
+    TH1F*PtPass_fr= new TH1F(PtPassName_fr_, PtPassName_fr_, nBins_fine,xEdges_fine);
     pt_pass_Map_.insert(std::make_pair(PtPassName_fr_, PtPass_fr));
 
 
@@ -439,8 +439,8 @@ void ApplyIsolation::bookHistograms() {
 	check_pt_turn_on_dir = true;
       }
       td2->cd();
-      TH1F*PtPass= new TH1F(PtPassName_, PtPassName_, 21,binning);
-      //TH1F*PtPass= new TH1F(PtPassName_, PtPassName_, nBins_fine,xEdges_fine);
+      //TH1F*PtPass= new TH1F(PtPassName_, PtPassName_, 21,binning);
+      TH1F*PtPass= new TH1F(PtPassName_, PtPassName_, nBins_fine,xEdges_fine);
       pt_pass_Map_.insert(std::make_pair(PtPassName_, PtPass));
       
       turnOn_Option_ += it;
@@ -452,8 +452,8 @@ void ApplyIsolation::bookHistograms() {
     }
   }
   td2->cd();
-  pT_all = new TH1F("pT_all","pT_all",21,binning);
-  //pT_all = new TH1F("pT_all","pT_all",nBins_fine,xEdges_fine);
+  //pT_all = new TH1F("pT_all","pT_all",21,binning);
+  pT_all = new TH1F("pT_all","pT_all",nBins_fine,xEdges_fine);
   
   th1fStore["FixedRateTurnons"] = new TH1F("FixedRateTurnons","",3,0.0,3.0);
   th1fStore["FixedRateTurnons"]->SetCanExtend(TH1::kAllAxes);

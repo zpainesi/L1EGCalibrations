@@ -10,6 +10,9 @@ all:	$(TARGET)
 isolationAnalysis : src/IsolationAnalysis.cc 
 	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
 
+evalOptions : src/evalOptions.cc 
+	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
+
 applyIsolation : src/ApplyIsolation.cc 
 	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
 
