@@ -110,6 +110,7 @@ void IsolationAnalysis::analyse() {
                       << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
                       <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nentries - jentry)/(1e-9 + jentry)* 0.001
                       <<std::endl;
+
        } 
 
 
@@ -362,12 +363,26 @@ void IsolationAnalysis::fillLUTProgression(std::string option){
     std::cout<<"Filling LUT only"<<std::endl;
   }
   std::cout<<"Filling LUT"<<std::endl;
+  Int_t maxEntriesForLUT=(lutIEtaVec_.size()-1)*(lutIEtVec_.size()-1)*(lutnTTVec_.size()-1);
+  Int_t count=0;
+  auto  t_start = std::chrono::high_resolution_clock::now();
+  auto  t_end = std::chrono::high_resolution_clock::now();
   for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
     {
       for(Int_t j = 0 ; j < lutIEtVec_.size()-1 ; j++)
 	{
 	  for(Int_t k = 0 ; k < lutnTTVec_.size()-1; k++)
 	    {
+          count++;
+          if(count%200==0)
+          {
+             t_end = std::chrono::high_resolution_clock::now();
+             std::cout<<"LUT Filling : Processing  loop id : "<<count<<" / "<<maxEntriesForLUT<<"  [ "<<100.0*count/maxEntriesForLUT<<"  % ]  "
+                      << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                      <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( maxEntriesForLUT - count)/(1e-9 + count)* 0.001
+                      <<std::endl;
+
+          }
 	      for (auto it : lutProgHistoMap_)
 		{
              

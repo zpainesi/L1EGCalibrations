@@ -112,7 +112,10 @@ void ApplyIsolation::loops() {
       ResultProgressionName_ +=it;
       pt_Progression_ +=it;
 	  TH3F* ResultProgressionName = (TH3F*)optionsFile_->Get("Step2Histos/"+ResultProgressionName_);
-      if( not ResultProgressionName) std::cout<<"BAD : "<<ResultProgressionName_<<" !! gonna break later\n";
+      if( not ResultProgressionName) {
+        std::cout<<"BAD : "<<ResultProgressionName_<<" !! gonna break later\n exiting";
+        exit(1);
+      }
       else 
       { 
         std::cout<<" Read option : "<<ResultProgressionName->GetName()<<"\n";
@@ -222,7 +225,7 @@ void ApplyIsolation::loops() {
 	break;    
       }
     }     
-    std:: cout<<"option: "<<it<<" , "<<"et: "<< xbin<<std::endl;
+    std:: cout<<"option: "<<it<<" , "<<"et: "<<xbin<<"  [ "<<vl/sqrt(vl/scale)<<" ]  "<<std::endl;
     et_option.push_back(xbin);
   }
 
