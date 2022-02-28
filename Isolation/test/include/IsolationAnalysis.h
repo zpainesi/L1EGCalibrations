@@ -32,6 +32,11 @@ public :
   Int_t          eta;
   Int_t          ntt;
   Int_t          iso;
+  float eleProbeEta	;
+  float eleProbePhi	;
+  float eleTagEta   ;
+  float eleTagPhi	;
+  Int_t isProbeLoose;
 
   Long64_t       maxEntries;
   Int_t          reportEvery;

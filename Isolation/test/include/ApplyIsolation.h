@@ -53,6 +53,12 @@ class ApplyIsolation {
    Int_t           l1tEmuRawEt;    
    Float_t         eleProbeSclEt;
    Int_t           l1tEmuIsoEt;
+  
+   float eleProbeEta	;
+   float eleProbePhi	;
+   float eleTagEta   ;
+   float eleTagPhi	;
+   Int_t isProbeLoose;
    
    Int_t reportEvery;
    Long64_t maxEntriesForRate;

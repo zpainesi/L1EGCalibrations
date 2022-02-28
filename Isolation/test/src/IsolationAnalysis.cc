@@ -113,6 +113,9 @@ void IsolationAnalysis::analyse() {
 
        } 
 
+    if( isProbeLoose==0 ) continue;
+    if( fabs(eleProbeEta) >= 2.5) continue;
+    if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
 
     hprof_IEt->Fill(et, iso);
     hprof_IEta->Fill(eta, iso);
@@ -177,6 +180,11 @@ void IsolationAnalysis::analyse() {
   
   t_start = std::chrono::high_resolution_clock::now();
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    if( isProbeLoose==0 ) continue;
+    if( fabs(eleProbeEta) >= 2.5) continue;
+    if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
+
+
       if(jentry%reportEvery == 0 )
        {
              t_end = std::chrono::high_resolution_clock::now();
@@ -547,6 +555,12 @@ void IsolationAnalysis::readTree()
   fChain->SetBranchAddress("l1tEmuRawEt",&et);
   fChain->SetBranchAddress("l1tEmuTowerIEta",&eta);
   fChain->SetBranchAddress("l1tEmuIsoEt",&iso);
+
+  fChain->SetBranchAddress("eleProbeEta"  ,&eleProbeEta			);
+  fChain->SetBranchAddress("eleProbePhi"  ,&eleProbePhi			);
+  fChain->SetBranchAddress("eleTagEta"    ,&eleTagEta		    	);
+  fChain->SetBranchAddress("eleTagPhi"    ,&eleTagPhi			    );
+  fChain->SetBranchAddress("isProbeLoose" ,&isProbeLoose			);
 }
 
 bool IsolationAnalysis::getHistoBin(TString str, short& eta_bin, short& et_bin, short& ntt_bin){

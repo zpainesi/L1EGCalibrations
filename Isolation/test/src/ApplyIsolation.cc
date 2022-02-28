@@ -295,6 +295,11 @@ void ApplyIsolation::loops() {
     nb1 = fChain1->GetEntry(jentry);   nbytes1 += nb1;
     if(l1tEmuNTT<60 && nTTRange_) continue;  //define range
     if(l1tEmuRawEt < 0.) continue;
+    
+    if( isProbeLoose==0 ) continue;
+    if( fabs(eleProbeEta) >= 2.5) continue;
+    if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
+
     pT_all->Fill(eleProbeSclEt);
     
     std::map<short, short>::iterator EtaPos = lutMapEta.find(abs(l1tEmuTowerIEta));
@@ -577,6 +582,11 @@ void ApplyIsolation::readTree() {
   fChain1->SetBranchAddress("eleProbeSclEt",&eleProbeSclEt);
   fChain1->SetBranchAddress("l1tEmuIsoEt",&l1tEmuIsoEt);
 
+  fChain->SetBranchAddress("eleProbeEta"  ,&eleProbeEta			);
+  fChain->SetBranchAddress("eleProbePhi"  ,&eleProbePhi			);
+  fChain->SetBranchAddress("eleTagEta"    ,&eleTagEta		    	);
+  fChain->SetBranchAddress("eleTagPhi"    ,&eleTagPhi			    );
+  fChain->SetBranchAddress("isProbeLoose" ,&isProbeLoose			);
 }
 
 
