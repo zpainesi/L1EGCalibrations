@@ -116,7 +116,6 @@ void IsolationAnalysis::analyse() {
     if( isProbeLoose==0 ) continue;
     if( fabs(eleProbeEta) >= 2.5) continue;
     if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
-
     hprof_IEt->Fill(et, iso);
     hprof_IEta->Fill(eta, iso);
     hprof_nTT->Fill(ntt, iso);
