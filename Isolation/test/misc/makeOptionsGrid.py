@@ -127,6 +127,7 @@ else :
         tmp=cfgTmplate.replace('@@OPTIONS',optstr[:-1])
         tmp=tmp.replace("@@TAG",tag)
         tmp=tmp.replace("@@PWD",pwd)
+        tmp=tmp.replace("@@OPT_FNAME",optionFile)
         tmp=tmp.replace("@@IDX",str(parIdx))
         tmp=tmp.replace("@@MAXEVENTS_EFF",str(MAXEVENTS_EFF))
         tmp=tmp.replace("@@MAXEVENTS_RATE",str(MAXEVENTS_RATE))
