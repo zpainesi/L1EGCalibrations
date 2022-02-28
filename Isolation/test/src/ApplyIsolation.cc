@@ -582,11 +582,11 @@ void ApplyIsolation::readTree() {
   fChain1->SetBranchAddress("eleProbeSclEt",&eleProbeSclEt);
   fChain1->SetBranchAddress("l1tEmuIsoEt",&l1tEmuIsoEt);
 
-  fChain->SetBranchAddress("eleProbeEta"  ,&eleProbeEta			);
-  fChain->SetBranchAddress("eleProbePhi"  ,&eleProbePhi			);
-  fChain->SetBranchAddress("eleTagEta"    ,&eleTagEta		    	);
-  fChain->SetBranchAddress("eleTagPhi"    ,&eleTagPhi			    );
-  fChain->SetBranchAddress("isProbeLoose" ,&isProbeLoose			);
+  fChain1->SetBranchAddress("eleProbeEta"  ,&eleProbeEta			);
+  fChain1->SetBranchAddress("eleProbePhi"  ,&eleProbePhi			);
+  fChain1->SetBranchAddress("eleTagEta"    ,&eleTagEta		    	);
+  fChain1->SetBranchAddress("eleTagPhi"    ,&eleTagPhi			    );
+  fChain1->SetBranchAddress("isProbeLoose" ,&isProbeLoose			);
 }
 
 
