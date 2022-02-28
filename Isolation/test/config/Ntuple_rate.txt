@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3MC/L1Ntuple.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/2018/L1Ntuples_12X_recaliberated.root
