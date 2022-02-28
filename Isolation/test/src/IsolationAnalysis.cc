@@ -121,7 +121,7 @@ void IsolationAnalysis::analyse() {
     hprof_IEta->Fill(eta, iso);
     hprof_nTT->Fill(ntt, iso);
     
-    if(et < 0 || ntt < 0)  continue;
+    if(et < 0 )  continue;
 
     TString Name_Histo = getHistoName(eta,et, ntt);
     std::map<TString, TH1F*>::iterator iPos = Histos_PerBin.find(Name_Histo);
@@ -180,10 +180,6 @@ void IsolationAnalysis::analyse() {
   
   t_start = std::chrono::high_resolution_clock::now();
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    if( isProbeLoose==0 ) continue;
-    if( fabs(eleProbeEta) >= 2.5) continue;
-    if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
-
 
       if(jentry%reportEvery == 0 )
        {
@@ -194,9 +190,14 @@ void IsolationAnalysis::analyse() {
                       <<std::endl;
        }
     if (jentry < 0) break;
+
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     
-    if (iso < 0 || et < 0) continue;     
+    if( isProbeLoose==0 ) continue;
+    if( fabs(eleProbeEta) >= 2.5) continue;
+    if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
+    
+    if ( et < 0) continue;     
     
     pt_all->Fill(et);
     eta_all->Fill(eta);
