@@ -1,5 +1,6 @@
 #include "TROOT.h"
 #include "TGraphAsymmErrors.h"
+#include "TLegend.h"
 #include "TFile.h"
 #include "TH1F.h"
 #include "TMath.h"
@@ -16,7 +17,7 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
 void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters) ;
 
 // Assumes x vals in graph are sorted in acending order
-Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double_t rX,TString prefix)
+Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double_t rX,TString prefix,TGraphAsymmErrors* baseline=nullptr)
 {
     Int_t iX_beg=0;
     Int_t iX_end=0;
@@ -93,20 +94,30 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
     
     auto excl1 = new TGraph(idx,xArea,yArea);
     excl1->SetLineColor(41);
-    excl1->SetFillColor(41);
+    excl1->SetLineWidth(3);
+    excl1->SetFillColor(kSpring);
     excl1->SetFillStyle(1001);
     
+    aGraph->SetLineWidth(2);
+    aGraph->SetLineColor(kBlue);
+
     multigraph->Add(excl1,"F");
     multigraph->Add(aGraph,"L");
     multigraph->SetMinimum(0.);
     multigraph->SetMaximum(1.0);
     aGraph->Draw();
+    if(baseline)
+    {
+     baseline->SetLineWidth(2);
+     baseline->SetLineColor(kRed);
+     multigraph->Add(baseline,"L");
+    }
     multigraph->Draw("A* same");
     multigraph->GetXaxis()->SetLimits(0.0,80.0);
     
    Double_t A= a1+a2;
    
-   TPaveText *pt = new TPaveText(40.0,0.4,78.0,0.6);
+   TPaveText *pt = new TPaveText(45.0,0.3,75.0,0.6);
    
    std::string hname(aGraph->GetName());
    std::vector<string> tockens;
@@ -126,6 +137,9 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
    }
    pt->AddText(tockens[3].c_str());
    pt->AddText(tag.c_str());
+   TString midXstr("");
+   midXstr+=midX;
+   pt->AddText("E_{T}^{L1EG} > "+midXstr);
    
    std::string st=std::to_string(A);
    pt->AddText(TString("A = ")+ st.c_str());
@@ -133,6 +147,14 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
    pt->SetTextSize(0.04);
    pt->SetShadowColor(0);
    pt->Draw();
+
+   //TLegend *leg = new TLegend(40.0, 0.15, 78.0,0.25);
+   TLegend *leg = new TLegend(0.55, 0.23, 0.85,0.33);
+   leg->SetFillColor(0);
+   leg->AddEntry(aGraph,tockens[3].c_str(), "l");
+   if (baseline)
+    leg->AddEntry(baseline,"Baseline", "l");
+   leg->Draw();
 
     acanvas.SaveAs(prefix+TString(aGraph->GetName())+".png","q");
     return A;
