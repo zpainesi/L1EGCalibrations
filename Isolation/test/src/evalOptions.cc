@@ -1,4 +1,5 @@
 #include "Util.h"
+#define DO_AREA_CUT
 
 using namespace std;
 
@@ -35,7 +36,7 @@ void processOptionFile(TString fileName,TString descHName,TString baselineFileNa
     TGraphAsymmErrors * graphToIntegrate(nullptr);
     TString folderName;
     auto descriptionHistogram = (TH1F*) aFile->Get(descHName);
-    Double_t eT_threshold,left_DX,right_DX,area;
+    Double_t eT_threshold,left_DX,right_DX,area,baselineArea;
     string cmd;
     Bool_t isBetterThanLoose(false);
     Bool_t isBetterThanTight(false);
@@ -50,11 +51,11 @@ void processOptionFile(TString fileName,TString descHName,TString baselineFileNa
     if(baselineTurnOn)
     {
         eT_threshold=baselineEt;
-        area=getIntegral(baselineTurnOn, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,nullptr);
-        std::cout<<"Baseline Area = "<<area<<"\n";
+        baselineArea=getIntegral(baselineTurnOn, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,nullptr);
+        std::cout<<"Baseline Area = "<<baselineArea<<"\n";
     }
     std::cout<<"idx , option , eTMin, eff , eTMax, area, isBetterThanLoose, isBetterThanTight\n";
-    int thresoldPassEvents(0),betterThanPassEvents(0);
+    int thresoldPassEvents(0),betterThanPassEvents(0),areaPassEvents(0);
     for(Int_t i=0;i<nBins;i++)
     {
         //if(i>5) break;
@@ -89,12 +90,15 @@ void processOptionFile(TString fileName,TString descHName,TString baselineFileNa
         thresoldPassEvents++;
         if( not isBetterThanTight) continue;
         betterThanPassEvents++;
-        
+        area=getIntegral(graphToIntegrate, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,baselineTurnOn);
+        #ifdef DO_AREA_CUT
+            if( area < baselineArea ) continue;
+        #endif
+        areaPassEvents++;
         folderName=prefix+"/"+tockens[3]+"/";
         cmd="mkdir -p "+folderName;
         system(cmd.c_str());
         
-        area=getIntegral(graphToIntegrate, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,baselineTurnOn);
         std::cout<<i<<" , "<<tockens[3]
                  <<" ,  "
                  <<tockens[4]<<" , "
@@ -110,6 +114,7 @@ void processOptionFile(TString fileName,TString descHName,TString baselineFileNa
     aFile->Close();
     std::cout<<" Number of options passing the \" eT thresold \" : "<<thresoldPassEvents<<" / "<<nBins<<"\n";
     std::cout<<" Number of options passing the \" better than the baseline \" : "<<betterThanPassEvents<<" / "<<nBins<<"\n";
+    std::cout<<" Number of options passing the \" area pass  \" : "<<areaPassEvents<<" / "<<nBins<<"\n";
 }
 
 int  main(int argc,char *argv[])
