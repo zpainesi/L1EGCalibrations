@@ -42,8 +42,6 @@ log = $Fp(filename)run.$(Cluster).log\n\
 runScriptTxt=loadConfigTemplate(runTmplName)
 cfgTmplate=loadConfigTemplate(cfgTmplName)
 
-
-
 etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
 effMins=[0.1,0.2,0.4,0.5,0.7,0.8,0.9]
 etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
@@ -125,7 +123,7 @@ else :
         if not os.path.exists(dirName):
             os.system('mkdir '+dirName)
         tmp=cfgTmplate.replace('@@OPTIONS',optstr[:-1])
-        tmp=tmp.replace("@@TAG",tag)
+        tmp=tmp.replace("@@TAG",tag+'p'+str(parIdx))
         tmp=tmp.replace("@@PWD",pwd)
         tmp=tmp.replace("@@OPT_FNAME",optionFile)
         tmp=tmp.replace("@@IDX",str(parIdx))
