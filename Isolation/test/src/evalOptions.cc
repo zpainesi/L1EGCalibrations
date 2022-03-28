@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void processOptionFile(TString fileName,std::ofstream &result_file,Bool_t *filled_Baseline,Double_t baselineEt=24,TString prefix="") {
+void processOptionFile(TString fileName,std::fstream &result_file,Bool_t *filled_Baseline,Double_t baselineEt=24,TString prefix="",Bool_t chkQuality=false,Bool_t saveGraph=false) {
   std::cout<<"fileName : "<<fileName<<"\n";
   std::cout<<"prefix : "<<prefix<<"\n";
   Bool_t temp = *filled_Baseline;
@@ -23,6 +23,8 @@ void processOptionFile(TString fileName,std::ofstream &result_file,Bool_t *fille
   eT_threshold=30;
   left_DX=7.0;
   right_DX=7.0;
+
+  Int_t isGoodChkBeg(29),isGoodChkEnd(54);
   
   TFile * f=TFile::Open(fileName,"READ");
   if (!f) std::cout<<"Input file ["<<fileName<<"] not found"<<std::endl;
@@ -31,30 +33,81 @@ void processOptionFile(TString fileName,std::ofstream &result_file,Bool_t *fille
   TGraphAsymmErrors * baselineTurnOn=nullptr;
   TString baselinePlotName="divide_pt_pass_Et_"+to_string(int(baselineEt))+"_tight_by_pT_all";
   baselineTurnOn=(TGraphAsymmErrors *)f->Get("turnon_progression_Run2/"+baselinePlotName);
-  if(!baselineTurnOn) std::cout<<"Baseline plot not found !! ["<<baselinePlotName<<"] from "<<f<<"\n";
+  if(!baselineTurnOn) {
+    std::cout<<"Baseline plot not found !! ["<<baselinePlotName<<"] from "<<f<<"\n";
+  }  
   else { 
     if(temp==false) {
       folderName=prefix+"/Baseline_Run2/";
       cmd="mkdir -p "+folderName;
       system(cmd.c_str());
       if(temp==false) {
-	folderName=prefix+"/Baseline_Run2/";
-	cmd="mkdir -p "+folderName;
-	system(cmd.c_str());
-	
-	std::cout<<" Obtained baseline as  : "<<baselineTurnOn->GetName()<<"\n";
-	eT_threshold=baselineEt;
-	area=getIntegral(baselineTurnOn, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,nullptr);
-	std::cout<<"Baseline Area = "<<area<<"\n";
+	     
+         folderName=prefix+"/Baseline_Run2/";
+	     cmd="mkdir -p "+folderName;
+	     system(cmd.c_str());
+	     
+	     std::cout<<" Obtained baseline as  : "<<baselineTurnOn->GetName()<<"\n";
+	     eT_threshold=baselineEt;
+	     area=getIntegral(baselineTurnOn, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,nullptr,saveGraph);
+	     std::cout<<"Baseline Area = "<<area<<"\n";
+
+	     auto acceptanceHistogram_Run2 = (TH1F*) f->Get("Run2Turnons_TightIso_Acceptance");
+	     acceptance =acceptanceHistogram_Run2->GetBinContent(1);
+	     std::cout<<"Acceptance for Baseline = "<<acceptance<<std::endl;
+      
+      std::cout<<"XX"<<" , "<<"Baseline "
+	       <<" ,  "
+	       <<" XX "<<" , "
+	       <<" XX "<<" , "
+	       <<" XX "<<"  "
+	       <<" , "<<eT_threshold 
+	       <<" , "<<area
+	       <<" , "<<" X "
+	       <<" , "<<" X "
+	       <<" , "<<acceptance
+	       <<"\n";
+
+      result_file <<fileName<<" "<<"Baseline "
+	       <<"\t"
+	       <<" XX "<<"\t"
+	       <<" XX "<<"\t"
+	       <<" XX "<<"\t"
+	       <<"\t"<<eT_threshold 
+	       <<"\t"<<area
+	       <<"\t"<<" X "
+	       <<"\t"<<" X "
+	       <<"\t"<<acceptance
+	       <<"\n";
 
 
-	auto acceptanceHistogram_Run2 = (TH1F*) f->Get("Run2Turnons_TightIso_Acceptance");
-	acceptance =acceptanceHistogram_Run2->GetBinContent(1);
-	std::cout<<"Acceptance for Baseline = "<<acceptance<<std::endl;
-      }
     }
+        
+    }
+    auto mindiff=0.2;
+    for(Int_t ii=0;ii<=baselineTurnOn->GetN();ii++)
+    {
+           if(abs(baselineTurnOn->GetPointY(ii) - 0.8) < mindiff ) 
+           { 
+               isGoodChkBeg=ii  ;
+               mindiff=abs(baselineTurnOn->GetPointY(ii) - 0.8);
+           }
+    }
+    
+    mindiff=0.2;
+    for(Int_t ii=0;ii<=baselineTurnOn->GetN();ii++)
+    {
+        if(abs(baselineTurnOn->GetPointY(ii) - 0.95) < mindiff ) 
+           { 
+               isGoodChkEnd=ii  ;
+               mindiff=abs(baselineTurnOn->GetPointY(ii) - 0.95);
+           }
+    }
+
     *filled_Baseline=true;
   }
+
+  std::cout<<"Setting up isGoodChk Rage = [ "<<isGoodChkBeg<<" , "<<isGoodChkEnd<<" ]"<<"\n";
   
   
   //working with all the option in a file
@@ -65,11 +118,12 @@ void processOptionFile(TString fileName,std::ofstream &result_file,Bool_t *fille
   auto xAxis = descriptionHistogram->GetXaxis();
   auto nBins = descriptionHistogram->GetNbinsX();
   std::vector<std::string> tokens;
-  std::cout<<"idx , option , eTMin, eff , eTMax, area, isBetterThanLoose, isBetterThanTight, Acceptance\n";
-  
+  std::cout<<"idx , option , eTMin, eff , eTMax,eTThreshold ,area, isBetterThanLoose, isBetterThanTight, Acceptance\n";
+  Bool_t passedThresoldCriteria;
   for(Int_t i=1;i<=nBins;i++)
     {
-      
+      isBetterThanTight=false;
+      passedThresoldCriteria=false;
       TString histname(xAxis->GetBinLabel(i));
       std::string hname(xAxis->GetBinLabel(i));
       if(hname.size()==0) continue;
@@ -87,18 +141,20 @@ void processOptionFile(TString fileName,std::ofstream &result_file,Bool_t *fille
       
       acceptance=acceptanceHistogram->GetBinContent(i);
       eT_threshold=descriptionHistogram->GetBinContent(i);
-      if( eT_threshold > baselineEt+2.0 ) continue;
-      thresoldPassEvents++;
+      if(eT_threshold <= baselineEt+2.0 ) passedThresoldCriteria=true;
+      if(chkQuality and eT_threshold > baselineEt+2.0 ) continue;
+      if(passedThresoldCriteria) thresoldPassEvents++;
       
       if(baselineTurnOn)  isBetterThanTight=isGoodTurnON(baselineTurnOn,graphToIntegrate,29,54);
-      if(! isBetterThanTight) continue;
-      betterThanPassEvents++;
+      if(chkQuality and !isBetterThanTight) continue;
+      if(isBetterThanTight) betterThanPassEvents++;
       
-      folderName=prefix+"/"+tokens[3]+"/";
-      cmd="mkdir -p "+folderName;
-      system(cmd.c_str());
-      
-      area=getIntegral(graphToIntegrate, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,baselineTurnOn);
+         folderName=prefix+"/"+tokens[3]+"/";
+          if(saveGraph  or (isBetterThanTight and passedThresoldCriteria)) {
+                cmd="mkdir -p "+folderName;
+                 system(cmd.c_str());
+            }
+      area=getIntegral(graphToIntegrate, eT_threshold,eT_threshold-left_DX,eT_threshold+right_DX,folderName,baselineTurnOn,saveGraph or (isBetterThanTight and passedThresoldCriteria) );
       std::cout<<i<<" , "<<tokens[3]
 	       <<" ,  "
 	       <<tokens[4]<<" , "
@@ -111,19 +167,17 @@ void processOptionFile(TString fileName,std::ofstream &result_file,Bool_t *fille
 	       <<" , "<<acceptance
 	       <<"\n";
 
-      result_file <<fileName<<" "<<tokens[3]
-		  <<" "
-		  <<tokens[4]<<" "
-		  <<tokens[5]<<" "
-		  <<tokens[6]<<" "
-		  <<" "<<eT_threshold
-		  <<" "<<area
-		  <<" "<<isBetterThanLoose
-		  <<" "<<isBetterThanTight
-		  <<" "<<acceptance
+      result_file <<fileName<<"\t"<<tokens[3]
+		  <<"\t"
+		  <<tokens[4]<<"\t"
+		  <<tokens[5]<<"\t"
+		  <<tokens[6]<<"\t"
+		  <<"\t"<<eT_threshold
+		  <<"\t"<<area
+		  <<"\t"<<isBetterThanLoose
+		  <<"\t"<<isBetterThanTight
+		  <<"\t"<<acceptance
 		  <<"\n";
-
-
     }
   
   f->Close();
@@ -142,17 +196,32 @@ int  main(int argc,char *argv[])
       
       exit(1);
     }
-  std::ofstream result_file;                                                                                                  \
-  result_file.open ("result.txt",ios::app);  
+  std::fstream result_file; 
+  TString basePath(argv[2]);
   Bool_t filled_Baseline = false;
   std::ifstream file_names(argv[1]);
   std::string line;
+  Bool_t saveGraph,chkQuality;
+  TString savePrefix("");
+  chkQuality=atoi(argv[2]);
+  saveGraph=atoi(argv[3]);
+  
+ // if(saveGraph)
+  {savePrefix=argv[4];}
+  
+  result_file.open(savePrefix+"/result.txt",ios::out);  
+  std::cout<<" Processing Only Good Graphs  : "<<chkQuality<<"\n";
+  std::cout<<" Saving Graphs : "<<saveGraph<<"\n";
+  std::cout<<" Saving to : "<<savePrefix<<"\n";
+
   if(file_names.is_open()) {
     while (file_names>>line) {
-      std::cout<<line<<std::endl;
-      processOptionFile(line,result_file,& filled_Baseline,24.0,argv[2]);
+      std::cout<<"Processing file : "<<line<<std::endl;
+      processOptionFile(line,result_file,& filled_Baseline,26.0,savePrefix,chkQuality,saveGraph);
     }
   }
+  std::cout<<"Results saved to file : "<<savePrefix+"/result.txt"<<"\n";
+  result_file.close();
   return 0;
 }
 
