@@ -19,16 +19,6 @@
  ```bash
  # For fixed rate area calulations
  ./evalOptions.exe \
-    <step3step4 file> \
-    FixedRateTurnons \
-    <baseline Filename> \
-    <baseline TGraph path in file > \
-    <prefix to the saved pic>
- ```
- Eg.
- ```bash
- # For fixed rate area calulations
- ./evalOptions.exe \
     <fnames list : file with the list of root files to analyze>
     <chkQuality : 0/1 |  if 0, implies the area is calulated and written to result even if the turnon fails isGoodTurnon() or eT<eT_base+2 >  \
     <saveGraph : 0/1 weather to save the areaGraphs as png , note : the graph is always saved if its better than baseline > \
