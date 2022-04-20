@@ -17,7 +17,7 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
 void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters) ;
 
 // Assumes x vals in graph are sorted in acending order
-Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double_t rX,TString prefix,TGraphAsymmErrors* baseline=nullptr)
+Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double_t rX,TString prefix,TGraphAsymmErrors* baseline=nullptr,Bool_t saveGraph=true)
 {
     Int_t iX_beg=0;
     Int_t iX_end=0;
@@ -85,8 +85,12 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
     xArea[idx]=rX;    yArea[idx]=y_mid;  idx++;
     xArea[idx]=lX;    yArea[idx]=y_mid;   idx++;
     
+    Double_t A= a1+a2;
     
-    TCanvas acanvas;
+   if(saveGraph)
+   {
+
+    TCanvas * acanvas=new TCanvas("aCanvas","aCanvas");
     TMultiGraph *multigraph = new TMultiGraph();
     multigraph->SetTitle("Efficiency vs pT");
     multigraph->GetXaxis()->SetTitle("Oflline p_{T} [ GeV ]");
@@ -115,48 +119,48 @@ Double_t getIntegral(TGraphAsymmErrors* aGraph, Double_t midX,Double_t lX,Double
     multigraph->Draw("A* same");
     multigraph->GetXaxis()->SetLimits(0.0,80.0);
     
-   Double_t A= a1+a2;
    
-   TPaveText *pt = new TPaveText(45.0,0.3,75.0,0.6);
-   
-   std::string hname(aGraph->GetName());
-   std::vector<string> tockens;
-   tockens.clear();
-   tokenize(hname,tockens,"_");
-   std::string tag;
-   if(tockens.size()>6)
-   {
-     std::replace( tockens[4].begin(), tockens[4].end(), 'p', '.');
-     std::replace( tockens[5].begin(), tockens[5].end(), 'p', '.');
-     std::replace( tockens[6].begin(), tockens[6].end(), 'p', '.');
-     tag="[ "+tockens[4]+" | "+tockens[5]+" | "+tockens[6]+ " ]";
-   }
-   else
-   {
-     tag="Baseline";
-   }
-   pt->AddText(tockens[3].c_str());
-   pt->AddText(tag.c_str());
-   TString midXstr("");
-   midXstr+=midX;
-   pt->AddText("E_{T}^{L1EG} > "+midXstr);
-   
-   std::string st=std::to_string(A);
-   pt->AddText(TString("A = ")+ st.c_str());
-   pt->SetTextColor(1);
-   pt->SetTextSize(0.04);
-   pt->SetShadowColor(0);
-   pt->Draw();
+      TPaveText *pt = new TPaveText(45.0,0.3,75.0,0.6);
+      
+      std::string hname(aGraph->GetName());
+      std::vector<string> tockens;
+      tockens.clear();
+      tokenize(hname,tockens,"_");
+      std::string tag;
+      if(tockens.size()>6)
+      {
+        std::replace( tockens[4].begin(), tockens[4].end(), 'p', '.');
+        std::replace( tockens[5].begin(), tockens[5].end(), 'p', '.');
+        std::replace( tockens[6].begin(), tockens[6].end(), 'p', '.');
+        tag="[ "+tockens[4]+" | "+tockens[5]+" | "+tockens[6]+ " ]";
+      }
+      else
+      {
+        tag="Baseline";
+      }
+      pt->AddText(tockens[3].c_str());
+      pt->AddText(tag.c_str());
+      TString midXstr("");
+      midXstr+=midX;
+      pt->AddText("E_{T}^{L1EG} > "+midXstr);
+      
+      std::string st=std::to_string(A);
+      pt->AddText(TString("A = ")+ st.c_str());
+      pt->SetTextColor(1);
+      pt->SetTextSize(0.04);
+      pt->SetShadowColor(0);
+      pt->Draw();
 
-   //TLegend *leg = new TLegend(40.0, 0.15, 78.0,0.25);
-   TLegend *leg = new TLegend(0.55, 0.23, 0.85,0.33);
-   leg->SetFillColor(0);
-   leg->AddEntry(aGraph,tockens[3].c_str(), "l");
-   if (baseline)
-    leg->AddEntry(baseline,"Baseline", "l");
-   leg->Draw();
+      //TLegend *leg = new TLegend(40.0, 0.15, 78.0,0.25);
+      TLegend *leg = new TLegend(0.55, 0.23, 0.85,0.33);
+      leg->SetFillColor(0);
+      leg->AddEntry(aGraph,tockens[3].c_str(), "l");
+      if (baseline)
+       leg->AddEntry(baseline,"Baseline", "l");
+      leg->Draw();
 
-    acanvas.SaveAs(prefix+TString(aGraph->GetName())+".png","q");
+       acanvas->SaveAs(prefix+TString(aGraph->GetName())+".png","q");
+    }
     return A;
 }
 

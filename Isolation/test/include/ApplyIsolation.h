@@ -28,6 +28,8 @@ class ApplyIsolation {
  public :
   TChain          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
+  TChain          *fChain_evtTree;   //!pointer to the analyzed TTree or TChain
+  Int_t           fCurrent_evtTree; //!current Tree number in a TChain
   
   TChain          *fChain1;   //!pointer to the analyzed TTree or TChain                                             
   Int_t           fCurrent1; //!current Tree number in a TChain                                                                                                                                            
@@ -42,7 +44,8 @@ class ApplyIsolation {
   std::vector<short>   egNTT;
   std::vector<short> egRawEt;  
   std::vector<short> egTowerIEta;
-
+  std::vector<short> egIso;
+  Int_t nVtx;
   //Turn-On
    Float_t         l1tEmuPt;
    Int_t           l1tEmuTowerIEta;
@@ -51,13 +54,51 @@ class ApplyIsolation {
    Float_t         eleProbeSclEt;
    Int_t           l1tEmuIsoEt;
 
-   Int_t   hasL1Emu_tightiso24;
-   Int_t   hasL1Emu_tightiso26;
-   Int_t   hasL1Emu_looseiso24;
-   Int_t   hasL1Emu_looseiso26;
-   Int_t   hasL1Emu_24;
-   Int_t   hasL1Emu_26;
-   
+  
+
+  TH1D* puReweightingHist;   
+  TString puReweightingFileName;
+  Bool_t hasPUReweitingFile;
+
+  Int_t   hasL1Emu_looseiso20 ;
+  Int_t   hasL1Emu_tightiso20 ;
+  Int_t   hasL1Emu_20 ;
+  Int_t   hasL1Emu_looseiso21 ;
+  Int_t   hasL1Emu_tightiso21 ;
+  Int_t   hasL1Emu_21 ;
+  Int_t   hasL1Emu_looseiso22 ;
+  Int_t   hasL1Emu_tightiso22 ;
+  Int_t   hasL1Emu_22 ;
+  Int_t   hasL1Emu_looseiso23 ;
+  Int_t   hasL1Emu_tightiso23 ;
+  Int_t   hasL1Emu_23 ;
+  Int_t   hasL1Emu_looseiso24 ;
+  Int_t   hasL1Emu_tightiso24 ;
+  Int_t   hasL1Emu_24 ;
+  Int_t   hasL1Emu_looseiso25 ;
+  Int_t   hasL1Emu_tightiso25 ;
+  Int_t   hasL1Emu_25 ;
+  Int_t   hasL1Emu_looseiso26 ;
+  Int_t   hasL1Emu_tightiso26 ;
+  Int_t   hasL1Emu_26 ;
+  Int_t   hasL1Emu_looseiso27 ;
+  Int_t   hasL1Emu_tightiso27 ;
+  Int_t   hasL1Emu_27 ;
+  Int_t   hasL1Emu_looseiso28 ;
+  Int_t   hasL1Emu_tightiso28 ;
+  Int_t   hasL1Emu_28 ;
+  Int_t   hasL1Emu_looseiso29 ;
+  Int_t   hasL1Emu_tightiso29 ;
+  Int_t   hasL1Emu_29 ;
+  Int_t   hasL1Emu_looseiso30 ;
+  Int_t   hasL1Emu_tightiso30 ;
+  Int_t   hasL1Emu_30 ;
+  Int_t   hasL1Emu_looseiso31 ;
+  Int_t   hasL1Emu_tightiso31 ;
+  Int_t   hasL1Emu_31 ;
+  Int_t   hasL1Emu_looseiso32 ;
+  Int_t   hasL1Emu_tightiso32 ;
+  Int_t   hasL1Emu_32   ;
    
    Int_t   isProbeLoose;
    Float_t   eleTagPhi;
