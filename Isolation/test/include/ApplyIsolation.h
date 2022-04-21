@@ -124,6 +124,7 @@ class ApplyIsolation {
    Long64_t maxEntriesForRate;
    Long64_t reportEvery;
    float frate; 
+   float frateDoubleEG; 
    
    std::string ntupleFileNameRate_;
    std::string ntupleFileNameTurnOn_;
@@ -158,6 +159,7 @@ class ApplyIsolation {
    std::map<TString,TH1F*> th1fStore;
    TH1F* pT_all;
    std::vector<UInt_t> et_option;
+   std::vector<UInt_t> etDoubleEG_option;
 
    bool check_pt_rate_dir = false;
    bool check_rate_dir = false;
