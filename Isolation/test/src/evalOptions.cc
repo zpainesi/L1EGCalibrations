@@ -217,7 +217,7 @@ int  main(int argc,char *argv[])
   if(file_names.is_open()) {
     while (file_names>>line) {
       std::cout<<"Processing file : "<<line<<std::endl;
-      processOptionFile(line,result_file,& filled_Baseline,26.0,savePrefix,chkQuality,saveGraph);
+      processOptionFile(line,result_file,& filled_Baseline,27.0,savePrefix,chkQuality,saveGraph);
     }
   }
   std::cout<<"Results saved to file : "<<savePrefix+"/result.txt"<<"\n";

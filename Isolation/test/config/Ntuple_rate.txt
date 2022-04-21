@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/2018/L1Ntuples_12X_recaliberated.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/run3MC/SingleNeutrino_Pt-2To20-gun_120X.root

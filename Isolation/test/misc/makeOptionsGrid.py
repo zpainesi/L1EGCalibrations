@@ -3,13 +3,17 @@ from __future__ import print_function
 import os,sys,itertools
 
 
+"""
+python misc/make...py
+"""
+
 MAXEVENTS_RATE=-1
 MAXEVENTS_EFF =2500000
 printConfig=True
 runTmplName='misc/runStep3and4.tpl.sh'
 cfgTmplName='misc/Par_ApplyIsolation.dat.tpl.cfg'
-optPerParSet=50
-optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_0_2/src/L1EGCalibrations/Isolation/test/caliberationFiles/HistgramFile_step1step2_eg_rawet_12X_withQuality_optfile.root'
+optPerParSet=10
+optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_eg_rawet_12X_newLayer1_OPTFile.root'
 
 pwd=os.environ['PWD']
 proxy_path=os.environ['X509_USER_PROXY']
@@ -22,6 +26,8 @@ tag=""
 if len(sys.argv) > 2:
     tag=sys.argv[2]
 
+print("print config : ",printConfig)
+print("tag : ",tag)
 
 def loadConfigTemplate(fname):
     f=open(fname,'r')
@@ -42,9 +48,15 @@ log = $Fp(filename)run.$(Cluster).log\n\
 runScriptTxt=loadConfigTemplate(runTmplName)
 cfgTmplate=loadConfigTemplate(cfgTmplName)
 
+# Grid A
 etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
 effMins=[0.1,0.2,0.4,0.5,0.7,0.8,0.9]
 etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
+
+# Grid B
+#etMins=[1.0+1.0*i for i in range(50) ]
+#effMins=[0.05 + 0.05*i for i in range(20)]
+#etMaxs=[1.0+1.0*i for i in range(70) ]
 
 allOptsProd=itertools.product(*[etMins,effMins,etMaxs])
 allOpts=[t for t in allOptsProd]

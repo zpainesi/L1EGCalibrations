@@ -162,8 +162,6 @@ void ApplyIsolation::loops() {
   auto t_end = std::chrono::high_resolution_clock::now();
   Double_t nEvents(0);
     
-  TH1F eT1ForDoubleEG("et1","et1", ET_MAX , -0.4 , ET_MAX - 0.5 );
-  TH1F eTLooseForDoubleEG("etLoose","etLoose",ET_MAX,-0.4, ET_MAX - 0.5);
 
   for (Long64_t jentry=0; jentry < nEntries_; jentry++) {
 
@@ -201,8 +199,7 @@ void ApplyIsolation::loops() {
     if (nEGs < 1) continue;
        // RUN 2 LUT Rates
     float maxEt=-1e9,maxEtLoose=-1e9,maxEtTight=-1e9,maxDoubleEGIsoEt=-1e3;
-    eT1ForDoubleEG.Reset();
-    eTLooseForDoubleEG.Reset();
+    bool Filled_ProgressionD=false;
     
     for (UShort_t iEG=0; iEG < nEGs; ++iEG) {
 	
@@ -219,12 +216,23 @@ void ApplyIsolation::loops() {
     if( EG_Et > maxEtLoose and ( EG_Iso==2 or EG_Iso==3) ) maxEtLoose=EG_Et;
     if( EG_Et > maxEtTight and ( EG_Iso==3 or EG_Iso==1) ) maxEtTight=EG_Et;
 
-    eT1ForDoubleEG.Fill( EG_Et );
-    if( EG_Iso==2 or EG_Iso==3 )
-        eTLooseForDoubleEG.Fill( EG_Et );
+    if(nEGs >=2 && !Filled_ProgressionD){
+       if(EG_Et > 10. && ( EG_Iso==2 or EG_Iso==3  ) ) {
+            if(iEG==0) {
+              maxDoubleEGIsoEt = std::min(egEt[iEG+1], (EG_Et-10));
+              Filled_ProgressionD = kTRUE;
+            }
+            else {
+              maxDoubleEGIsoEt = std::max(EG_Et-10.0,0.0);
+              Filled_ProgressionD = kTRUE;
+            }
+          }
+      }
+
+
     }
 
-    if(maxEt > 0){
+    if(maxEt >= 0){
         ptMap_["pt_Run2"]->Fill(maxEt,puWeight);
     }
     if(maxEtLoose >= 0.0){
@@ -233,28 +241,6 @@ void ApplyIsolation::loops() {
     if(maxEtTight >=0.0) {
         ptMap_["pt_Run2_tight"]->Fill(maxEtTight,puWeight);
     }
-    
-    maxDoubleEGIsoEt=-1e3;
-
-    for(UInt_t i=10;i< (ET_MAX ) ;i++) 
-    {
-           if( eT1ForDoubleEG.Integral(1 + i -10, ET_MAX ) >= 2 ) 
-           {
-              if(eTLooseForDoubleEG.Integral(1 + i , ET_MAX ) >=1)
-              {
-                    maxDoubleEGIsoEt=i;
-              }
-              else
-              {
-                 break;
-              }
-           }
-           else
-           {
-                break;
-           }
-    }
-
     if( maxDoubleEGIsoEt >= 0.0)
     {
         ptMap_["pt_Run2_DoubleEGLoose_diff10"]->Fill(maxDoubleEGIsoEt,puWeight);
@@ -279,10 +265,9 @@ void ApplyIsolation::loops() {
 	  TH3F* ResultProgressionName = optionsMap[ResultProgressionName_];
       
       maxOptEt=-1e9;
-      eT1ForDoubleEG.Reset();
-      eTLooseForDoubleEG.Reset();
       //std::cout<<" opt : "<<pt_DoubleEGProgression_<<" \n";
-      for (UShort_t iEG=0; iEG < nEGs; ++iEG) {
+    
+    for (UShort_t iEG=0; iEG < nEGs; ++iEG) {
 	
 	if (egBx[iEG]!=0)   continue;
 	
@@ -315,10 +300,19 @@ void ApplyIsolation::loops() {
        maxOptEt=EG_Et;
       }
 
+    if(nEGs >=2 && !Filled_ProgressionD){
+       if(EG_Et > 10. && EG_Iso_Et<=IsoCut_Progression) {
+            if(iEG==0) {
+              maxDoubleEGIsoEt = std::min(egEt[iEG+1], (EG_Et-10));
+              Filled_ProgressionD = kTRUE;
+            }
+            else {
+              maxDoubleEGIsoEt = std::max(EG_Et-10.0,0.0);
+              Filled_ProgressionD = kTRUE;
+            }
+          }
+      }
 
-    eT1ForDoubleEG.Fill( EG_Et );
-    if( EG_Iso_Et<=IsoCut_Progression  )
-        eTLooseForDoubleEG.Fill( EG_Et );
     }
     
 
@@ -327,30 +321,9 @@ void ApplyIsolation::loops() {
 	        ptMap_[pt_Progression_]->Fill(maxOptEt,puWeight);
      }
     
-    maxDoubleEGIsoEt=-1e3;
-    for(UInt_t i=10;i< (ET_MAX ) ;i++) 
-      {
-             if( eT1ForDoubleEG.Integral(i+1 - 10, ET_MAX ) >= 2 ) 
-             {
-                if(eTLooseForDoubleEG.Integral(i + 1 , ET_MAX ) >=1)
-                {
-                      maxDoubleEGIsoEt = i ;
-                }
-                else
-                {
-                   break;
-                }
-             }
-             else
-             {
-                  break;
-             }
-      }
-    
      if( maxDoubleEGIsoEt >= 0.0)
       {
-        //std::cout<<"\t\t\t  Fiering EGDouble : "<<maxDoubleEGIsoEt<<"\n";
-        ptMap_[pt_DoubleEGProgression_]->Fill(maxDoubleEGIsoEt,puWeight);
+            ptMap_[pt_DoubleEGProgression_]->Fill(maxDoubleEGIsoEt,puWeight);
       }
     }
 
@@ -425,7 +398,7 @@ void ApplyIsolation::loops() {
 	break;    
       }
     }     
-    std:: cout<<"option: "<<it<<" , Double EG "<<" et: "<<xbin<<"_"<<xbin-10<<" +/- " <<vl/sqrt(vl/scale)<<std::endl;
+    std:: cout<<"option: "<<it<<" , Double EG "<<" et: "<<xbin+10<<"_"<<xbin<<" +/- " <<vl/sqrt(vl/scale)<<std::endl;
     etDoubleEG_option.push_back(xbin);
   }
 
@@ -665,10 +638,10 @@ void ApplyIsolation::loops() {
       turnOn_Option_="turnOn_DoubleEGOption";
       PtPassName_ += it;
       PtPassName_ +="_Et_";
-      PtPassName_ += std::to_string(e)+"_"+std::to_string(e-10);
+      PtPassName_ += std::to_string(e+10)+"_"+std::to_string(e);
       turnOn_Option_ += it;
       turnOn_Option_ +="_Et_";
-      turnOn_Option_ += std::to_string(e)+"_"+std::to_string(e-10);
+      turnOn_Option_ += std::to_string(e+10)+"_"+std::to_string(e);
       turnOn_Map_[turnOn_Option_]=new TGraphAsymmErrors( pt_pass_Map_[PtPassName_],pT_all,"cp"); 
       turnOn_Map_[turnOn_Option_]->Write();
       acceptance = pt_pass_Map_[PtPassName_]->GetEntries()/nEntries1_ ;
@@ -857,10 +830,10 @@ void ApplyIsolation::bookHistograms() {
       
       PtPassName_ += it;
       PtPassName_ +="_Et_";
-      PtPassName_ += std::to_string(e)+"_"+std::to_string(e-10);  
+      PtPassName_ += std::to_string(e+10)+"_"+std::to_string(e);  
       turnOn_Option_ += it;
       turnOn_Option_ +="_Et_";
-      turnOn_Option_ += std::to_string(e)+"_"+std::to_string(e-10);;
+      turnOn_Option_ += std::to_string(e+10)+"_"+std::to_string(e);;
       
       PtPass= new TH1F(PtPassName_, PtPassName_, nBins_fine,xEdges_fine);
       pt_pass_Map_.insert(std::make_pair(PtPassName_, PtPass));
