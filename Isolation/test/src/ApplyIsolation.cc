@@ -297,7 +297,7 @@ void ApplyIsolation::loops() {
   
 
     Int_t IsoCut_Progression;
-    for(UInt_t e = 5 ; e <= 35; e += 1) {
+    for(UInt_t e = 5 ; e <= 55; e += 1) {
       for (auto it :lutProgOptVec_) {
 	TString ResultProgressionName_= "LUT_Progression_";
         TString PtPassName_= "pt_pass_option";
@@ -391,7 +391,7 @@ void ApplyIsolation::loops() {
   } //End of Event loop for turnon
 
   //Turnons/Nvtx_Eff/Eta_Eff  for various Ets
-  for(UInt_t e = 5 ; e <= 35 ; e += 1) {
+  for(UInt_t e = 5 ; e <= 55 ; e += 1) {
     for (auto it :lutProgOptVec_) {
       TString PtPassName_= "pt_pass_option";
       TString turnOn_Option_="turnOn_Option";
@@ -573,7 +573,7 @@ void ApplyIsolation::bookHistograms() {
     rateMap_.insert(std::make_pair(CurrentNameHisto1D,rate_ProgressionD));
 
     
-    for(UInt_t e = 5 ; e <= 35 ; e += 1) {
+    for(UInt_t e = 5 ; e <= 55 ; e += 1) {
       TString PtPassName_= "pt_pass_option";
       TString turnOn_Option_="turnOn_Option";
       
@@ -666,7 +666,7 @@ void ApplyIsolation::bookHistograms() {
   
 
   //For Vertex
-  for(UInt_t e = 5 ; e <= 35 ; e += 1) {
+  for(UInt_t e = 5 ; e <= 55 ; e += 1) {
 
       TString NvtxPass_ ="Nvtx_Pass_";
       NvtxPass_+="_Et_";
@@ -695,7 +695,7 @@ void ApplyIsolation::bookHistograms() {
 
 
 //For Vertex Iso            
-  for(UInt_t e = 5 ; e <= 35 ; e += 1) {
+  for(UInt_t e = 5 ; e <= 55 ; e += 1) {
     for (auto it :lutProgOptVec_) {
 
       TString NvtxPassIso_ ="Nvtx_Pass_Iso_";
@@ -728,7 +728,7 @@ void ApplyIsolation::bookHistograms() {
   }
   
   //For Eta
-  for(UInt_t e = 5 ; e <= 35 ; e += 1) {
+  for(UInt_t e = 5 ; e <= 55 ; e += 1) {
       
       TString EtaPass_ ="Eta_Pass_";
       EtaPass_+="_Et_";
@@ -759,7 +759,7 @@ void ApplyIsolation::bookHistograms() {
   
   
   //For Eta Iso                                                                                                    
-  for(UInt_t e = 5 ; e <= 35 ; e += 1) {
+  for(UInt_t e = 5 ; e <= 55 ; e += 1) {
     for (auto it :lutProgOptVec_) {
 
       TString EtaPassIso_ ="Eta_Pass_Iso_";
