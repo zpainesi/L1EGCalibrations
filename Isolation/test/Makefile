@@ -7,6 +7,9 @@ INCPATH     = include/
 TARGET		= isolationAnalysis
 all:	$(TARGET) 
 
+isolationAnalysisSlim : src/IsolationAnalysisSlim.cc 
+	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
+
 isolationAnalysis : src/IsolationAnalysis.cc 
 	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
 

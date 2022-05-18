@@ -400,11 +400,11 @@ void IsolationAnalysis::fillLUTProgression(std::string option){
 		  std::string tmp_string = it.first;
 		  std::vector<std::string> options;
 		  tokenize(tmp_string,options,":");
-                  Double_t minPt =  std::stod(options[1]);
-                  Double_t effLowMinPt = std::stod(options[2]);
+          Double_t minPt =  std::stod(options[1]);
+          Double_t effLowMinPt = std::stod(options[2]);
 		  Double_t reach100pc= std::stod(options[3]);
                   
-		  Double_t Efficiency_Progression = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
+		  Double_t Efficiency_Progression = findEfficiencyProgressionSigmoid((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
 		  if(Efficiency_Progression >= 0.9999) Efficiency_Progression = 1.0001;
 		  Int_t Int_Efficiency_Progression = int(Efficiency_Progression*100);
 		  TH3F* eff_histo;		  
@@ -458,6 +458,16 @@ Double_t IsolationAnalysis::findEfficiencyProgression(Double_t IEt, Double_t Min
 
   return Efficiency ;
 }
+
+Double_t IsolationAnalysis::findEfficiencyProgressionSigmoid(Double_t IEt, Double_t TurnOnPt,
+						      Double_t slopePtLow, Double_t slopePtHigh) {
+  Float_t Pt = IEt/2.;
+  Float_t slope = Pt > TurnOnPt ? slopePtHigh : slopePtLow ;
+  return 1.0f/ ( 1.0f + exp(-1.0f* (Pt - TurnOnPt) * slope ) )  ;
+}
+
+
+
 
 void IsolationAnalysis::readLUTTable(std::string& file_name, unsigned int& nbin,
 				     std::map<short, short>& lut_map){

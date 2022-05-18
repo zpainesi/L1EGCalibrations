@@ -67,6 +67,8 @@ public :
   void readLUTTable(std::string& file_name, unsigned int& nbin, std::map<short, short>& lut_map);
   bool getHistoBin(TString str, short& et_bin, short& eta_bin, short& ntt_bin);
   TString getHistoName(short et, short eta, short ntt);
+  Double_t findEfficiencyProgressionSigmoid(Double_t IEt, Double_t MinPt,
+				     Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at);
   Double_t findEfficiencyProgression(Double_t IEt, Double_t MinPt,
 				     Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at);
   void fillLUTProgression(const std::string option);
