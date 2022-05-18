@@ -13,8 +13,7 @@ printConfig=True
 runTmplName='misc/runStep3and4.tpl.sh'
 cfgTmplName='misc/Par_ApplyIsolation.dat.tpl.cfg'
 optPerParSet=10
-optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_eg_rawet_12X_newLayer1_OPTFile.root'
-
+optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_V3_OPTFile.root'
 pwd=os.environ['PWD']
 proxy_path=os.environ['X509_USER_PROXY']
 HOME=os.environ['HOME']
@@ -50,7 +49,7 @@ cfgTmplate=loadConfigTemplate(cfgTmplName)
 
 # Grid A
 etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
-effMins=[0.1,0.2,0.4,0.5,0.7,0.8,0.9]
+effMins=[0.1,0.2,0.4,0.5,0.6,0.7,0.8,0.9]
 etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
 
 # Grid B
@@ -126,9 +125,9 @@ else :
             os.system('chmod +x '+runScriptName)
             condorScript.write("queue filename matching ("+runScriptName+")\n")
             njobs+=1
-
             optInParset=0
             optstr=''
+
     if(optInParset > 0 ):
         parIdx+=1
         dirName= pwd+'/'+head+'/Job_'+str(parIdx)
@@ -168,4 +167,5 @@ else :
     print(' Number of options made : ',optId)
     print(" Number of jobs made : ", njobs)
     print(" Condor  submit file name : ", condorScriptName)
+
     condorScript.close()
