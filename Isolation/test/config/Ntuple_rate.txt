@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3MC/SingleNeutrino_Pt-2To20-gun_120X_Recalib_v2.root
+/home/athachay/t3store3/l1egamma/data/run3MC/SingleNeutrino_122X_CMSSW_12_3_0pre6.root

@@ -1,10 +1,10 @@
 #!/bin/bash
+set -x
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 export HOME=@@HOME
 export X509_USER_PROXY=@@PROXY
 cd @@DIRNAME
 eval `scramv1 runtime -sh`
-set -x
 TMPDIR=`mktemp -d`
 cd $TMPDIR
 cp  @@PWD/applyIsolation.exe .

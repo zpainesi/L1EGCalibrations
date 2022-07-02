@@ -61,13 +61,13 @@ checkIf0Gtr1=True
 
 # Grid C For the sigmoid search
 turnOnPts=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
-slopeLow=[0.1,0.3, 0.8 , 1.0 , 2, 3 ,4 , 6 , 15, 30]
-slopeHigh=[0.1,0.3, 0.8 , 1.0 , 2, 3 ,4 , 6 , 15, 30]
+slopeLow=[0.1,0.2,0.3,0.4,0.6,0.8, 1.0 , 2, 4, 6 , 15, 30]
+slopeHigh=[0.1,0.3, 3 ,4 , 6 , 15, 30]
 checkIf0Gtr1=False
 
 
 ParToScan=[etMins,effMins,etMaxs]
-ParToScan=[turnOnPts,slopeLow,slopeHigh]
+#ParToScan=[turnOnPts,slopeLow,slopeHigh]
 
 allOptsProd=itertools.product(*ParToScan)
 allOpts=[t for t in allOptsProd]

@@ -137,8 +137,10 @@ void ApplyIsolation::loops() {
   short in_compressediEt;
   short in_compressedNTT;
   Long64_t nbytes = 0, nbytes_1=0, nb = 0, nb_1=0;
-  //  weightFile_ = new TFile(weightFileName_.c_str(), "READ");
-  //TH1D*w= (TH1D*)weightFile_->Get("ratio_hist");
+  weightFile_ = new TFile(weightFileName_.c_str(), "READ");
+  TH1D *w= (TH1D*)weightFile_->Get("ratio_hist");
+  if(not w) w->Print();
+  else std::cout<<" Weight ! problem!! \n";
   optionsFile_ = new TFile(optionsFileName_.c_str(), "READ");
   optionsFile_->cd("Step2Histos");
 
@@ -151,7 +153,8 @@ void ApplyIsolation::loops() {
 
   auto t_start = std::chrono::high_resolution_clock::now();
   auto t_end = std::chrono::high_resolution_clock::now();
-
+  Float_t sum_weight=1e-9;
+  Float_t weight=0.0;
   for (Long64_t jentry=0; jentry < nEntries_; jentry++) {
     Long64_t ientry = fChain->LoadTree(jentry);
     Long64_t i1entry = fChain_1->LoadTree(jentry);
@@ -168,9 +171,13 @@ void ApplyIsolation::loops() {
 		 <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nEntries_ - jentry)/(1e-9 + jentry)* 0.001
 		 <<std::endl;
       }
-    //    weight=w->GetBinContent(nPV_True+1);
-    //    std::cout<<"weight ="<<weight<<","<<nPV_True<<std::endl;
-    //    sum_weight=sum_weight+weight; 
+    weight=0.0;
+    weight=w->GetBinContent(nPV_True+1);
+    //if( nPV_True <= 52 and nPV_True>=44 ) weight=1.0;
+    //else continue;
+    //std::cout<<"weight = "<<weight<<" , "<<nPV_True<<std::endl;
+    sum_weight+=weight;
+
     if (nEGs < 1) continue;
     for (auto it :lutProgOptVec_) {
       bool Filled_Progression= kFALSE;
@@ -220,11 +227,11 @@ void ApplyIsolation::loops() {
 	  if(EG_Et > 10. && EG_Iso_Et<=IsoCut_Progression) {
 	    if(iEG==0) {
 	      Et_Double = std::min(egEt[iEG+1], (EG_Et-10));
-	      ptMap_[pt_ProgressionD_]->Fill(Et_Double);
+	      ptMap_[pt_ProgressionD_]->Fill(Et_Double,weight);
 	      Filled_ProgressionD = kTRUE;
 	    }	      
 	    else  Et_Double = std::min(egEt[iEG+1], (EG_Et-10));
-	    ptMap_[pt_ProgressionD_]->Fill(Et_Double);
+	    ptMap_[pt_ProgressionD_]->Fill(Et_Double,weight);
 	    Filled_ProgressionD = kTRUE;
 	  }
 	}
@@ -232,7 +239,7 @@ void ApplyIsolation::loops() {
     }
   }
 
-  double scale = (11.2456 * bunches)/nEntries_;
+  double scale = (11.2456 * bunches)/sum_weight;
   
   //Filling Rate Histos ( Single EG + Double EG)
   for(UInt_t i=0;i< ET_MAX;i++) {
@@ -857,7 +864,7 @@ void ApplyIsolation::readParameters(const std::string jfile) {
 
       if(key=="NtupleFileNameRate")        ntupleFileNameRate_= value;
       else if(key=="NtupleFileNameTurnOn")        ntupleFileNameTurnOn_= value;
-      else if(key=="WeightFileName") weightFileName_ = value.c_str();
+      else if(key=="PUReweightingHistFile") weightFileName_ = value.c_str();
       else if (key=="OptionsFileName") optionsFileName_ = value.c_str();
       else if (key=="OutputFileName")  outputFileName_ = value.c_str();
       else if (key=="EtLUTFileName")    readLUTTable(value,nBinsIEt, lutMapEt);
