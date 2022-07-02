@@ -12,8 +12,9 @@ MAXEVENTS_EFF =2500000
 printConfig=True
 runTmplName='misc/runStep3and4.tpl.sh'
 cfgTmplName='misc/Par_ApplyIsolation.dat.tpl.cfg'
-optPerParSet=10
+optPerParSet=9
 optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_V3_OPTFile.root'
+optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_sigmoid_OPTFile.root'
 pwd=os.environ['PWD']
 proxy_path=os.environ['X509_USER_PROXY']
 HOME=os.environ['HOME']
@@ -51,13 +52,24 @@ cfgTmplate=loadConfigTemplate(cfgTmplName)
 etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
 effMins=[0.1,0.2,0.4,0.5,0.6,0.7,0.8,0.9]
 etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
+checkIf0Gtr1=True
 
 # Grid B
 #etMins=[1.0+1.0*i for i in range(50) ]
 #effMins=[0.05 + 0.05*i for i in range(20)]
 #etMaxs=[1.0+1.0*i for i in range(70) ]
 
-allOptsProd=itertools.product(*[etMins,effMins,etMaxs])
+# Grid C For the sigmoid search
+turnOnPts=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
+slopeLow=[0.1,0.3, 0.8 , 1.0 , 2, 3 ,4 , 6 , 15, 30]
+slopeHigh=[0.1,0.3, 0.8 , 1.0 , 2, 3 ,4 , 6 , 15, 30]
+checkIf0Gtr1=False
+
+
+ParToScan=[etMins,effMins,etMaxs]
+ParToScan=[turnOnPts,slopeLow,slopeHigh]
+
+allOptsProd=itertools.product(*ParToScan)
 allOpts=[t for t in allOptsProd]
 nOptsMax=len(allOpts)
 print('Options in the cartesian product : ',nOptsMax)
@@ -68,8 +80,9 @@ njobs=0
 if printConfig:
     optstr=''
     for i in range(nOptsMax):
-        if allOpts[i][0] > allOpts[i][2]:
-            continue
+        if checkIf0Gtr1:
+            if allOpts[i][0] > allOpts[i][2]:
+                continue
         optId+=1
         optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
         optstr+=':'+str(allOpts[i][0])+':'+str(allOpts[i][1])+':'+str(allOpts[i][2])    
@@ -86,8 +99,9 @@ else :
     optInParset=0
     optstr=''
     for i in range(nOptsMax):
-        if allOpts[i][0] > allOpts[i][2]:
-            continue
+        if checkIf0Gtr1:
+            if allOpts[i][0] > allOpts[i][2]:
+                continue
         optId+=1
         optInParset+=1
         optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
