@@ -13,8 +13,8 @@ printConfig=True
 runTmplName='misc/runStep3and4.tpl.sh'
 cfgTmplName='misc/Par_ApplyIsolation.dat.tpl.cfg'
 optPerParSet=9
-optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_V3_OPTFile.root'
-optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_sigmoid_OPTFile.root'
+optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_122X_caloParams_v02_recaliberatedV1_gridA.root'
+optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_122X_caloParams_v02_recaliberatedV1_sigmoid.root'
 pwd=os.environ['PWD']
 proxy_path=os.environ['X509_USER_PROXY']
 HOME=os.environ['HOME']
@@ -61,8 +61,8 @@ checkIf0Gtr1=True
 
 # Grid C For the sigmoid search
 turnOnPts=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
-slopeLow=[0.1,0.3, 0.8 , 1.0 , 2, 3 ,4 , 6 , 15, 30]
-slopeHigh=[0.1,0.3, 0.8 , 1.0 , 2, 3 ,4 , 6 , 15, 30]
+slopeLow=[0.1,0.2,0.3,0.4,0.5,0.6 , 0.8 , 1.0 , 2, 4  , 10, 30]
+slopeHigh=[0.1,0.3, 0.8 , 1.0 , 3 , 6 , 10, 30]
 checkIf0Gtr1=False
 
 
@@ -104,6 +104,7 @@ else :
                 continue
         optId+=1
         optInParset+=1
+        print(optId," | | ",i," / ",nOptsMax)
         optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
         optstr+=','
         if optInParset==optPerParSet:

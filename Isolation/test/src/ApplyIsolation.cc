@@ -62,6 +62,8 @@ void ApplyIsolation::accessTree(std::string & input_filelist_rate , std::string 
   } 
   else {
 
+    //fChain = new TChain("L1UpgradeEmuTree");
+    //fChain_1= new TChain("L1EventTree");
     fChain = new TChain("l1UpgradeEmuTree/L1UpgradeTree");
     fChain_1= new TChain("l1EventTree/L1EventTree");
     static constexpr int BUF_SIZE = 256;
@@ -171,7 +173,11 @@ void ApplyIsolation::loops() {
     //    weight=w->GetBinContent(nPV_True+1);
     //    std::cout<<"weight ="<<weight<<","<<nPV_True<<std::endl;
     //    sum_weight=sum_weight+weight; 
+    if( nPV_True > 52) continue;
+    if( nPV_True < 44 ) continue;
+
     if (nEGs < 1) continue;
+	 
     for (auto it :lutProgOptVec_) {
       bool Filled_Progression= kFALSE;
       bool Filled_ProgressionD= kFALSE;
@@ -186,6 +192,14 @@ void ApplyIsolation::loops() {
       pt_ProgressionD_ +=it;
 
       TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
+     /*std::cout<<" ResultProgressionName : "<<ResultProgressionName_<<"\n";
+     for(UInt_t kk=0;kk< ResultProgressionName->GetNbinsX();kk++)
+     for(UInt_t ll=0;ll< ResultProgressionName->GetNbinsY();ll++)
+     for(UInt_t mm=0;mm< ResultProgressionName->GetNbinsZ();mm++)
+     {   
+	    IsoCut_Progression = ResultProgressionName->GetBinContent(kk,ll,mm);
+        std::cout<<"\t\tIsoCut_Progression : "<<kk<<" : "<<ll<<" : "<<mm<<" | "<<IsoCut_Progression<<"\n";
+     }*/
       
       for (UShort_t iEG=0; iEG < nEGs; ++iEG) {
 	if (egBx[iEG]!=0)   continue;
@@ -210,7 +224,6 @@ void ApplyIsolation::loops() {
 	if (NTTPos != lutMapNTT.end()) in_compressedNTT = NTTPos->second;
 	else in_compressedNTT = nBinsNTT-1;
 	IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
-	
 	if(!Filled_Progression && EG_Iso_Et<=IsoCut_Progression) {
 	  ptMap_[pt_Progression_]->Fill(EG_Et);
 	  Filled_Progression = kTRUE;
@@ -249,7 +262,12 @@ void ApplyIsolation::loops() {
       
       rateMap_[CurrentNameHisto1]->SetBinContent(i+1, ptMap_[CurrentNameHisto]->Integral(i+1,ET_MAX)*scale); //Single EG
       rateMap_[CurrentNameHisto1D]->SetBinContent(i+1, ptMap_[CurrentNameHistoD]->Integral(i+1,ET_MAX)*scale); // Double EG
+
+    if(i==10 or i==22 or i==28) 
+    {
+     std::cout<<CurrentNameHisto1<<" Et "<<i<<ptMap_[CurrentNameHisto]->Integral(i+1,ET_MAX)<<"*"<<scale<<" = "<<ptMap_[CurrentNameHisto]->Integral(i+1,ET_MAX)*scale<<"\n";
     }
+  }
   }
   
   optionsFile_ = new TFile(optionsFileName_.c_str(), "READ");
@@ -272,11 +290,11 @@ void ApplyIsolation::loops() {
     
     if(jentry%reportEvery_ == 0 )
       {
-	t_end = std::chrono::high_resolution_clock::now();
-	std::cout<<"Processing Entry in event loop (TurnOn) : "<<jentry<<" / "<<nEntries1_<<"  [ "<<100.0*jentry/nEntries1_<<"  % ]  "
-		 << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
-		 <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nEntries1_ - jentry)/(1e-9 + jentry)* 0.001
-		 <<std::endl;
+	    t_end = std::chrono::high_resolution_clock::now();
+	    std::cout<<"Processing Entry in event loop (TurnOn) : "<<jentry<<" / "<<nEntries1_<<"  [ "<<100.0*jentry/nEntries1_<<"  % ]  "
+		     << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+		     <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nEntries1_ - jentry)/(1e-9 + jentry)* 0.001
+		     <<std::endl;
       }
     if(!( isProbeLoose==1 && fabs(eleProbeEta) < 2.5  && sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2))>0.6)) continue;
     if(l1tEmuRawEt < 0.) continue;
@@ -414,8 +432,8 @@ void ApplyIsolation::loops() {
       
       double rate = FindRate(it, e);
       double rateD = FindRateD(it, e);
-      if(e==24) std::cout<<"24 :"<<rate<<std::endl;
-      if(e==10) std::cout<<"10 :"<<rateD<<std::endl;
+      if(e==24) std::cout<<turnOn_Option_ <<"  24 :"<<rate<<std::endl;
+      if(e==10) std::cout<<turnOn_Option_ <<"  10 :"<<rateD<<std::endl;
 
       th1fStore["EtForTurnons"]->Fill(turnOn_Map_[turnOn_Option_]->GetName(),e);
       th1fStore["AcceptanceForTurnons"]->Fill(turnOn_Map_[turnOn_Option_]->GetName(),acceptance);

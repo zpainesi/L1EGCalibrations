@@ -19,5 +19,8 @@ evalOptions : src/evalOptions.cc
 applyIsolation : src/ApplyIsolation.cc 
 	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
 
+L1EGRatePlotter : src/L1EGRatePlotter.cc 
+	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
+
 clean :
 	@rm *.exe

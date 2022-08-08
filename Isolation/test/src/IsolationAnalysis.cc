@@ -404,7 +404,8 @@ void IsolationAnalysis::fillLUTProgression(std::string option){
           Double_t effLowMinPt = std::stod(options[2]);
 		  Double_t reach100pc= std::stod(options[3]);
                   
-		  Double_t Efficiency_Progression = findEfficiencyProgressionSigmoid((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
+		  //Double_t Efficiency_Progression = findEfficiencyProgressionSigmoid((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
+		  Double_t Efficiency_Progression = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
 		  if(Efficiency_Progression >= 0.9999) Efficiency_Progression = 1.0001;
 		  Int_t Int_Efficiency_Progression = int(Efficiency_Progression*100);
 		  TH3F* eff_histo;		  
@@ -434,6 +435,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option){
 		  Int_t IsoCut = th->GetBinContent(i+1,j+1, k+1);
 
 		  if(iEff==100) IsoCut = 1000;
+          //std::cout<<"IsoCut for : "<<i+1<<" , "<<j+1<<" , "<<k+1<<" , "<<IsoCut<<"\n";
 		  LUT_WP.at(iEff)->SetBinContent(i+1,j+1,k+1,IsoCut);
 		}		 
 	      
