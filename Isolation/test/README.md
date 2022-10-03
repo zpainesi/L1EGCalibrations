@@ -9,5 +9,7 @@
   ```
   make applyIsolation
   ```
-## Step 5 : Deriving the optimal LUTs
+## Using condor for grid search
+ - docs to be updated 
+## Step 7 : Deriving the optimal LUTs
   * Use the notebooks in `analyzer` directory
