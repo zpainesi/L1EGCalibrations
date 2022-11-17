@@ -1,9 +1,0 @@
-executable = $(filename)
-output = $Fp(filename)run.$(Cluster).stdout
-error = $Fp(filename)run.$(Cluster).stderr
-log = $Fp(filename)run.$(Cluster).log
-+JobFlavour = "workday"
-
-queue filename matching (Condor/JobsForSteps/v2/runStep3and4.sh)
-queue filename matching (Condor/JobsForSteps/v2p*/runStep3and4.sh)
-
