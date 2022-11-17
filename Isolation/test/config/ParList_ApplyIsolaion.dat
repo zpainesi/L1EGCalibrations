@@ -1,0 +1,15 @@
+NtupleFileNameTurnOn=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/config/Ntuple_turnon.txt
+NtupleFileNameRate=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/config/Ntuple_rate.txt
+OptionsFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_eg_rawet_12X_newLayer1_OPTFile.root
+OptionsFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_defOPTFile.root
+#PUReweightingHistFile=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/ratio_file.root
+OutputFileName=HistgramFile_step3step4_12X.root
+EtLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egCompressELUT_4bit_v4.txt
+EtaLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egCompressEtaLUT_4bit_v4.txt
+NTTLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
+nTTRange=1
+LUTProgressionOptions=1_10_1_30,2_10_1_50,3_10_1_70,4_15_1_30,5_15_1_50,6_15_1_70,7_25_1_30,8_25_1_50,9_25_1_70,10_10_5_30,11_10_5_50,12_10_5_70,13_15_5_30,14_15_5_50,15_15_5_70,16_25_5_30,17_25_5_50,18_25_5_70,19_10_9_30,20_10_9_50,21_10_9_70,22_15_9_30,23_15_9_50,24_15_9_70,25_25_9_30,26_25_9_50,27_25_9_70
+MaxEntriesForRate=200000
+MaxEntriesForEfficency=200000
+FixedRate=16.7
+DoubleEGFixedRate=3.9
