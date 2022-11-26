@@ -4,10 +4,10 @@ import ROOT
 from GBR2LUT import GBR2LUT
 from GBR2LUTEmulator_test_newcal import GBR2LUTEmulator_test_newcal
 
-inputFile = "regressionLowPtForRun3MC_results.root"
+inputFile = "/home/athachay/t3store3/l1egamma/emulationstuff/CMSSW_7_6_0/src/EG_Calibrations/L1EGCalibrations/RegressionTraining/CMSSW_122XSampleFiles_PF_eT/regressionRun3MC_122XSample_v0_results.root"
 version = "v17.04.04"
 sortedShapesFile = "data/compressedSortedShapes.txt"
-regresionName ="lowPtRegressionUncorrectedLUT"
+regresionName ="pfetReg"
 outputDir="./"
 if len(sys.argv) < 2 :
     print("Please provide the results file !! ")
@@ -20,9 +20,9 @@ if len(sys.argv) > 3 :
 
 suffix="_{}.txt".format(version)
 
-print "Reading the Input Result file File as   :  ", inputFile
-print "Reading the Sorted Shapes File as       :  ", sortedShapesFile
-print "Setting the output file name as          :  ", outputDir+regresionName+suffix 
+print( "Reading the Input Result file File as   :  ", inputFile)
+print( "Reading the Sorted Shapes File as       :  ", sortedShapesFile)
+print( "Setting the output file name as          :  ", outputDir+regresionName+suffix )
 
 
 header = """\
