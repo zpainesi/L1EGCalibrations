@@ -21,7 +21,7 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
     intree->Add(input_names[i]);
 */
 
-  TFile *f=TFile::Open("/grid_mnt/t3storage3/athachay/l1egamma/data/run3MC/NTuple_crab_4841files_fromSweta.root");
+  TFile *f=TFile::Open("/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/TagAndProbe_ReEmul_EGEraF_Remul_caloParam_v0_4_default.root");
   TTree *intree=(TTree*)f->Get("Ntuplizer/TagAndProbe");
 
 
@@ -43,7 +43,7 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
   int _HoverERatio;
   int _nTT;
   int _Run2IdLevel;
- 
+  Float_t eleProbePt;
  
   //Branches in intree
   ULong64_t _nEvent;
@@ -70,6 +70,7 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
   intree->SetBranchStatus("TowerHoE",1);
   intree->SetBranchStatus("l1tEmuNTT",1);
   intree->SetBranchStatus("isProbeLoose",1);
+  intree->SetBranchStatus("eleProbePt",1);
 
   intree->SetBranchAddress("EventNumber",&_nEvent);
   intree->SetBranchAddress("RunNumber",&_nRun);
@@ -81,6 +82,7 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
   intree->SetBranchAddress("TowerHoE",&_ele_L1Stage2_emul_hOverERatio);
   intree->SetBranchAddress("l1tEmuNTT",&_ele_L1Stage2_emul_nTT);
   intree->SetBranchAddress("isProbeLoose",&_ele_LooseIdDecisions);
+  intree->SetBranchAddress("eleProbePt",&eleProbePt);
 
   tree->Branch("Run",&_run,"_run/I");
   tree->Branch("Event",&_event,"_event/l");
@@ -93,6 +95,7 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
   tree->Branch("target2",&_target,"_target2/F");
   tree->Branch("HoverERatio",&_HoverERatio,"_HoverERatio/I");
   tree->Branch("nTT",&_nTT,"_nTT/I");
+  tree->Branch("eleProbePt",&eleProbePt,"eleProbePt/F");
   tree->Branch("Run2IdLevel",&_Run2IdLevel,"_Run2IdLevel/I");
 
 
@@ -102,7 +105,6 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
   Long64_t nentries = intree->GetEntries();
   Long64_t nentries_beg = 0;
   std::cout<<" Available total "<<nentries<<" \n";
-  nentries_beg = nentries*0.8;
   std::cout<<" Processing total "<<nentries - nentries_beg<<" \n";
 
   
@@ -138,8 +140,11 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
 	    _ieta           = _ele_L1Stage2_emul_ieta;
 	    _E              = _ele_L1Stage2_emul_rawEt;
 	    _shape          = _ele_L1Stage2_emul_shape;
-	    _target         = _ele_sclEt/(0.5*_E);
-	    _target2         = _ele_sclEt/(_E);
+	     if( abs(_ieta) <= 17)   
+	        _target         = _ele_sclEt/(0.5*_E);
+         else
+            _target         = eleProbePt/(0.5*_E);
+	    _target2        = _ele_sclEt/(_E);
 	    _HoverERatio    = _ele_L1Stage2_emul_hOverERatio;
 	    _nTT            = _ele_L1Stage2_emul_nTT;
         

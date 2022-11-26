@@ -6,9 +6,8 @@ import operator
 compressedIetaFile  = "data/egCompressEtaLUT_4bit_v4.txt"
 compressedEFile     = "data/egCompressELUT_4bit_v4.txt"
 compressedShapeFile = "data/egCompressShapesLUT_calibr_4bit_v4.txt"
-inputFileName       = "low_pT_regressionTrainerFile.root"
-#outputFileName      = "compressed_low_pT_regressionTrainerFile.root"
-outputFileName      = "temp.root"
+inputFileName       = "regressionTrainerFile_test.root"
+outputFileName      = "compressed_regressionTrainerFile_PFEt_data.root"
 treeName = "eIDSimpleTree"
 
 
@@ -29,7 +28,7 @@ def sortShapes(shapeHisto):
     for b in range(1,nbins+1):
         numbers[b-1] = shapeHisto.GetBinContent(b)
     #
-    sortedShapes = sorted(numbers.iteritems(), key=operator.itemgetter(1))
+    sortedShapes = sorted(numbers.items(), key=operator.itemgetter(1))
     #
     zeros = []
     nonzeros = []
@@ -52,7 +51,7 @@ def sortShapes(shapeHisto):
     with open("data/compressedSortedShapes.txt", 'w') as f:
         for shape in range(0,128):
             sortedShape = lut[shape]
-            print >>f, shape, sortedShape
+            f.write(str(shape) + ' ' + str(sortedShape) +'\n' )
     return lut
 
 
@@ -89,11 +88,11 @@ data = {"Run"    :array.array('i',[0]),
        }
 
 
-print "First pass: reading tree to build compressed shape histo"
+print( "First pass: reading tree to build compressed shape histo")
 nentries = inputTree.GetEntriesFast()
-for e in xrange(nentries):
+for e in range(nentries):
     if e%2000==0:
-        print "\t entry = ",e," / ",nentries,"  [ ",100.0*e/nentries ," ] "
+        print( "\t entry = ",e," / ",nentries,"  [ ",100.0*e/nentries ," ] ")
     inputTree.GetEntry(e)
     data["Run"][0]    = int(inputTree.Run)
     data["Event"][0]  =  int(inputTree.Event)
@@ -112,7 +111,6 @@ for e in xrange(nentries):
     data["compressedshape"][0] = compressedShape[data["shape"][0]]
     shapeHisto.Fill(data["compressedshape"][0])
     #outputTree.Fill()
-
 ## Sort compressed shapes and write in file
 compressedSortedShape = sortShapes(shapeHisto)
 
@@ -124,10 +122,10 @@ for name, a in data.items():
     outputTree.Branch(name, a, "{0}/{1}".format(name, a.typecode.upper()))
 shapeHisto.Write()
 
-print "Second pass: reading tree for filling output tree"
-for e in xrange(nentries):
+print( "Second pass: reading tree for filling output tree")
+for e in range(nentries):
     if e%2000==0:
-        print "\t entry = ",e," / ",nentries,"  [ ",100.0*e/nentries ," ] "
+        print( "\t entry = ",e," / ",nentries,"  [ ",100.0*e/nentries ," ] ")
     inputTree.GetEntry(e)
     data["Run"][0]    = int(inputTree.Run)
     data["Event"][0]  =  int(inputTree.Event)
