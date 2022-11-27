@@ -1,1 +1,1 @@
-/home/athachay/t3store3/l1egamma/data/run3MC/TagAndProbe_EtCaliberatedReEmulation_122Xsample_CaloParams_2022_v0_2_1203pre6_IT129_v1p0.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/TagAndProbe_ReEmul_EGEraF_Remul_caloParam_v0_4_recalib_v2p1_splitted.root

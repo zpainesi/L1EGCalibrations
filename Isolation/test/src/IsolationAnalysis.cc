@@ -199,9 +199,9 @@ void IsolationAnalysis::analyse() {
     if( fabs(eleProbeEta) >= 2.5) continue;
     if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
     
+    pt_all->Fill(et);
     if ( et < 0) continue;     
     
-    pt_all->Fill(et);
     eta_all->Fill(eta);
     nTT_all->Fill(ntt);
     

@@ -140,10 +140,10 @@ void makeRegressionTree(){ //vector<TString> input_names, TString output_name){
 	    _ieta           = _ele_L1Stage2_emul_ieta;
 	    _E              = _ele_L1Stage2_emul_rawEt;
 	    _shape          = _ele_L1Stage2_emul_shape;
-	     if( abs(_ieta) <= 17)   
+	     //if( abs(_ieta) <= 17)   
 	        _target         = _ele_sclEt/(0.5*_E);
-         else
-            _target         = eleProbePt/(0.5*_E);
+         //else
+         //   _target         = eleProbePt/(0.5*_E);
 	    _target2        = _ele_sclEt/(_E);
 	    _HoverERatio    = _ele_L1Stage2_emul_hOverERatio;
 	    _nTT            = _ele_L1Stage2_emul_nTT;

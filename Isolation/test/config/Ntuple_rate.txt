@@ -1,1 +1,1 @@
-/home/athachay/t3store3/l1egamma/data/run3MC/SingleNeutrino_122X_CMSSW_12_3_0pre6.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/L1Ntuple_EGEraF_Ephimeral_361468_Remul_caloParam_v0_4_recalib.root
