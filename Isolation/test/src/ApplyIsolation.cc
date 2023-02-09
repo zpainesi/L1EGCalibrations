@@ -62,8 +62,10 @@ void ApplyIsolation::accessTree(std::string & input_filelist_rate , std::string 
   } 
   else {
 
-    fChain = new TChain("l1UpgradeEmuTree/L1UpgradeTree");
-    fChain_1= new TChain("l1EventTree/L1EventTree");
+    //fChain = new TChain("l1UpgradeEmuTree/L1UpgradeTree");
+    //fChain_1= new TChain("l1EventTree/L1EventTree");
+    fChain = new TChain("L1UpgradeEmuTree");
+    fChain_1= new TChain("L1EventTree");
     static constexpr int BUF_SIZE = 256;
     char buf[BUF_SIZE];
     while (myFileRate.getline(buf, BUF_SIZE, '\n')) {  // Pops off the newline character                                     
@@ -86,7 +88,8 @@ void ApplyIsolation::accessTree(std::string & input_filelist_rate , std::string 
     fChain1 = 0;
   } 
   else {
-    fChain1 = new TChain("Ntuplizer/TagAndProbe");
+    //fChain1 = new TChain("Ntuplizer/TagAndProbe");
+    fChain1 = new TChain("test");
     static constexpr int BUF_SIZE = 256;
     char buf[BUF_SIZE];
     while (myFileTurnOn.getline(buf, BUF_SIZE, '\n')) {  // Pops off the newline character                                
@@ -172,9 +175,10 @@ void ApplyIsolation::loops() {
 		 <<std::endl;
       }
     weight=0.0;
-    weight=w->GetBinContent(nPV_True+1);
-    //if( nPV_True <= 52 and nPV_True>=44 ) weight=1.0;
-    //else continue;
+    //weight=w->GetBinContent(nPV_True+1);
+    //std::cout<<nPV_True <<" <- nPV_True \n";
+    if( nPV_True >= 49 and nPV_True<=55 ) weight=1.0;
+    else continue;
     //std::cout<<"weight = "<<weight<<" , "<<nPV_True<<std::endl;
     sum_weight+=weight;
 
@@ -193,7 +197,8 @@ void ApplyIsolation::loops() {
       pt_ProgressionD_ +=it;
 
       TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
-      
+      if( not ResultProgressionName )
+        std::cout<<" Did not find : "<< ResultProgressionName_ <<"\n";
       for (UShort_t iEG=0; iEG < nEGs; ++iEG) {
 	if (egBx[iEG]!=0)   continue;
 	float EG_Et  = egEt[iEG];
@@ -222,7 +227,6 @@ void ApplyIsolation::loops() {
 	  ptMap_[pt_Progression_]->Fill(EG_Et);
 	  Filled_Progression = kTRUE;
 	}
-	
 	if(nEGs >=2 && !Filled_ProgressionD){ 
 	  if(EG_Et > 10. && EG_Iso_Et<=IsoCut_Progression) {
 	    if(iEG==0) {
@@ -285,9 +289,17 @@ void ApplyIsolation::loops() {
 		 <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nEntries1_ - jentry)/(1e-9 + jentry)* 0.001
 		 <<std::endl;
       }
+    weight=1.0;
+    //weight=w->GetBinContent(nPV_True+1);
+    //if( nPV_True <= 49 and nPV_True>=55 ) weight=1.0;
+    //else continue;
+    
     if(!( isProbeLoose==1 && fabs(eleProbeEta) < 2.5  && sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2))>0.6)) continue;
-    if(l1tEmuRawEt < 0.) continue;
+    
+
     pT_all->Fill(eleProbeSclEt);
+    if(l1tEmuRawEt < 0.) continue;
+
     sum++;
     
     std::map<short, short>::iterator EtaPos = lutMapEta.find(abs(l1tEmuTowerIEta));
@@ -315,7 +327,10 @@ void ApplyIsolation::loops() {
 	PtPassName_ += std::to_string(e);
 	
 	TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
-	IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
+    if( not ResultProgressionName )
+        std::cout<<" Did not find : "<< ResultProgressionName_ <<"\n";
+	std::cout<<in_compressediEta+1<<" | "<<in_compressediEt+1<<" | "<<in_compressedNTT+1<<"\n";
+    IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
 	
 	if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression)	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
 	
@@ -381,7 +396,7 @@ void ApplyIsolation::loops() {
 	    Nvtx_fail_Map_[NvtxFail_]->Fill(Nvtx,1);
 	    eta_fail_Map_[EtaFail_]->Fill(eleProbeEta,1);
 	  }
-	}
+	 }
     }
     // using Run2 LUT [***Make it generalised]             
     if(hasL1Emu_26==1) pt_pass_Map_Run2_["pt_pass_Et_26"]->Fill(eleProbeSclEt);

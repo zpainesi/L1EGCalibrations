@@ -130,9 +130,13 @@ void L1EGRatePlotter::loop()
 
 		if (EG_Et >= Et_Threshold+10) flag_Double = true;
 		nPassed_Double++;
-		
-		if (EG_Iso==1 || EG_Iso==3) nPassed_TightIso_Single++;
-		if (EG_Iso==2 || EG_Iso==3) {
+		std::cout<<EG_Iso<<"\n";
+		if (EG_Iso==1 || EG_Iso==3) {
+            nPassed_TightIso_Single++;
+                std::cout<<" isTight \n";
+		}
+        if (EG_Iso==2 || EG_Iso==3) {
+                std::cout<<" isLoose \n";
 		  nPassed_LooseIso_Single++;
 		  if (EG_Et >= Et_Threshold+10) flag_LooseIso_Double = true;
 		  nPassed_LooseIso_Double++;	      
@@ -253,6 +257,7 @@ void L1EGRatePlotter::readParameters(const std::string jfile) {
       // enable '#' and '//' style comments
       if (line.substr(0,1) == "#" || line.substr(0,2) == "//") continue;
       std::vector<std::string> tokens;
+      std::cout<<line<<"\n";
       tokenize(line,tokens,"=");
       std::cout << tokens[0] << ":" << tokens[1] << std::endl;
       std::string key   = tokens.at(0);
