@@ -1,5 +1,11 @@
 # Deriving Isolation LUTs
-
+## Basic Setup
+```
+cmsrel CMSSW_X_Y_Z   # Any X > 12 will do
+cd CMSSW_X_Y_Z
+git clone https://github.com/ats2008/L1EGCalibrations.git
+cd L1EGCalibrations/Isolation/test/
+```
 ## Introduction
 #### 1. Computation of the isolation cut for a given flat efficiency.
 The isolation energy (E_iso) is defined as the difference between the energy deposit in a 6x9 TT window (E_6x9) and the raw energy deposited by the tau/EG (ET_raw) . E_iso depends of ET_raw, iEta and nTT (being this last one a pileup estimator for taus and EG). We reject the background by requiring that the tau is isolated, e.g., this E_iso is smaller than a certain value (E_isocut). The value of the isolation cut is chosen accordingly to a target signal efficiency, that is constant in ieta and nTT but can be varied as a function of ET. It is computed for a given flat efficiency with simulated events in exclusive intervals of the isolation input variables ET_raw, iEta and nTT.
