@@ -17,9 +17,9 @@
 #include <TBranchElement.h>
 #include <fstream>
 
-void MakeEGIsoLUT(string option, bool isOption, bool includeCompression)
+void MakeEGIsoLUT(string option,TString infilename, bool isOption=false, bool includeCompression=false)
 {
-  TFile* fLUTS = new TFile("HistgramFile_step2.root");
+  TFile* fLUTS = new TFile( infilename );
   TH3F* LUT ;
  
   fLUTS->cd("Step2Histos");
@@ -27,7 +27,7 @@ void MakeEGIsoLUT(string option, bool isOption, bool includeCompression)
   if(isOption) LUT = (TH3F*) gDirectory->Get(Option);
   else { 
     int Option_=std::atoi(option.c_str());
-    TString Option="LUT_WP"+to_string(Option_);
+    //TString Option="LUT_WP"+to_string(Option_);
     LUT = (TH3F*) gDirectory->Get(Option);
   }
   if(!LUT) std::cout<<"leave";
