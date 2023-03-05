@@ -138,6 +138,7 @@ void IsolationAnalysis::analyse() {
 
   std::cout << "  Total Number of Histograms " << Histos_PerBin.size() << std::endl;
   Int_t NumberOfHistosWithLowStats = 0;
+
   Int_t c=0;
   t_start = std::chrono::high_resolution_clock::now();
   t_end = std::chrono::high_resolution_clock::now();
@@ -155,6 +156,7 @@ void IsolationAnalysis::analyse() {
       continue;
     }
     if(th->GetEntries()<40){
+      std::cout<<"Low stat Bin : "<<ibin_et<<" , "<<ibin_eta<<" , "<< ibin_ntt <<" , "<< th->GetEntries()<<"\n";
       NumberOfHistosWithLowStats++;
     }
     for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff){

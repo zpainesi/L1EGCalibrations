@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/TagAndProbe_ReEmul_EGEraF_Remul_caloParam_v0_4_recalib_v2p1_splitted.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/DYToLL_TandP_calo_v6_ZS0p0_v1.root

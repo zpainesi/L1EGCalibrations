@@ -13,12 +13,14 @@ printConfig=True
 runTmplName='misc/runStep3and4.tpl.sh'
 cfgTmplName='misc/Par_ApplyIsolation.dat.tpl.cfg'
 optPerParSet=9
+optPerParSet=10
 
 #optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_V3_OPTFile.root'
 #optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_sigmoid_OPTFile.root'
-
 #optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_122X_caloParams_v02_recaliberatedV1_gridA.root'
-optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/DataDerivedIso/HistgramFile_step2.root'
+#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/DataDerivedIso/HistgramFile_step2.root'
+#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedAugmented_OPTFile.root'
+optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedDefault_OPTFile.root'
 
 pwd=os.environ['PWD']
 proxy_path=os.environ['X509_USER_PROXY']
