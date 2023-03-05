@@ -37,7 +37,7 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
   ./isolationAnalysis.exe ParList_IsoAna.dat do_1
   ```
 
-  Since `step 1` tahes a long time to run, is a covininat methord to do `step 1` once and reuse its output for defining the LUT histogram maps.
+  Since `step 1` takes a long time to run, is a covininat methord to do `step 1` once and reuse its output for defining the LUT histogram maps.
 
   The Configuration file is described as below :
   ```
