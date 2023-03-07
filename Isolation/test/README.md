@@ -82,3 +82,12 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
    ```
 ## Step 7 : Deriving the optimal LUTs
   * Use the notebooks in `analyzer` directory
+
+# Augmenting to make dataset flat in nTT
+
+ - See the `analyzers/Augumentation.ipynb` for more details
+ - use the script `python/augumentDataset_flatInNTT.py` for making the augmented dataset
+    ```bash
+     python python/augumentDataset_flatInNTT.py -i workarea/DYToLL_TandP_calo_v6_ZS0p0_v1.root -o workarea/results/dataAugmentation_mc_v1/ --export
+    ```
+
