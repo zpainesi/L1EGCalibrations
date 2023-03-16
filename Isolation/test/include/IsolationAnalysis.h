@@ -75,6 +75,9 @@ public :
   UInt_t nBinsIEta;
   UInt_t nBinsIEt; 
   UInt_t nBinsnTT;
+
+  UInt_t tmpFitMin;
+  UInt_t tmpFitMax;
   
   TProfile* hprof_IEt;
   TProfile* hprof_IEta;
@@ -105,6 +108,7 @@ public :
   
   std::vector<std::string> lutProgOptVec_;
   std::map<std::string, TH3F*> lutProgHistoMap_;
+  std::map<std::string, TH3F*> lutProgHistoMap_v2_;
   std::vector<TH3F*> LUT_WP ;
   
   std::vector<short> lutIEtaVec_;

@@ -192,12 +192,12 @@ void IsolationAnalysis::analyse() {
         }
     }
 
-    // Obtaining the fits and projections from the histogram 
+    // Obtaining the fits and projections from the histogram
     int iMax=16*16*100;
     t_start = std::chrono::high_resolution_clock::now();
     t_end = std::chrono::high_resolution_clock::now();
     c=0;
-    for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff) 
+    for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff)
     {
         std::cout<<"\t Fitting loop ! processing for efficiency : "<<iEff<<"\n";
         for ( short iet =0 ; iet < 16; iet++)
@@ -212,7 +212,7 @@ void IsolationAnalysis::analyse() {
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
                 projection->Fit(projection_fit,"Q");
                 projection_fit->Write();
-                
+
                 c++;
                 if(c%100 == 0)
                 {
@@ -223,14 +223,14 @@ void IsolationAnalysis::analyse() {
                              <<std::endl;
                 }
 
-            }       
+            }
         }
 
     }
     /*
           // for each bin in eta/e project icoCut on nTT and make a fit of it
           // this approach makes the isoCut strictly increasing and less dependent on statistic fluctuations
-          
+
           for(UInt_t i = 0 ; i < NbinsIEta-1 ; ++i)
           {
             for(UInt_t j = 0 ; j < NbinsIEt-1 ; ++j)
@@ -248,69 +248,69 @@ void IsolationAnalysis::analyse() {
 
 
 
-   */
+    */
     t_start = std::chrono::high_resolution_clock::now();
     if(false)
-    for (Long64_t jentry=0; jentry<nentries; jentry++) {
+        for (Long64_t jentry=0; jentry<nentries; jentry++) {
 
-        if(jentry%reportEvery == 0 )
-        {
-            t_end = std::chrono::high_resolution_clock::now();
-            std::cout<<"Loop 3/3 : Processing Entry in event loop : "<<jentry<<" / "<<nentries<<"  [ "<<100.0*jentry/nentries<<"  % ]  "
-                     << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
-                     <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nentries - jentry)/(1e-9 + jentry)* 0.001
-                     <<std::endl;
-        }
-        if (jentry < 0) break;
-
-        nb = fChain->GetEntry(jentry);
-        nbytes += nb;
-
-        if( isProbeLoose==0 ) continue;
-        if( fabs(eleProbeEta) >= 2.5) continue;
-        if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
-
-        pt_all->Fill(et);
-        if ( et < 0) continue;
-
-        eta_all->Fill(eta);
-        nTT_all->Fill(ntt);
-
-        TString Name_Histo = getHistoName(eta,et, ntt);
-
-        short ibin_eta;
-        short ibin_et;
-        short ibin_ntt;
-
-        getHistoBin(Name_Histo, ibin_eta,  ibin_et, ibin_ntt);
-
-        std::map<TString,TH1F*>::iterator iPos = Histos_PerBin.find(Name_Histo);
-        if (iPos == Histos_PerBin.end()) continue;
-        TH1F* th = iPos->second;
-        if (!th->GetEntries()) continue;
-        float eff_at_isolation = th->Integral(1,iso)/th->Integral(1,100+1);
-
-        for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff) 	{
-            std::map<Int_t,std::map<TString,Int_t>>::iterator jPos = IsoCut_PerEfficiency_PerBin.find(iEff);
-
-            if (jPos == IsoCut_PerEfficiency_PerBin.end()) continue;
-            std::map<TString,Int_t>::iterator kPos = jPos->second.find(Name_Histo);
-            if (kPos == jPos->second.end())  continue;
-            if(iso<=kPos->second) {
-                eta_pass_efficiency[iEff]->Fill(eta);
-                pt_pass_efficiency[iEff]->Fill(et);
-                nTT_pass_efficiency[iEff]->Fill(ntt);
+            if(jentry%reportEvery == 0 )
+            {
+                t_end = std::chrono::high_resolution_clock::now();
+                std::cout<<"Loop 3/3 : Processing Entry in event loop : "<<jentry<<" / "<<nentries<<"  [ "<<100.0*jentry/nentries<<"  % ]  "
+                         << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                         <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nentries - jentry)/(1e-9 + jentry)* 0.001
+                         <<std::endl;
             }
-            if(iso<=IsoCut_PerBin[iEff]->GetBinContent(ibin_eta+1, ibin_et+1, ibin_ntt+1)) pt_pass_efficiency_TH3[iEff]->Fill(et);
-            //      if (eff_at_isolation <= iEff*0.01  ){
-            //	eta_pass_efficiency[iEff]->Fill(eta);
-            //	pt_pass_efficiency[iEff]->Fill(et);
-            //	nTT_pass_efficiency[iEff]->Fill(ntt);
-            //
-            //	IsoCut_PerBin[iEff]->SetBinContent(ibin_eta+1, ibin_et+1, ibin_ntt+1, isolation);
-            //	}
+            if (jentry < 0) break;
+
+            nb = fChain->GetEntry(jentry);
+            nbytes += nb;
+
+            if( isProbeLoose==0 ) continue;
+            if( fabs(eleProbeEta) >= 2.5) continue;
+            if( sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2)) < 0.6 ) continue;
+
+            pt_all->Fill(et);
+            if ( et < 0) continue;
+
+            eta_all->Fill(eta);
+            nTT_all->Fill(ntt);
+
+            TString Name_Histo = getHistoName(eta,et, ntt);
+
+            short ibin_eta;
+            short ibin_et;
+            short ibin_ntt;
+
+            getHistoBin(Name_Histo, ibin_eta,  ibin_et, ibin_ntt);
+
+            std::map<TString,TH1F*>::iterator iPos = Histos_PerBin.find(Name_Histo);
+            if (iPos == Histos_PerBin.end()) continue;
+            TH1F* th = iPos->second;
+            if (!th->GetEntries()) continue;
+            float eff_at_isolation = th->Integral(1,iso)/th->Integral(1,100+1);
+
+            for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff) 	{
+                std::map<Int_t,std::map<TString,Int_t>>::iterator jPos = IsoCut_PerEfficiency_PerBin.find(iEff);
+
+                if (jPos == IsoCut_PerEfficiency_PerBin.end()) continue;
+                std::map<TString,Int_t>::iterator kPos = jPos->second.find(Name_Histo);
+                if (kPos == jPos->second.end())  continue;
+                if(iso<=kPos->second) {
+                    eta_pass_efficiency[iEff]->Fill(eta);
+                    pt_pass_efficiency[iEff]->Fill(et);
+                    nTT_pass_efficiency[iEff]->Fill(ntt);
+                }
+                if(iso<=IsoCut_PerBin[iEff]->GetBinContent(ibin_eta+1, ibin_et+1, ibin_ntt+1)) pt_pass_efficiency_TH3[iEff]->Fill(et);
+                //      if (eff_at_isolation <= iEff*0.01  ){
+                //	eta_pass_efficiency[iEff]->Fill(eta);
+                //	pt_pass_efficiency[iEff]->Fill(et);
+                //	nTT_pass_efficiency[iEff]->Fill(ntt);
+                //
+                //	IsoCut_PerBin[iEff]->SetBinContent(ibin_eta+1, ibin_et+1, ibin_ntt+1, isolation);
+                //	}
+            }
         }
-    }
     outputFile_->cd();
     outputFile_->cd("Step1Histos");
     for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff) {
@@ -422,6 +422,17 @@ void IsolationAnalysis::bookHistograms(std::string option)
                                  lutIEtVec_.size()-1, 0, lutIEtVec_.size()-1,
                                  lutnTTVec_.size()-1, 0, lutnTTVec_.size()-1);
             lutProgHistoMap_.insert({it, th3});
+
+            // Booking the Extrapolated LUT option
+            hname = "LUT_Progression_v2_";
+            hname += options[0];
+            th3 = new TH3F(hname,hname,
+                           lutIEtaVec_.size()-1, 0, lutIEtaVec_.size()-1,
+                           lutIEtVec_.size()-1, 0, lutIEtVec_.size()-1,
+                           lutnTTVec_.size()-1, 0, lutnTTVec_.size()-1);
+            lutProgHistoMap_v2_.insert({it, th3});
+
+
         }
         for(UInt_t iEff = 0 ; iEff <= 100 ; ++iEff)
         {
@@ -445,16 +456,46 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
         std::cout<<"Filling LUT only"<<std::endl;
     }
     std::cout<<"Filling LUT"<<std::endl;
-    Int_t maxEntriesForLUT=(lutIEtaVec_.size()-1)*(lutIEtVec_.size()-1)*(lutnTTVec_.size()-1);
+    Int_t maxEntriesForLUT=(lutIEtaVec_.size()-1)*(lutIEtVec_.size()-1)*(lutProgHistoMap_.size());
     Int_t count=0;
+
+
     auto  t_start = std::chrono::high_resolution_clock::now();
     auto  t_end = std::chrono::high_resolution_clock::now();
-    for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
+    for (auto it : lutProgHistoMap_)
     {
+
+        std::string tmp_string = it.first;
+        std::vector<std::string> options;
+        tokenize(tmp_string,options,":");
+        Double_t minPt =  std::stod(options[1]);
+        Double_t effLowMinPt = std::stod(options[2]);
+        Double_t reach100pc= std::stod(options[3]);
+
+
         for(Int_t j = 0 ; j < lutIEtVec_.size()-1 ; j++)
         {
-            for(Int_t k = 0 ; k < lutnTTVec_.size()-1; k++)
+
+            // Obtaining the Efficiency valut from the LUT option
+            Double_t Efficiency_Progression = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
+
+            if(Efficiency_Progression >= 0.9999) Efficiency_Progression = 1.0001;
+            Int_t Int_Efficiency_Progression = int(Efficiency_Progression*100);
+
+            // Loading corresponding Efficiency WP
+            TH3F* eff_histo;
+            if(option == "do_2") {
+                TString WPName = "Eff_";
+                WPName +=std::to_string(Int_Efficiency_Progression);
+                eff_histo = dynamic_cast<TH3F*>(WPFile->Get("Step1Histos/"+WPName));
+                //std::cout<<WPName<<std::endl;
+            }
+            else
+                eff_histo = IsoCut_PerBin[Int_Efficiency_Progression];
+
+            for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
             {
+
                 count++;
                 if(count%200==0)
                 {
@@ -465,49 +506,44 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                              <<std::endl;
 
                 }
-                for (auto it : lutProgHistoMap_)
+
+                // Loading the fit for correponding [ Eff , Et , Eta ]
+                TString fitName = "fit_pz_"+to_string(Int_Efficiency_Progression)+"_eta"+to_string(i)+"_e"+to_string(j);
+                TF1* currentFit = (TF1*) (WPFile->Get("Step1Histos/"+fitName));
+
+                if ( not currentFit)
                 {
-
-                    std::string tmp_string = it.first;
-                    std::vector<std::string> options;
-                    tokenize(tmp_string,options,":");
-                    Double_t minPt =  std::stod(options[1]);
-                    Double_t effLowMinPt = std::stod(options[2]);
-                    Double_t reach100pc= std::stod(options[3]);
-
-                    Double_t Efficiency_Progression = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
-                    if(Efficiency_Progression >= 0.9999) Efficiency_Progression = 1.0001;
-                    Int_t Int_Efficiency_Progression = int(Efficiency_Progression*100);
-                    TH3F* eff_histo;
-                    if(option == "do_2") {
-                        TString WPName = "Eff_";
-                        WPName +=std::to_string(Int_Efficiency_Progression);
-                        eff_histo = dynamic_cast<TH3F*>(WPFile->Get("Step1Histos/"+WPName));
-                        //std::cout<<WPName<<std::endl;
-                    }
-                    else
-                        eff_histo = IsoCut_PerBin[Int_Efficiency_Progression];
+                    std::cout<<" Fit not found for "<< fitName<<" ! \n \t Exiting !!  \n";
+                    exit(1);
+                }
+                for(Int_t k = 0 ; k < lutnTTVec_.size()-1; k++)
+                {
                     Int_t IsoCut_Progression = eff_histo->GetBinContent(i+1,j+1, k+1);
                     if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
                     it.second->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
+
+                    // Filling from the Fit extrapolation
+                    IsoCut_Progression = Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k + 1 );
+                    lutProgHistoMap_v2_[it.first]->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
+
+                    // Commenting out non-necessary histograms
+                    // for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff)
+                    // {
+                    //     TH3F* th;
+                    //     if(option == "do_2") {
+                    //         TString WPName1 = "Eff_";
+                    //         WPName1 +=TString::Itoa(iEff,10);
+                    //         th = dynamic_cast<TH3F*>(WPFile->Get("Step1Histos/"+WPName1));
+                    //     }
+                    //     else
+                    //         th= IsoCut_PerBin[iEff];
+                    //     Int_t IsoCut = th->GetBinContent(i+1,j+1, k+1);
+
+                    //     if(iEff==100) IsoCut = 1000;
+                    //     LUT_WP.at(iEff)->SetBinContent(i+1,j+1,k+1,IsoCut);
+                    // }
+
                 }
-
-                for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff)
-                {
-                    TH3F* th;
-                    if(option == "do_2") {
-                        TString WPName1 = "Eff_";
-                        WPName1 +=TString::Itoa(iEff,10);
-                        th = dynamic_cast<TH3F*>(WPFile->Get("Step1Histos/"+WPName1));
-                    }
-                    else
-                        th= IsoCut_PerBin[iEff];
-                    Int_t IsoCut = th->GetBinContent(i+1,j+1, k+1);
-
-                    if(iEff==100) IsoCut = 1000;
-                    LUT_WP.at(iEff)->SetBinContent(i+1,j+1,k+1,IsoCut);
-                }
-
             }
         }
     }
