@@ -1,5 +1,6 @@
 #include <string>
 #include <TH2.h>
+#include <TF1.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TGraphAsymmErrors.h>
@@ -8,10 +9,16 @@
 #include <fstream>
 #include "IsolationAnalysis.h"
 
+using namespace std;
+
 IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
     reportEvery=5000;
     maxEntries=-1;
     readParameters(inputFileName);
+
+    tmpFitMin = 6 ;
+    tmpFitMax = 25;
+
     if (ntupleFileName_.size() == 0) {
         std::cout << " Inputfile list missing !!!" << ntupleFileName_ << std::endl;
         return;
@@ -157,7 +164,7 @@ void IsolationAnalysis::analyse() {
             continue;
         }
         if(th->GetEntries()<40) {
-            std::cout<<"Low stat Bin : "<<ibin_et<<" , "<<ibin_eta<<" , "<< ibin_ntt <<" , "<< th->GetEntries()<<"\n";
+            //std::cout<<"Low stat Bin : "<<ibin_et<<" , "<<ibin_eta<<" , "<< ibin_ntt <<" , "<< th->GetEntries()<<"\n";
             NumberOfHistosWithLowStats++;
         }
         for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff) {
@@ -171,6 +178,8 @@ void IsolationAnalysis::analyse() {
                     }
                 }
             }
+
+
         }
         c++;
         if(c%200 == 0)
@@ -183,7 +192,65 @@ void IsolationAnalysis::analyse() {
         }
     }
 
+    // Obtaining the fits and projections from the histogram 
+    int iMax=16*16*100;
     t_start = std::chrono::high_resolution_clock::now();
+    t_end = std::chrono::high_resolution_clock::now();
+    c=0;
+    for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff) 
+    {
+        std::cout<<"\t Fitting loop ! processing for efficiency : "<<iEff<<"\n";
+        for ( short iet =0 ; iet < 16; iet++)
+        {
+            for (short ieta=0; ieta < 16 ; ieta++ )
+            {
+                TString projName = "pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
+                TH1D* projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, iet+1, iet+1, ieta+1, ieta+1, "e");
+                projection->Write();
+
+                TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
+                TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
+                projection->Fit(projection_fit,"Q");
+                projection_fit->Write();
+                
+                c++;
+                if(c%100 == 0)
+                {
+                    t_end = std::chrono::high_resolution_clock::now();
+                    std::cout<<"Loop 3/3 : Processing Hist in event loop : "<<c<<" / "<<iMax <<"  [ "<<100.0*c/iMax<<"  % ]  "
+                             << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                             <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( iMax - c)/(1e-9 + c )* 0.001
+                             <<std::endl;
+                }
+
+            }       
+        }
+
+    }
+    /*
+          // for each bin in eta/e project icoCut on nTT and make a fit of it
+          // this approach makes the isoCut strictly increasing and less dependent on statistic fluctuations
+          
+          for(UInt_t i = 0 ; i < NbinsIEta-1 ; ++i)
+          {
+            for(UInt_t j = 0 ; j < NbinsIEt-1 ; ++j)
+              {
+                TString projName = "pz_"+to_string(iEff)+"_eta"+to_string(i)+"_e"+to_string(j);
+                TH1D* projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, i+1, i+1, j+1, j+1, "e");
+                projection->Write();
+
+                TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(i)+"_e"+to_string(j);
+                TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", FitMin, FitMax);
+                projection->Fit(projection_fit);
+                projection_fit->Write();
+              }
+          }
+
+
+
+   */
+    t_start = std::chrono::high_resolution_clock::now();
+    if(false)
     for (Long64_t jentry=0; jentry<nentries; jentry++) {
 
         if(jentry%reportEvery == 0 )
@@ -505,6 +572,7 @@ void IsolationAnalysis::saveHistograms() {
           if (it.second) it.second->Delete();
         }*/
 
+        outputFile_->Purge();
         outputFile_->Write();
         outputFile_->Close();
     }
