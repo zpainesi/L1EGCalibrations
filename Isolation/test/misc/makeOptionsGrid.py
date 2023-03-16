@@ -1,17 +1,29 @@
 #!/usr/bin/env python
 from __future__ import print_function 
 import os,sys,itertools
-
+import argparse
 
 """
 python misc/make...py
 """
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-c',"--cfgFile", help="Template Config File",default='misc/Par_ApplyIsolation.dat.tpl.cfg')
+parser.add_argument('-t',"--tag", help="Arguments for the tag",default='')
+parser.add_argument('-r',"--runTemplate", help="Template Run File",default='misc/runStep3and4.tpl.sh')
+parser.add_argument("-p","--printConfig", help="print only grid values",default=False,action='store_true')
+parser.add_argument("--opt", help="options file",default=None)
+parser.add_argument("--doStep2", help="Print the step 2 option string ",action='store_true')
+
+args = parser.parse_args()
+
 MAXEVENTS_RATE=-1
 MAXEVENTS_EFF =2500000
-printConfig=True
-runTmplName='misc/runStep3and4.tpl.sh'
-cfgTmplName='misc/Par_ApplyIsolation.dat.tpl.cfg'
+printConfig=args.printConfig
+runTmplName=args.runTemplate
+tag=args.tag
+cfgTmplName=args.cfgFile
 optPerParSet=9
 optPerParSet=10
 
@@ -22,20 +34,17 @@ optPerParSet=10
 #optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedAugmented_OPTFile.root'
 optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedDefault_OPTFile.root'
 
+if args.opt:
+    optionFile=os.path.abspath(args.opt)
 pwd=os.environ['PWD']
 proxy_path=os.environ['X509_USER_PROXY']
 HOME=os.environ['HOME']
 
-if len(sys.argv) > 1:
-    if int(sys.argv[1]) < 1:
-        printConfig=False
-tag=""
-if len(sys.argv) > 2:
-    tag=sys.argv[2]
 
+print("print optionfile : ",optionFile)
 print("print config : ",printConfig)
 print("tag : ",tag)
-
+print("Template config ",cfgTmplName)
 def loadConfigTemplate(fname):
     f=open(fname,'r')
     txt=f.readlines()
@@ -112,6 +121,8 @@ else :
         optId+=1
         optInParset+=1
         optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
+        if args.doStep2:
+            optstr+=':'+str(allOpts[i][0])+':'+str(allOpts[i][1])+':'+str(allOpts[i][2])    
         optstr+=','
         if optInParset==optPerParSet:
             parIdx+=1

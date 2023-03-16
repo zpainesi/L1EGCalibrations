@@ -65,6 +65,11 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
   ```
   Will print out a custon LUT description string as described in the script.
 
+#### Step 2 In Condor
+```
+     python misc/makeOptionsGrid.py -c misc/Par_Step1Step2.dat.tpl.cfg --opt CalibFiles/EraGDefault_Step1.root  -t defV4 -r misc/runStep2.tpl.sh --doStep2
+```
+
 ## Step 3 and 4 : Obtaining Rate and Efficincies
   * For compiling :
   ```
