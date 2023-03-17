@@ -15,6 +15,7 @@ parser.add_argument('-r',"--runTemplate", help="Template Run File",default='misc
 parser.add_argument("-p","--printConfig", help="print only grid values",default=False,action='store_true')
 parser.add_argument("--opt", help="options file",default=None)
 parser.add_argument("--doStep2", help="Print the step 2 option string ",action='store_true')
+parser.add_argument("--doV2", help="Customize apply isolation step with the v2_* tag",action='store_true')
 
 args = parser.parse_args()
 
@@ -120,6 +121,8 @@ else :
                 continue
         optId+=1
         optInParset+=1
+        if args.doV2:
+            optstr+='v2_'
         optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
         if args.doStep2:
             optstr+=':'+str(allOpts[i][0])+':'+str(allOpts[i][1])+':'+str(allOpts[i][2])    
