@@ -365,7 +365,7 @@ void ApplyIsolation::loops() {
 	    eta_fail_Map_[EtaFailIso_]->Fill(eleProbeEta,1);
 	  }
 	}
-      }    //Option loop closing
+  }    //Option loop closing
       
       // if(e==24 && l1tEmuPt >= e) PtPass_inclusive->Fill(eleProbeSclEt); 
       

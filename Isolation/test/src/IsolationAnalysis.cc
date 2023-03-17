@@ -16,8 +16,8 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
     maxEntries=-1;
     readParameters(inputFileName);
 
-    tmpFitMin = 6 ;
-    tmpFitMax = 25;
+    tmpFitMin = 15 ;
+    tmpFitMax = 25 ;
 
     if (ntupleFileName_.size() == 0) {
         std::cout << " Inputfile list missing !!!" << ntupleFileName_ << std::endl;
@@ -457,6 +457,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
     }
     std::cout<<"Filling LUT"<<std::endl;
     Int_t maxEntriesForLUT=(lutIEtaVec_.size()-1)*(lutIEtVec_.size()-1)*(lutProgHistoMap_.size());
+    std::cout<<"Number of pT , eta , option triplets :  "<<(lutIEtaVec_.size()-1)<<"*"<<(lutIEtVec_.size()-1)<<"*"<< lutProgHistoMap_.size()  <<" => "<<maxEntriesForLUT<<"\n";
     Int_t count=0;
 
 
@@ -475,6 +476,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
 
         for(Int_t j = 0 ; j < lutIEtVec_.size()-1 ; j++)
         {
+
 
             // Obtaining the Efficiency valut from the LUT option
             Double_t Efficiency_Progression = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
@@ -497,16 +499,13 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
             {
 
                 count++;
-                if(count%200==0)
-                {
+                if(count%500==0){
                     t_end = std::chrono::high_resolution_clock::now();
                     std::cout<<"LUT Filling : Processing  loop id : "<<count<<" / "<<maxEntriesForLUT<<"  [ "<<100.0*count/maxEntriesForLUT<<"  % ]  "
-                             << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
-                             <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( maxEntriesForLUT - count)/(1e-9 + count)* 0.001
-                             <<std::endl;
-
+                         << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+                         <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( maxEntriesForLUT - count)/(1e-9 + count)* 0.001
+                         <<std::endl;
                 }
-
                 // Loading the fit for correponding [ Eff , Et , Eta ]
                 TString fitName = "fit_pz_"+to_string(Int_Efficiency_Progression)+"_eta"+to_string(i)+"_e"+to_string(j);
                 TF1* currentFit = (TF1*) (WPFile->Get("Step1Histos/"+fitName));
