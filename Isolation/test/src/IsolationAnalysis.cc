@@ -198,20 +198,22 @@ void IsolationAnalysis::analyse() {
     t_end = std::chrono::high_resolution_clock::now();
     c=0;
     for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff)
-    {
+    {   
         std::cout<<"\t Fitting loop ! processing for efficiency : "<<iEff<<"\n";
         for ( short iet =0 ; iet < 16; iet++)
         {
             for (short ieta=0; ieta < 16 ; ieta++ )
             {
                 TString projName = "pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
-                TH1D* projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, iet+1, iet+1, ieta+1, ieta+1, "e");
+                TH1D* projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, ieta+1, ieta+1, iet+1, iet+1, "e");
                 projection->Write();
 
                 TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
-                projection->Fit(projection_fit,"Q");
+                projection->Fit(projection_fit,"QR");
                 projection_fit->Write();
+                std::cout<<"\tFit Results for [ "<<iEff<<" % , "<<iet<<","<<ieta<<" ] |> icpt. "
+                                <<projection_fit->GetParameter(0)<<" slp "<< projection_fit->GetParameter(1)<<"\n";
 
                 c++;
                 if(c%100 == 0)
@@ -522,7 +524,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                     it.second->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
 
                     // Filling from the Fit extrapolation
-                    IsoCut_Progression = Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k + 1 );
+                    IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 1);
                     lutProgHistoMap_v2_[it.first]->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
 
                     // Commenting out non-necessary histograms
