@@ -212,9 +212,6 @@ void IsolationAnalysis::analyse() {
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
                 projection->Fit(projection_fit,"QR");
                 projection_fit->Write();
-                std::cout<<"\tFit Results for [ "<<iEff<<" % , "<<iet<<","<<ieta<<" ] |> icpt. "
-                                <<projection_fit->GetParameter(0)<<" slp "<< projection_fit->GetParameter(1)<<"\n";
-
                 c++;
                 if(c%100 == 0)
                 {
