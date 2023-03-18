@@ -65,6 +65,20 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
   ```
   Will print out a custon LUT description string as described in the script.
 
+##### FIT Diagonstics for step 1 :
+
+- Plots the fits for a given eta and et bins for different efficiencies
+Uasge :
+```
+python python/makeFitDiagonosticPlots_forEtEta.py -i /home/aravind/Documents/dumpX/EraGDefault_Step1.root  -t defaultV1 --et 5 --eta 9
+```
+
+- Plots the fits for each eta amd et bins for a given efficiency
+Uasge :
+```
+ python python/makeFitDiagonosticPlots.py -i /home/aravind/Documents/dumpX/EraGDefault_Step1.root  -t defaultV1 -e 50
+```
+
 #### Step 2 In Condor
 ```
      python misc/makeOptionsGrid.py -c misc/Par_Step1Step2.dat.tpl.cfg --opt CalibFiles/EraGDefault_Step1.root  -t defV4 -r misc/runStep2.tpl.sh --doStep2
