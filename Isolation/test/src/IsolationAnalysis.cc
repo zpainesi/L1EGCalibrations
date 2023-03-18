@@ -524,7 +524,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                     it.second->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
 
                     // Filling from the Fit extrapolation
-                    IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 1);
+                    IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
                     lutProgHistoMap_v2_[it.first]->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
 
                     // Commenting out non-necessary histograms
