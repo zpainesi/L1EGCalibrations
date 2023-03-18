@@ -87,3 +87,13 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
    ```
 ## Step 7 : Deriving the optimal LUTs
   * Use the notebooks in `analyzer` directory
+
+## Making the visualization of the LUTs exported to txt files 
+```
+# For EG LUTs
+python python/getLUTImages.py -t LUT_TAG_HERE -i <input file path >
+
+# For Tau LUTs
+python python/getTauLUTImages.py -t LUT_TAG_HERE -i <input file path >
+
+```
