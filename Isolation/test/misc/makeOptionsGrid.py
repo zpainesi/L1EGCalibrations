@@ -66,9 +66,9 @@ runScriptTxt=loadConfigTemplate(runTmplName)
 cfgTmplate=loadConfigTemplate(cfgTmplName)
 
 # Grid A
-etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
+etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0,60.0,70.0,80.0,100.0,120.0]
 effMins=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0]
+etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0,60.0,70.0,80.0,100.0,120.0]
 checkIf0Gtr1=True
 
 # Grid B
@@ -117,7 +117,8 @@ else :
     optstr=''
     for i in range(nOptsMax):
         if checkIf0Gtr1:
-            if allOpts[i][0] > allOpts[i][2]:
+            #if allOpts[i][0] > ( allOpts[i][2] - 15 ):
+            if allOpts[i][0] > allOpts[i][2] :
                 continue
         optId+=1
         optInParset+=1

@@ -101,7 +101,7 @@ public :
   std::map<short, short> lutMapIEt_;
   std::map<short, short> lutMapIEta_;
   std::map<short, short> lutMapnTT_;
-  
+   
   std::map<TString,TH1F*> Histos_PerBin ;
   std::map<Int_t,TH3F*> IsoCut_PerBin ;
   std::map<Int_t,std::map<TString,Int_t>> IsoCut_PerEfficiency_PerBin;
@@ -117,6 +117,9 @@ public :
   std::vector<short>  updatedIEtaVec_;
   std::vector<short>  updatedIEtVec_;
   std::vector<short>  updatednTTVec_;  
+    
+  bool doSuperCompression;
+  std::vector<Int_t> superCompressionToDefaultCompressionMap;
 };
 
 #endif

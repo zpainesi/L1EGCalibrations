@@ -12,8 +12,12 @@
 using namespace std;
 
 IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
+    superCompressionToDefaultCompressionMap.resize(16);
+    superCompressionToDefaultCompressionMap={0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7};
     reportEvery=5000;
     maxEntries=-1;
+    doSuperCompression = false ;    
+        
     readParameters(inputFileName);
 
     tmpFitMin = 15 ;
@@ -439,8 +443,8 @@ void IsolationAnalysis::bookHistograms(std::string option)
             NameHisto += iEff;
             TH3F* LUT_temp = new TH3F(NameHisto.Data(),NameHisto.Data(),
                                       lutIEtaVec_.size()-1, 0, lutIEtaVec_.size()-1,
-                                      lutIEtVec_.size()-1, 0, lutIEtVec_.size()-1,
-                                      lutnTTVec_.size()-1, 0, lutnTTVec_.size()-1);
+                                      lutIEtVec_.size()-1 , 0, lutIEtVec_.size()-1 ,
+                                      lutnTTVec_.size()-1 , 0, lutnTTVec_.size()-1  );
             LUT_WP.push_back(LUT_temp);
         }
     }
@@ -471,7 +475,8 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
         Double_t minPt =  std::stod(options[1]);
         Double_t effLowMinPt = std::stod(options[2]);
         Double_t reach100pc= std::stod(options[3]);
-
+        
+        std::cout<<"Is using super Compressed vars : "<<doSuperCompression<<"\n";
 
         for(Int_t j = 0 ; j < lutIEtVec_.size()-1 ; j++)
         {
@@ -494,8 +499,12 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
             else
                 eff_histo = IsoCut_PerBin[Int_Efficiency_Progression];
 
-            for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
+            Int_t i = 0 ;
+            //for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
+            for(Int_t ii = 0 ; ii < 16 ; ii++)
             {
+                if (doSuperCompression)     i = superCompressionToDefaultCompressionMap[ii];
+                else                        i = ii ;
 
                 count++;
                 if(count%500==0){
@@ -518,11 +527,12 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                 {
                     Int_t IsoCut_Progression = eff_histo->GetBinContent(i+1,j+1, k+1);
                     if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
-                    it.second->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
+                    it.second->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
                     // Filling from the Fit extrapolation
                     IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
-                    lutProgHistoMap_v2_[it.first]->SetBinContent(i+1,j+1,k+1,IsoCut_Progression);
+                    if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
+                    lutProgHistoMap_v2_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
                     // Commenting out non-necessary histograms
                     // for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff)
@@ -630,6 +640,7 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
             std::string value = tokens.at(1);
             if(key=="NtupleFileName")        ntupleFileName_= value;
             else if (key=="OutputWPStepFileName") outputWPFileName_ = value.c_str();
+            else if (key=="DoSuperCompression")  doSuperCompression = atoi(value.c_str()) > 0;
             else if (key=="OutputFileName")  outputFileName_ = value.c_str();
             else if (key=="EtLUTFileName")	readLUTTable(value,nBinsIEt, lutMapIEt_);
             else if (key=="EtaLUTFileName")	readLUTTable(value,nBinsIEta, lutMapIEta_);
