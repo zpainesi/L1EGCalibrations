@@ -23,6 +23,7 @@
 
 // Header file for the classes stored in the TTree if any.
 #define nBins_fine 100
+#define nBins 38
 class ApplyIsolation {
 public :
     TChain          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -205,8 +206,7 @@ public :
     TDirectory* td11;
     TDirectory* td12;
     TDirectory* td13;
-
-    Double_t binning[39] = {1., 3., 5., 7., 9.,  10., 12., 15., 18., 20., 22., 24., 26., 28.,
+    Double_t xEdges[39] = {1., 3., 5., 7., 9.,  10., 12., 15., 18., 20., 22., 24., 26., 28.,
                             29., 30., 31., 32., 33., 34., 35., 36., 37., 38., 39., 40., 41.,
                             42., 43., 45., 50., 60., 70., 100., 200., 300., 400., 600., 1000.
                            };
