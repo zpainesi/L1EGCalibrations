@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/L1Ntuple_2022EphZB_run362616_126X.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/L1NTuples_CMSSW_13_0_0_pre4_EZ0_2022G_ReCalib.root
