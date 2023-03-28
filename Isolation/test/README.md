@@ -97,10 +97,23 @@ Uasge :
         - Need to customize `config/Ntuple_rate.txt`
  - Make the Condor job files 
    ```
-   python misc/makeOptionsGrid.py 1
+   # For default scheme
+   python misc/makeOptionsGrid.py -c misc/Par_ApplyIsolation.dat.tpl.cfg  --opt CalibFiles/EraG_step2Output.root-t eraGExtrapolated  
+   # For extrapolation scheme
+   python misc/makeOptionsGrid.py -c misc/Par_ApplyIsolation.dat.tpl.cfg  --opt CalibFiles/EraG_step2Output.root-t eraGExtrapolated  --doV2
    ```
 ## Step 7 : Deriving the optimal LUTs
-  * Use the notebooks in `analyzer` directory
+    Use the optimization scripts available under python directory
+    *Please setup the baseline files insside the scripts properly ! *
+    ```
+    python python/doubleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolated_v4_upd1.fls  -o results/optimization/
+    ```
+    ```
+    python python/singleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolated_v4_upd1.fls  -o results/optimization/
+    ```
+  * One can also use the notebooks in `analyzer` directory
+  * TODO : should move to a json based customization scheme
+  
 
 ## Making the visualization of the LUTs exported to txt files 
 ```
