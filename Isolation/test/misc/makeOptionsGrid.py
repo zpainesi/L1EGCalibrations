@@ -98,7 +98,7 @@ if printConfig:
     optstr=''
     for i in range(nOptsMax):
         if checkIf0Gtr1:
-            if allOpts[i][0] > allOpts[i][2]:
+            if allOpts[i][0] >= allOpts[i][2]:
                 continue
         optId+=1
         optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
