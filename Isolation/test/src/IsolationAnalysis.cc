@@ -12,13 +12,24 @@
 using namespace std;
 
 IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
-    superCompressionToDefaultCompressionMap.resize(16);
-    superCompressionToDefaultCompressionMap={0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7};
+    doSuperCompression = 0 ;    
+    doDynamicBinning=false;
     reportEvery=5000;
     maxEntries=-1;
-    doSuperCompression = false ;    
         
     readParameters(inputFileName);
+    
+    superCompressionToDefaultCompressionMap.resize(16);
+                                              //0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15      
+      superCompressionToDefaultCompressionMap={ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 } ;
+    if(doSuperCompression==3){
+      superCompressionToDefaultCompressionMap={ 0,0,1,1,2,2,3,3,4,4, 4, 5, 5, 6, 6, 7};  // 3 bit scheme
+      std::cout<<"\t Loading the super compression map for 3 bit compression ! \n";
+    }
+    if(doSuperCompression==2){
+      superCompressionToDefaultCompressionMap={ 0,0,0,0,1,1,1,1,2,2, 2, 2, 2, 3, 3, 3};  // 2 dit scheme
+      std::cout<<"\t Loading the super compression map for 2 bit compression ! \n";
+    }
 
     tmpFitMin = 15 ;
     tmpFitMax = 25 ;
@@ -204,18 +215,55 @@ void IsolationAnalysis::analyse() {
     for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff)
     {   
         std::cout<<"\t Fitting loop ! processing for efficiency : "<<iEff<<"\n";
-        for ( short iet =0 ; iet < 16; iet++)
+        for ( short iet =0 ; iet < lutIEtVec_.size()-1; iet++)
         {
-            for (short ieta=0; ieta < 16 ; ieta++ )
+            for (short ieta=0; ieta < lutIEtaVec_.size()-1 ; ieta++ )
             {
                 TString projName = "pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TH1D* projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, ieta+1, ieta+1, iet+1, iet+1, "e");
-                projection->Write();
 
                 TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
                 projection->Fit(projection_fit,"QR");
-                projection_fit->Write();
+                if (doDynamicBinning){
+                    if ( projection_fit->GetParameter(1) < 0 )
+                     {
+                        for( short dX=1; dX <3 ; dX++)
+                        {
+                             projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, 
+                                                                             max(ieta-dX+1 , 0), 
+                                                                             min(ieta+dX+1 , int(lutIEtVec_.size()-1)), 
+                                                                             max(iet -dX+1 , 0 ),
+                                                                             min(iet +dX+1 , int(lutIEtVec_.size()-1)), 
+                                                                             "e");
+                             projection->Fit(projection_fit,"QR");
+                             if ( projection_fit->GetParameter(1) > 0 )  {
+                                std::cout<<"\t CASE 2  [ dX = "<<dX<<" ] : Fit for eff : "<<iEff<<" , et : "<<iet<<" , eta : "<<ieta<<" to be taken from exteded region "
+                                        <<"et [ "<<max(iet -dX , 0 )<<" , "<<min(iet +dX , int(lutIEtVec_.size()-1))<<" ] " 
+                                        <<"eta [ "<<max(ieta-dX , 0)<<" , "<<min(ieta+dX , int(lutIEtVec_.size()-1))<<" ] ,"
+                                        <<"\n";
+                                 break;
+                             }
+                        } 
+                     }
+                     if ( projection_fit->GetParameter(1) < 0  and iEff > 1)
+                     {
+                         std::cout<<"\t CASE 3 : Fit for eff "<<iEff<<" , "<<iet<<" , "<<ieta<<" to be taken from eff "<<iEff-1<<"\n";
+                         TString fitName_pre = "fit_pz_"+to_string(iEff-1)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
+                         
+                         projection_fit = (TF1*) gDirectory->Get(fitName_pre)->Clone();    
+                         projection_fit->SetName(fitName);
+                         projection_fit->SetParameter(0 , projection_fit->GetParameter(0) -1 );
+                     }
+                     projection->Write();
+                     projection_fit->Write();
+                     if( projection_fit->GetParameter(1) < 0.01 )
+                     {
+                         std::cout<<"\t Fit for iet : "<<iet<<" , ieta "<<ieta<<" is  "<<projection_fit->GetParameter(0)<<" + "<<projection_fit->GetParameter(1)<<" * x "
+                                  <<" | integral of the projection TH1D "<<projection->Integral()<<" \n";
+                     }
+                       
+                }
                 c++;
                 if(c%100 == 0)
                 {
@@ -225,7 +273,6 @@ void IsolationAnalysis::analyse() {
                              <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( iMax - c)/(1e-9 + c )* 0.001
                              <<std::endl;
                 }
-
             }
         }
 
@@ -503,7 +550,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
             //for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
             for(Int_t ii = 0 ; ii < 16 ; ii++)
             {
-                if (doSuperCompression)     i = superCompressionToDefaultCompressionMap[ii];
+                if (doSuperCompression > 0)     i = superCompressionToDefaultCompressionMap[ii];
                 else                        i = ii ;
 
                 count++;
@@ -640,7 +687,8 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
             std::string value = tokens.at(1);
             if(key=="NtupleFileName")        ntupleFileName_= value;
             else if (key=="OutputWPStepFileName") outputWPFileName_ = value.c_str();
-            else if (key=="DoSuperCompression")  doSuperCompression = atoi(value.c_str()) > 0;
+            else if (key=="DoSuperCompression")  doSuperCompression = atoi(value.c_str());
+            else if (key=="DoDynamicBinning")  doDynamicBinning = atoi(value.c_str()) > 0;
             else if (key=="OutputFileName")  outputFileName_ = value.c_str();
             else if (key=="EtLUTFileName")	readLUTTable(value,nBinsIEt, lutMapIEt_);
             else if (key=="EtaLUTFileName")	readLUTTable(value,nBinsIEta, lutMapIEta_);

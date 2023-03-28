@@ -118,7 +118,8 @@ public :
   std::vector<short>  updatedIEtVec_;
   std::vector<short>  updatednTTVec_;  
     
-  bool doSuperCompression;
+  int doSuperCompression;
+  bool doDynamicBinning;
   std::vector<Int_t> superCompressionToDefaultCompressionMap;
 };
 
