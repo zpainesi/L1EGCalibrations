@@ -103,14 +103,14 @@ Uasge :
    python misc/makeOptionsGrid.py -c misc/Par_ApplyIsolation.dat.tpl.cfg  --opt CalibFiles/EraG_step2Output.root-t eraGExtrapolated  --doV2
    ```
 ## Step 7 : Deriving the optimal LUTs
-    Use the optimization scripts available under python directory
-    *Please setup the baseline files insside the scripts properly ! *
-    ```
-    python python/doubleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolated_v4_upd1.fls  -o results/optimization/
-    ```
-    ```
-    python python/singleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolated_v4_upd1.fls  -o results/optimization/
-    ```
+Use the optimization scripts available under python directory
+*Please setup the baseline files insside the scripts properly !*
+```
+python python/doubleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolated_v4_upd1.fls  -o results/optimization/
+```
+```
+python python/singleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolated_v4_upd1.fls  -o results/optimization/
+```
   * One can also use the notebooks in `analyzer` directory
   * TODO : should move to a json based customization scheme
   
