@@ -121,7 +121,7 @@ void ApplyIsolation::loops() {
     
     TFile outputTreeFile("testOut.root","RECREATE");
     outputTreeFile.cd();
-    auto outputTree = fChain1->CloneTree();
+    auto outputTree = fChain1->CloneTree(0);
 
     std::map<TString,float> isolationValues;
     
@@ -129,7 +129,7 @@ void ApplyIsolation::loops() {
         
         TString ResultProgressionName_= "ISO_LUT_Progression_" + it ;
         isolationValues[ResultProgressionName_] = 0.0 ;
-        outputTree->Branch(ResultProgressionName_ , &isolationValues[ResultProgressionName_] ) ;
+        outputTree->Branch(ResultProgressionName_ , &isolationValues[ResultProgressionName_] ,ResultProgressionName_+"/F") ;
 
     }
 
@@ -290,6 +290,7 @@ void ApplyIsolation::readTree() {
     fChain1->SetBranchAddress("l1tEmuRawEt",&l1tEmuRawEt);
     fChain1->SetBranchAddress("l1tEmuTowerIEta",&l1tEmuTowerIEta);
     fChain1->SetBranchAddress("eleProbeSclEt",&eleProbeSclEt);
+    fChain1->SetBranchAddress("l1tEmuIso",&l1tEmuIso);
     fChain1->SetBranchAddress("l1tEmuIsoEt",&l1tEmuIsoEt);
 
     fChain1->SetBranchAddress("eleProbeEta",&eleProbeEta);

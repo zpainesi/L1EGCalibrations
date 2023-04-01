@@ -57,6 +57,7 @@ public :
     Int_t           l1tEmuRawEt;
     Float_t         eleProbeSclEt;
     Int_t           l1tEmuIsoEt;
+    Int_t           l1tEmuIso;
 
     Int_t   hasL1Emu_tightiso22;
     Int_t   hasL1Emu_tightiso24;
