@@ -332,22 +332,38 @@ void ApplyIsolation::loops() {
                 if(eleProbeSclEt>32) {
                     if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression) {
                         TString NvtxPassIso_ ="Nvtx_Pass_Iso_" + it + "_Et_" + std::to_string(e);
-                        TString EtaPassIso_ ="Eta_Pass_Iso_" + it + "_Et_" + std::to_string(e);
-                        TString nTTPassIso_ ="nTT_Pass_Iso_" + it + "_Et_" + std::to_string(e);
+                        TString EtaPassIso_  ="Eta_Pass_Iso_" + it + "_Et_" + std::to_string(e);
+                        //TString nTTPassIso_  ="nTT_Pass_Iso_" + it + "_Et_" + std::to_string(e);
                         Nvtx_pass_Map_[NvtxPassIso_]->Fill(Nvtx,1);
                         eta_pass_Map_[EtaPassIso_]->Fill(eleProbeEta,1);
-                        nTT_pass_Map_[nTTPassIso_]->Fill(l1tEmuNTT,1);
+                       // nTT_pass_Map_[nTTPassIso_]->Fill(l1tEmuNTT,1);
 
                     }
                     else {
                         TString NvtxFailIso_ ="Nvtx_Fail_Iso_" + it + "_Et_" + std::to_string(e);
                         TString EtaFailIso_ ="Eta_Fail_Iso_" + it + "_Et_" + std::to_string(e);
-                        TString nTTFailIso_ ="nTT_Fail_Iso_" + it + "_Et_" + std::to_string(e);
+                        //TString nTTFailIso_ ="nTT_Fail_Iso_" + it + "_Et_" + std::to_string(e);
                         Nvtx_fail_Map_[NvtxFailIso_]->Fill(Nvtx,1);
                         eta_fail_Map_[EtaFailIso_]->Fill(eleProbeEta,1);
-                        nTT_fail_Map_[nTTFailIso_]->Fill(l1tEmuNTT,1);
+                      //  nTT_fail_Map_[nTTFailIso_]->Fill(l1tEmuNTT,1);
                     }
                 }
+
+                if( ( eleProbeSclEt > (e-2) ) and ( eleProbeSclEt < (e+15)  ) )
+                {
+                    if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression) {
+                        TString nTTPassIso_  ="nTT_Pass_Iso_" + it + "_Et_" + std::to_string(e);
+                        nTT_pass_Map_[nTTPassIso_]->Fill(l1tEmuNTT,1);
+
+                    }
+                    else {
+                        TString nTTFailIso_ ="nTT_Fail_Iso_" + it + "_Et_" + std::to_string(e);
+                        nTT_fail_Map_[nTTFailIso_]->Fill(l1tEmuNTT,1);
+                    }
+
+                }
+                
+                if(eleProbeSclEt>32) {
             }    //Option loop closing
 
             //Fillling Nvtx/Eta no Iso histos
@@ -614,7 +630,6 @@ void ApplyIsolation::bookHistograms() {
             nTT_pass_Map_.insert(std::make_pair(nTTPassIso_,thnTTPI));
             nTT_fail_Map_.insert(std::make_pair(nTTFailIso_,thnTTFI));
             nTT_Eff_Map_.insert(std::make_pair(nTTIsoEff_,thnTTEI));
-
 
         }
     }
