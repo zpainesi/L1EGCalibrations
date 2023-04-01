@@ -32,10 +32,6 @@ ApplyIsolation::ApplyIsolation(std::string& inputFileName) {
         xEdges_fine[i]=0.0+i*1.0;
     }
     readParameters(inputFileName);
-    if (ntupleFileNameRate_.size() == 0) {
-        std::cout << " Inputfile for rate list missing !!!" << ntupleFileNameRate_ << std::endl;
-        return;
-    }
 
     if (ntupleFileNameTurnOn_.size() == 0) {
         std::cout << " Inputfile for turn on list missing !!!" << ntupleFileNameTurnOn_ << std::endl;
