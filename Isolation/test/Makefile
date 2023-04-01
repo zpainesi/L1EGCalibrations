@@ -19,6 +19,9 @@ applyIsolation : src/ApplyIsolation.cc
 applyIsolation_plotter : src/ApplyIsolation_plotter.cc 
 	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
 
+exportIsolation : src/ExportIsolation.cc
+	$(CXX) $(CXXFLAGS) -I$(INCPATH) -g -o $@.exe $<  $(LIBS)
+
 L1EGRatePlotter : src/L1EGRatePlotter.cc 
 	$(CXX) $(CXXFLAGS) -I$(INCPATH) -o $@.exe $<  $(LIBS)
 
