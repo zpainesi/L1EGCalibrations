@@ -1,3 +1,7 @@
+/*
+    root -l -q 'MakeEGIsoLUT.C("v2_v2_702_12p5_0p2_15p0","LUTs/ZS0p5_2BitEXT_","workarea/CalibFiles/ZS0p5/2BitInEta/EraG_step2EXT_eraGZS0p5ReCalib_2Bit.root")'
+*/
+
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
@@ -17,7 +21,7 @@
 #include <TBranchElement.h>
 #include <fstream>
 
-void MakeEGIsoLUT(string option,TString infilename, bool isOption=false, bool includeCompression=false)
+void MakeEGIsoLUT(string option,TString prefix="",TString infilename="", bool isOption=false, bool includeCompression=false)
 {
   TFile* fLUTS = new TFile( infilename );
   TH3F* LUT ;
@@ -61,7 +65,7 @@ void MakeEGIsoLUT(string option,TString infilename, bool isOption=false, bool in
   else if(isOption && !includeCompression) outFile = "EG_Iso_LUT_Option_" + option + ".txt";
   else if(!isOption && !includeCompression) outFile = "EG_Iso_LUT_Flat_WP_" + option + ".txt";
 
-  std::ofstream LUTfile (outFile.Data());
+  std::ofstream LUTfile ((prefix+outFile).Data());
 
   ////////////////////////////////////////////////////////////////////////////
   //// print compression block on top of the LUT /////////////////////////////
@@ -163,7 +167,7 @@ void MakeEGIsoLUT(string option,TString infilename, bool isOption=false, bool in
 	      if (iEt == 0 && ieta == 0 && inTT == 0) LUTfile << " # start of isolation LUT -- ieta : iEt : nTT = " << ieta << " : " << iEt << " : " << inTT; 
 	      else LUTfile << " # ieta : iEt : inTT = " << ieta << " : " << iEt << " : " << inTT; 
 	      LUTfile << endl;
-	      cout << onlyIsoAddr << " # ieta : iEt : inTT = " << ieta << " : " << iEt << " : " << inTT <<  " --> thr: " << thr << endl; 
+	  //    cout << onlyIsoAddr << " # ieta : iEt : inTT = " << ieta << " : " << iEt << " : " << inTT <<  " --> thr: " << thr << endl; 
 	      
 	      TotalIDX++;
 	      onlyIsoAddr++;
