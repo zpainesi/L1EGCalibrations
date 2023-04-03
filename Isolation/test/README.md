@@ -113,7 +113,13 @@ python python/singleEGOptimization.py -f eraGExtrapolated_v4_upd1/eraGExtrapolat
 ```
   * One can also use the notebooks in `analyzer` directory
   * TODO : should move to a json based customization scheme
-  
+
+##  Export the Isolation results for a set of options
+
+```
+make exportIsolation
+./exportIsolation.exe config/ParList_Export.dat
+```
 
 ## Making the visualization of the LUTs exported to txt files 
 ```

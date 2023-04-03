@@ -119,7 +119,7 @@ void ApplyIsolation::loops() {
     if (fChain1 == 0) return;
     nEntries1_ = fChain1->GetEntriesFast();
     
-    TFile outputTreeFile("testOut.root","RECREATE");
+    TFile outputTreeFile(outputFileName_.data(),"RECREATE");
     outputTreeFile.cd();
     auto outputTree = fChain1->CloneTree(0);
 
