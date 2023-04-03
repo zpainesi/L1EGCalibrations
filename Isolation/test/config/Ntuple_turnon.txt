@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/slimmedDSet_EGEraG_Remul_caloParam_v0_6_recalib.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/slimmedDSet_TagAndProbe_eraG_recaliberated_EGamma_ZS0p5_v5.root

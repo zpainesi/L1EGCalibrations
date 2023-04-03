@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function 
 import os,sys,itertools
-import argparse
+import argparse,json
 
 """
 python misc/make...py
@@ -28,11 +28,6 @@ cfgTmplName=args.cfgFile
 optPerParSet=9
 optPerParSet=10
 
-#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_V3_OPTFile.root'
-#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_12X_newLayer1_sigmoid_OPTFile.root'
-#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_122X_caloParams_v02_recaliberatedV1_gridA.root'
-#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/DataDerivedIso/HistgramFile_step2.root'
-#optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedAugmented_OPTFile.root'
 optionFile='/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedDefault_OPTFile.root'
 
 if args.opt:
@@ -67,7 +62,7 @@ cfgTmplate=loadConfigTemplate(cfgTmplName)
 
 # Grid A
 etMins=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0,60.0,70.0,80.0,100.0,120.0]
-effMins=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+effMins=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 etMaxs=[5.0,7.5,10.0,12.5,15.0,17.5,20.0,22.5,25.0,27.5,30.0,32.5,35.0,37.5,40.0,42.5,45.0,50.0,60.0,70.0,80.0,100.0,120.0]
 checkIf0Gtr1=True
 
@@ -94,6 +89,10 @@ print('Options in the cartesian product : ',nOptsMax)
 optId=0
 parIdx=0
 njobs=0
+allOptionDict={}
+
+optionsDict={}
+
 if printConfig:
     optstr=''
     for i in range(nOptsMax):
@@ -122,11 +121,15 @@ else :
                 continue
         optId+=1
         optInParset+=1
+        optName=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')    
         if args.doV2:
-            optstr+='v2_'
-        optstr+=str(optId)+'_'+str(allOpts[i][0]).replace('.','p')+'_'+str(allOpts[i][1]).replace('.','p')+'_'+str(allOpts[i][2]).replace('.','p')
+            optName='v2_'+optName
+        
+        optstr+=optName
         if args.doStep2:
             optstr+=':'+str(allOpts[i][0])+':'+str(allOpts[i][1])+':'+str(allOpts[i][2])    
+        allOptionDict[optId]=(allOpts[i][0] , allOpts[i][1] , allOpts[i][2] , optName )
+
         optstr+=','
         if optInParset==optPerParSet:
             parIdx+=1
@@ -205,3 +208,6 @@ else :
     print(" Condor  submit file name : ", condorScriptName)
 
     condorScript.close()
+    with open(head+'/optionMap.json','w') as f:
+        json.dump(allOptionDict,f,indent=4)
+

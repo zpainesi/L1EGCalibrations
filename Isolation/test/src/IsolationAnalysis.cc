@@ -212,7 +212,7 @@ void IsolationAnalysis::analyse() {
     t_start = std::chrono::high_resolution_clock::now();
     t_end = std::chrono::high_resolution_clock::now();
     c=0;
-    for(UInt_t iEff = 1 ; iEff < 101 ; ++iEff)
+    for(Int_t iEff = 100 ; iEff >= 0 ; --iEff)
     {   
         std::cout<<"\t Fitting loop ! processing for efficiency : "<<iEff<<"\n";
         for ( short iet =0 ; iet < lutIEtVec_.size()-1; iet++)
@@ -228,7 +228,7 @@ void IsolationAnalysis::analyse() {
                 if (doDynamicBinning){
                     if ( projection_fit->GetParameter(1) < 0 )
                      {
-                        for( short dX=1; dX <3 ; dX++)
+                        for( short dX=1; dX <5  ; dX++)
                         {
                              projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, 
                                                                              max(ieta-dX+1 , 0), 
@@ -246,24 +246,26 @@ void IsolationAnalysis::analyse() {
                              }
                         } 
                      }
-                     if ( projection_fit->GetParameter(1) < 0  and iEff > 1)
+                     if ( projection_fit->GetParameter(1) < 0  and iEff < 100)
                      {
                          std::cout<<"\t CASE 3 : Fit for eff "<<iEff<<" , "<<iet<<" , "<<ieta<<" to be taken from eff "<<iEff-1<<"\n";
-                         TString fitName_pre = "fit_pz_"+to_string(iEff-1)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
+                         TString fitName_pre = "fit_pz_"+to_string(iEff+1)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                          
                          projection_fit = (TF1*) gDirectory->Get(fitName_pre)->Clone();    
                          projection_fit->SetName(fitName);
                          projection_fit->SetParameter(0 , projection_fit->GetParameter(0) -1 );
                      }
-                     projection->Write();
-                     projection_fit->Write();
-                     if( projection_fit->GetParameter(1) < 0.01 )
-                     {
-                         std::cout<<"\t Fit for iet : "<<iet<<" , ieta "<<ieta<<" is  "<<projection_fit->GetParameter(0)<<" + "<<projection_fit->GetParameter(1)<<" * x "
-                                  <<" | integral of the projection TH1D "<<projection->Integral()<<" \n";
-                     }
-                       
+                      
                 }
+
+                if( projection_fit->GetParameter(1) < 0.01 )
+                {
+                    std::cout<<"\t Fit for iet : "<<iet<<" , ieta "<<ieta<<" is  "<<projection_fit->GetParameter(0)<<" + "<<projection_fit->GetParameter(1)<<" * x "
+                             <<" | integral of the projection TH1D "<<projection->Integral()<<" \n";
+                }
+                projection->Write();
+                projection_fit->Write();
+ 
                 c++;
                 if(c%100 == 0)
                 {
@@ -547,8 +549,8 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                 eff_histo = IsoCut_PerBin[Int_Efficiency_Progression];
 
             Int_t i = 0 ;
-            //for(Int_t i = 0 ; i < lutIEtaVec_.size()-1; i++)
-            for(Int_t ii = 0 ; ii < 16 ; ii++)
+            //for(Int_t ii = 0 ; ii < 16 ; ii++)
+            for(Int_t ii = 0 ; ii < lutIEtaVec_.size()-1; ii++)
             {
                 if (doSuperCompression > 0)     i = superCompressionToDefaultCompressionMap[ii];
                 else                        i = ii ;
@@ -561,6 +563,8 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                          <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( maxEntriesForLUT - count)/(1e-9 + count)* 0.001
                          <<std::endl;
                 }
+                
+
                 // Loading the fit for correponding [ Eff , Et , Eta ]
                 TString fitName = "fit_pz_"+to_string(Int_Efficiency_Progression)+"_eta"+to_string(i)+"_e"+to_string(j);
                 TF1* currentFit = (TF1*) (WPFile->Get("Step1Histos/"+fitName));
@@ -574,29 +578,18 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                 {
                     Int_t IsoCut_Progression = eff_histo->GetBinContent(i+1,j+1, k+1);
                     if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
+                    else if(Int_Efficiency_Progression== 0) IsoCut_Progression = 0;
                     it.second->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
                     // Filling from the Fit extrapolation
-                    IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
-                    if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
+                    if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000 ;
+                    else if(Int_Efficiency_Progression== 0 ) IsoCut_Progression = 0 ;
+                    else{
+                            IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
+                           // std::cout<<"For [ "<<i<<","<<j<<" ]  nTT  = "<<k<<" : "<<
+                    }
                     lutProgHistoMap_v2_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
-                    // Commenting out non-necessary histograms
-                    // for(UInt_t iEff = 0 ; iEff < 101 ; ++iEff)
-                    // {
-                    //     TH3F* th;
-                    //     if(option == "do_2") {
-                    //         TString WPName1 = "Eff_";
-                    //         WPName1 +=TString::Itoa(iEff,10);
-                    //         th = dynamic_cast<TH3F*>(WPFile->Get("Step1Histos/"+WPName1));
-                    //     }
-                    //     else
-                    //         th= IsoCut_PerBin[iEff];
-                    //     Int_t IsoCut = th->GetBinContent(i+1,j+1, k+1);
-
-                    //     if(iEff==100) IsoCut = 1000;
-                    //     LUT_WP.at(iEff)->SetBinContent(i+1,j+1,k+1,IsoCut);
-                    // }
 
                 }
             }

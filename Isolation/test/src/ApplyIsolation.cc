@@ -363,9 +363,6 @@ void ApplyIsolation::loops() {
 
                 }
                 
-                if(eleProbeSclEt>32) {
-            }    //Option loop closing
-
             //Fillling Nvtx/Eta no Iso histos
             if(eleProbeSclEt>32) {
                 if(l1tEmuPt >= e) {
@@ -386,6 +383,8 @@ void ApplyIsolation::loops() {
                 }
             }
         }
+
+      }
     } //End of Event loop for turnon
 
 
