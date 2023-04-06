@@ -40,7 +40,7 @@ ApplyIsolation::ApplyIsolation(std::string& inputFileName) {
 
     accessTree(ntupleFileNameRate_, ntupleFileNameTurnOn_);
 
-    assert(fChain);
+    assert(fChain1);
 
     bookedHistograms_ = false;
 

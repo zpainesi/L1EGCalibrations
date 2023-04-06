@@ -44,6 +44,7 @@ public :
     Int_t           nPV_True;
     UInt_t run;
     std::vector<float>   egEt;
+    std::vector<float>   egEta;
     std::vector<short>   egBx;
     std::vector<short>   egIsoEt;
     std::vector<short>   egNTT;
