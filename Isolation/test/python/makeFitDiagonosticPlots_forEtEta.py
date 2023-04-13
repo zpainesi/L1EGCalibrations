@@ -28,7 +28,7 @@ def main():
             axes=np.ndarray.flatten(axes)
             axid=0
             pid=0
-            for eff in range(1,100+1):
+            for eff in range(1,100+1,5):
                 if axid%10==0:
                     print("Processing Eff ",eff)
                 ax=axes[axid]
@@ -37,6 +37,8 @@ def main():
     
                 hist= inputWPFile.Get('Step1Histos/'+proj)
                 fit = inputWPFile.Get('Step1Histos/'+fName)
+                print(proj,fName)
+                print(hist,fit)
                 a=fit.GetParameter(0)
                 b=fit.GetParameter(1)
                 chi2=fit.GetChisquare()
@@ -49,7 +51,6 @@ def main():
                 ax.plot(x,y,c='r')
                 axid+=1
                 if axid==25 :
-                
                     foutname=saveBase+f'{tag}DiagonosticPlotAtEt{et}Eta{ieta}_part{pid}.png'
                     print("Saving figure as  ",foutname)
                     f.savefig(foutname , bbox_inches='tight')
@@ -58,6 +59,19 @@ def main():
                     axes=np.ndarray.flatten(axes)
                     axid=0
                     pid+=1
+
+    if axid>0 :
+        foutname=saveBase+f'{tag}DiagonosticPlotAtEt{et}Eta{ieta}_part{pid}.png'
+        print("Saving figure as  ",foutname)
+        f.savefig(foutname , bbox_inches='tight')
+        plt.close(f)
+        f,axes=plt.subplots(5,5,figsize=(25,25))
+        axes=np.ndarray.flatten(axes)
+        axid=0
+        pid+=1
+
+  
+
 
 if __name__=='__main__':
     main()

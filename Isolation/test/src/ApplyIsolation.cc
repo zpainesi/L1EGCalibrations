@@ -194,16 +194,20 @@ void ApplyIsolation::loops() {
             TString pt_ProgressionDI_= "pt_Progression_doubleIso" +it;
             TString pt_ProgressionDIER_= "pt_Progression_doubleIsoER" +it;
             TString pt_ProgressionDIXXp10ER_= "pt_Progression_doubleIsoXXp10ER" +it;
+            TString pt_ProgressionDIXXp5ER_ = "pt_Progression_doubleIsoXXp5ER" +it;
+
             TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
             if(!ResultProgressionName) std::cout<<"LOLLLLLLL"<<ResultProgressionName_<<std::endl;
 
             Int_t nIsoEGs=0;
             Int_t nIsoEREGs=0;
             Int_t nIsoERXXp10EGs=0;
+            Int_t nIsoERXXp5EGs=0;
 
             float doubleIso_threshold(1e9);
             float doubleIso_thresholdER(1e9);
             float doubleIsoXXp10_thresholdER(1e9);
+            float doubleIsoXXp5_thresholdER(1e9);
 
             for (UShort_t iEG=0; iEG < nEGs; ++iEG) {
                 if (egBx[iEG]!=0)   continue;
@@ -249,7 +253,6 @@ void ApplyIsolation::loops() {
 
                 if(nEGs >=2) {
                     if(EG_Et > 10. && EG_Iso_Et<=IsoCut_Progression) {
-                        
                         if(iEG==0) {
                             doubleIsoXXp10_thresholdER = std::min(egEt[iEG+1], (EG_Et-10));
                         }
@@ -257,6 +260,17 @@ void ApplyIsolation::loops() {
                         nIsoERXXp10EGs+=1;
 
                     }
+
+                    if(EG_Et > 5. && EG_Iso_Et<=IsoCut_Progression) {
+                        if(iEG==0) {
+                            doubleIsoXXp5_thresholdER = std::min(egEt[iEG+1], (EG_Et-5));
+                        }
+                        else  doubleIsoXXp10_thresholdER = EG_Et-5;
+                        nIsoERXXp5EGs+=1;
+
+                    }
+
+
                 }
 
                     if( EG_Iso_Et<=IsoCut_Progression) {
@@ -283,6 +297,12 @@ void ApplyIsolation::loops() {
             {
                         ptMap_[pt_ProgressionDIER_]->Fill(doubleIso_thresholdER);
             }
+
+            if(nIsoERXXp5EGs >=2 )
+            {
+                        ptMap_[pt_ProgressionDIXXp5ER_]->Fill(doubleIsoXXp5_thresholdER);
+            }
+
             if(nIsoERXXp10EGs >=2 )
             {
                         ptMap_[pt_ProgressionDIXXp10ER_]->Fill(doubleIsoXXp10_thresholdER);
@@ -306,12 +326,15 @@ void ApplyIsolation::loops() {
             TString CurrentNameHisto1DIER = "rate_Progression_doubleIsoER" + it;
             TString CurrentNameHistoDXXp10IER  = "pt_Progression_doubleIsoXXp10ER" + it;
             TString CurrentNameHisto1DXXp10IER = "rate_Progression_doubleIsoXXp10ER" + it;
+            TString CurrentNameHistoDXXp5IER  = "pt_Progression_doubleIsoXXp5ER" + it;
+            TString CurrentNameHisto1DXXp5IER = "rate_Progression_doubleIsoXXp5ER" + it;
 
             rateMap_[CurrentNameHisto1]->SetBinContent(i+1, ptMap_[CurrentNameHisto]->Integral(i+1,ET_MAX)*scale); //Single EG Iso
             rateMap_[CurrentNameHisto1D]->SetBinContent(i+1, ptMap_[CurrentNameHistoD]->Integral(i+1,ET_MAX)*scale); // Double EG Iso
             rateMap_[CurrentNameHisto1DI]->SetBinContent(i+1, ptMap_[CurrentNameHistoDI]->Integral(i+1,ET_MAX)*scale); // Double EG DoubleIso
             rateMap_[CurrentNameHisto1DIER]->SetBinContent(i+1, ptMap_[CurrentNameHistoDIER]->Integral(i+1,ET_MAX)*scale); // Double EG DoubleIso ER
             rateMap_[CurrentNameHisto1DXXp10IER]->SetBinContent(i+1, ptMap_[CurrentNameHistoDXXp10IER]->Integral(i+1,ET_MAX)*scale); // Double EG DoubleIso ER
+            rateMap_[CurrentNameHisto1DXXp5IER]->SetBinContent(i+1, ptMap_[CurrentNameHistoDXXp5IER]->Integral(i+1,ET_MAX)*scale); // Double EG DoubleIso ER
 
         }
     }
@@ -535,7 +558,7 @@ void ApplyIsolation::bookHistograms() {
         }
         tdD->cd();
         TString  CurrentNameHistoD = "pt_Progression_double" + it;
-        TH1F* pt_ProgressionD=  new TH1F(CurrentNameHistoD, CurrentNameHistoD,ET_MAX,  0.0, ET_MAX);
+        TH1F* pt_ProgressionD=  new TH1F(CurrentNameHistoD, CurrentNameHistoD , ET_MAX,  0.0, ET_MAX);
         ptMap_.insert(std::make_pair(CurrentNameHistoD,pt_ProgressionD));
 
         CurrentNameHistoD = "pt_Progression_doubleIso" + it;
@@ -550,6 +573,10 @@ void ApplyIsolation::bookHistograms() {
         pt_ProgressionD=  new TH1F(CurrentNameHistoD, CurrentNameHistoD,ET_MAX,  0.0, ET_MAX);
         ptMap_.insert(std::make_pair(CurrentNameHistoD,pt_ProgressionD));
 
+        CurrentNameHistoD = "pt_Progression_doubleIsoXXp5ER" + it;
+        pt_ProgressionD=  new TH1F(CurrentNameHistoD, CurrentNameHistoD,ET_MAX,  0.0, ET_MAX);
+        ptMap_.insert(std::make_pair(CurrentNameHistoD,pt_ProgressionD));
+
 
         //For Single EG Rate with Iso
         if(!check_rate_dir) {
@@ -558,7 +585,7 @@ void ApplyIsolation::bookHistograms() {
         }
         td1->cd();
         TString CurrentNameHisto1= "rate_Progression" + it;
-        TH1F* rate_Progression = new TH1F(CurrentNameHisto1, CurrentNameHisto1, ET_MAX,  0.0, ET_MAX );
+        TH1F* rate_Progression = new TH1F(CurrentNameHisto1, CurrentNameHisto1, ET_MAX,  0.0-0.5, ET_MAX-0.5 );
         rateMap_.insert(std::make_pair(CurrentNameHisto1,rate_Progression));
         
         //For Double EG Rate with Iso
@@ -569,19 +596,23 @@ void ApplyIsolation::bookHistograms() {
         td1D->cd();
         
         TString CurrentNameHisto1D= "rate_Progression_double" + it;
-        TH1F* rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0, ET_MAX );
+        TH1F* rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0-0.5, ET_MAX-0.5 );
         rateMap_.insert(std::make_pair(CurrentNameHisto1D,rate_ProgressionD));
 
         CurrentNameHisto1D= "rate_Progression_doubleIso" + it;
-        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0, ET_MAX );
+        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0-0.5, ET_MAX-0.5 );
         rateMap_.insert(std::make_pair(CurrentNameHisto1D,rate_ProgressionD));
 
         CurrentNameHisto1D= "rate_Progression_doubleIsoER" + it;
-        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0, ET_MAX );
+        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0-0.5, ET_MAX-0.5 );
         rateMap_.insert(std::make_pair(CurrentNameHisto1D,rate_ProgressionD));
 
         CurrentNameHisto1D= "rate_Progression_doubleIsoXXp10ER" + it;
-        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0, ET_MAX );
+        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0-0.5, ET_MAX-0.5 );
+        rateMap_.insert(std::make_pair(CurrentNameHisto1D,rate_ProgressionD));
+
+        CurrentNameHisto1D= "rate_Progression_doubleIsoXXp5ER" + it;
+        rate_ProgressionD = new TH1F(CurrentNameHisto1D, CurrentNameHisto1D, ET_MAX,  0.0-0.5, ET_MAX-0.5 );
         rateMap_.insert(std::make_pair(CurrentNameHisto1D,rate_ProgressionD));
 
 

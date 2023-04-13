@@ -62,7 +62,7 @@ for ky in allLUTS:
         t.set_bbox(dict(facecolor='w',alpha=1.0, edgecolor='r'))
         plt.colorbar(c,cax=ax2)
     f.suptitle('LUT : '+ky+"\n"+fname.split('/')[-1],y=0.91)
-    fname='LUT_'+ky+'.jpeg'
+    fname='LUTs/'+ky+'.jpeg'
     print("Saving : ",fname)
     f.savefig(fname,bbox_inches='tight')
     #     if et > 2:

@@ -69,6 +69,8 @@ public :
   TString getHistoName(short et, short eta, short ntt);
   Double_t findEfficiencyProgression(Double_t IEt, Double_t MinPt,
 				     Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at);
+  Double_t findEfficiencyProgressionForV3(Double_t IEt, Double_t MinPt,
+				     Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at);
   void fillLUTProgression(const std::string option);
   short getUpdatedBin(short value, std::string type);
     
@@ -109,6 +111,7 @@ public :
   std::vector<std::string> lutProgOptVec_;
   std::map<std::string, TH3F*> lutProgHistoMap_;
   std::map<std::string, TH3F*> lutProgHistoMap_v2_;
+  std::map<std::string, TH3F*> lutProgHistoMap_v3_;
   std::vector<TH3F*> LUT_WP ;
   
   std::vector<short> lutIEtaVec_;

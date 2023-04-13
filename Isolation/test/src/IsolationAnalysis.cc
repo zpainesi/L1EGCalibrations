@@ -20,8 +20,8 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
     readParameters(inputFileName);
     
     superCompressionToDefaultCompressionMap.resize(16);
-                                              //0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15      
-      superCompressionToDefaultCompressionMap={ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 } ;
+                                             //0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15      
+    superCompressionToDefaultCompressionMap={ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 } ;
     if(doSuperCompression==3){
       superCompressionToDefaultCompressionMap={ 0,0,1,1,2,2,3,3,4,4, 4, 5, 5, 6, 6, 7};  // 3 bit scheme
       std::cout<<"\t Loading the super compression map for 3 bit compression ! \n";
@@ -31,7 +31,7 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
       std::cout<<"\t Loading the super compression map for 2 bit compression ! \n";
     }
 
-    tmpFitMin = 15 ;
+    tmpFitMin = 12 ;
     tmpFitMax = 25 ;
 
     if (ntupleFileName_.size() == 0) {
@@ -224,7 +224,11 @@ void IsolationAnalysis::analyse() {
 
                 TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
+                projection_fit->SetParLimits(1,0.0,20.0);
+
                 projection->Fit(projection_fit,"QR");
+                
+
                 if (doDynamicBinning){
                     if ( projection_fit->GetParameter(1) < 0 )
                      {
@@ -246,6 +250,7 @@ void IsolationAnalysis::analyse() {
                              }
                         } 
                      }
+
                      if ( projection_fit->GetParameter(1) < 0  and iEff < 100)
                      {
                          std::cout<<"\t CASE 3 : Fit for eff "<<iEff<<" , "<<iet<<" , "<<ieta<<" to be taken from eff "<<iEff-1<<"\n";
@@ -484,6 +489,15 @@ void IsolationAnalysis::bookHistograms(std::string option)
                            lutnTTVec_.size()-1, 0, lutnTTVec_.size()-1);
             lutProgHistoMap_v2_.insert({it, th3});
 
+            // Booking the Extrapolated LUT option with 0 supression below the min threashold
+            hname = "LUT_Progression_v3_";
+            hname += options[0];
+            th3 = new TH3F(hname,hname,
+                           lutIEtaVec_.size()-1, 0, lutIEtaVec_.size()-1,
+                           lutIEtVec_.size()-1, 0, lutIEtVec_.size()-1,
+                           lutnTTVec_.size()-1, 0, lutnTTVec_.size()-1);
+            lutProgHistoMap_v3_.insert({it, th3});
+
 
         }
         for(UInt_t iEff = 0 ; iEff <= 100 ; ++iEff)
@@ -532,11 +546,16 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
 
 
             // Obtaining the Efficiency valut from the LUT option
-            Double_t Efficiency_Progression = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
+            Double_t Efficiency_Progression       = findEfficiencyProgression((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
+            Double_t Efficiency_Progression_forV3 = findEfficiencyProgressionForV3((lutIEtVec_[j]+lutIEtVec_[j+1])/2.0, minPt,effLowMinPt,reach100pc);
 
             if(Efficiency_Progression >= 0.9999) Efficiency_Progression = 1.0001;
             Int_t Int_Efficiency_Progression = int(Efficiency_Progression*100);
 
+            if(Efficiency_Progression_forV3 >= 0.9999) Efficiency_Progression = 1.0001;
+            Int_t Int_Efficiency_Progression_forV3 = int(Efficiency_Progression_forV3*100);
+            
+            std::cout<<"\t for v2 : "<<Int_Efficiency_Progression<<" |  for v3 : "<< Int_Efficiency_Progression_forV3<<" @ Et : "<< 0.5*( lutIEtVec_[j]+lutIEtVec_[j+1]) <<"\n";
             // Loading corresponding Efficiency WP
             TH3F* eff_histo;
             if(option == "do_2") {
@@ -547,6 +566,17 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
             }
             else
                 eff_histo = IsoCut_PerBin[Int_Efficiency_Progression];
+
+            // Loading corresponding Efficiency WP for the Zero supressed 
+            TH3F* eff_histo_forV3;
+            if(option == "do_2") {
+                TString WPName = "Eff_";
+                WPName +=std::to_string(Int_Efficiency_Progression_forV3);
+                eff_histo_forV3 = dynamic_cast<TH3F*>(WPFile->Get("Step1Histos/"+WPName));
+                //std::cout<<WPName<<std::endl;
+            }
+            else
+                eff_histo_forV3 = IsoCut_PerBin[Int_Efficiency_Progression_forV3];
 
             Int_t i = 0 ;
             //for(Int_t ii = 0 ; ii < 16 ; ii++)
@@ -565,7 +595,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                 }
                 
 
-                // Loading the fit for correponding [ Eff , Et , Eta ]
+                // Loading the fit for correponding [ Eff , Et , Eta ]  V2 Scheme
                 TString fitName = "fit_pz_"+to_string(Int_Efficiency_Progression)+"_eta"+to_string(i)+"_e"+to_string(j);
                 TF1* currentFit = (TF1*) (WPFile->Get("Step1Histos/"+fitName));
 
@@ -591,15 +621,42 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                     lutProgHistoMap_v2_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
 
+               }
+
+                // Loading the fit for correponding [ Eff , Et , Eta ]  V3 Scheme
+                fitName = "fit_pz_"+to_string(Int_Efficiency_Progression_forV3)+"_eta"+to_string(i)+"_e"+to_string(j);
+                currentFit = (TF1*) (WPFile->Get("Step1Histos/"+fitName));
+
+                if ( not currentFit)
+                {
+                    std::cout<<" Fit not found for "<< fitName<<" for v3 ! \n \t Exiting !!  \n";
+                    exit(1);
                 }
+
+                for(Int_t k = 0 ; k < lutnTTVec_.size()-1; k++)
+                {
+                    // Filling from the Fit extrapolation in V3 Scheme
+                    Int_t IsoCut_Progression=1000;
+                    if(Int_Efficiency_Progression==100) IsoCut_Progression      = 1000 ;
+                    else if(Int_Efficiency_Progression== 0 ) IsoCut_Progression = 0 ;
+                    else{
+                            IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
+                    }
+
+                    lutProgHistoMap_v3_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
+                }
+
             }
         }
     }
 }
+
 Double_t IsolationAnalysis::findEfficiencyProgression(Double_t IEt, Double_t MinPt,
         Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at) {
+    
     Double_t Efficiency = 0;
-    Double_t Pt = IEt/2.;
+    Double_t Pt         = IEt/2.;
+    
     if(Pt>=Reaching_100pc_at) Efficiency = 1.;
     else if(Pt<MinPt) Efficiency = Efficiency_low_MinPt;
     else
@@ -613,6 +670,31 @@ Double_t IsolationAnalysis::findEfficiencyProgression(Double_t IEt, Double_t Min
 
     return Efficiency ;
 }
+
+Double_t IsolationAnalysis::findEfficiencyProgressionForV3(Double_t IEt, Double_t MinPt,
+        Double_t Efficiency_low_MinPt, Double_t Reaching_100pc_at) {
+    
+    Double_t Efficiency = 0;
+    Double_t Pt         = IEt/2.;
+    
+    if(Pt>=Reaching_100pc_at) Efficiency = 1.;
+    else if(Pt<MinPt) Efficiency = 0.0;
+    else
+    {
+        Double_t  Slope = (1.-Efficiency_low_MinPt)/(Reaching_100pc_at-MinPt);
+        Efficiency = Slope*Pt + (1. - Slope*Reaching_100pc_at);
+    }
+
+    if(Efficiency<0) Efficiency = 0.;
+    if(Efficiency>=1) Efficiency = 1.;
+    
+    std::cout<<"\t v3 | "<<IEt<<" , "<<MinPt<<" , "<<Efficiency_low_MinPt<<" , "<<Reaching_100pc_at<<" Eff . : "<<Efficiency <<"\n";
+
+    return Efficiency ;
+}
+
+
+
 
 void IsolationAnalysis::readLUTTable(std::string& file_name, unsigned int& nbin,
                                      std::map<short, short>& lut_map) {
