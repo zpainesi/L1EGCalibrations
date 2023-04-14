@@ -27,12 +27,12 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
       std::cout<<"\t Loading the super compression map for 3 bit compression ! \n";
     }
     if(doSuperCompression==2){
-      superCompressionToDefaultCompressionMap={ 0,0,0,0,1,1,1,1,2,2, 2, 2, 2, 3, 3, 3};  // 2 dit scheme
+      superCompressionToDefaultCompressionMap={0,0,0,0,1,1,1,1,2,2, 2, 2, 2, 3, 3, 3};  // 2 dit scheme
       std::cout<<"\t Loading the super compression map for 2 bit compression ! \n";
     }
 
-    tmpFitMin = 12 ;
-    tmpFitMax = 25 ;
+    tmpFitMin = 10 ;
+    tmpFitMax = 22 ;
 
     if (ntupleFileName_.size() == 0) {
         std::cout << " Inputfile list missing !!!" << ntupleFileName_ << std::endl;
@@ -224,6 +224,8 @@ void IsolationAnalysis::analyse() {
 
                 TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
+                projection_fit->SetParameter(0,0.0);
+                projection_fit->SetParameter(1,0.5);
                 projection_fit->SetParLimits(1,0.0,20.0);
 
                 projection->Fit(projection_fit,"QR");
