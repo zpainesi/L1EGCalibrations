@@ -235,11 +235,13 @@ void ApplyIsolation::loops() {
 
                 IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
 
+                
                 if(!Filled_Progression && EG_Iso_Et<=IsoCut_Progression) {
                     ptMap_[pt_Progression_]->Fill(EG_Et);
                     Filled_Progression = kTRUE;
                 }
 
+                
                 if(nEGs >=2 && !Filled_ProgressionD) {
                     if(EG_Et > 10. && EG_Iso_Et<=IsoCut_Progression) {
                         if(iEG==0) {
@@ -251,29 +253,33 @@ void ApplyIsolation::loops() {
                     }
                 }
 
+
+
                 if(nEGs >=2) {
-                    if(EG_Et > 10. && EG_Iso_Et<=IsoCut_Progression) {
-                        if(iEG==0) {
-                            doubleIsoXXp10_thresholdER = std::min(egEt[iEG+1], (EG_Et-10));
-                        }
-                        else  doubleIsoXXp10_thresholdER = EG_Et-10;
-                        nIsoERXXp10EGs+=1;
+                    if( (EG_Iso_Et<=IsoCut_Progression )  and (abs(EG_Eta) < 1.5) and (nIsoERXXp10EGs  < 2) ) {
 
+                        if(nIsoERXXp10EGs==0) {
+                            doubleIsoXXp10_thresholdER   =  EG_Et ;
+                        }
+                        else{
+                            doubleIsoXXp10_thresholdER = std::min( EG_Et , doubleIsoXXp10_thresholdER-10 ) ;
+                        }
+                        nIsoERXXp10EGs++;
                     }
 
-                    if(EG_Et > 5. && EG_Iso_Et<=IsoCut_Progression) {
-                        if(iEG==0) {
-                            doubleIsoXXp5_thresholdER = std::min(egEt[iEG+1], (EG_Et-5));
+                    if( (EG_Iso_Et<=IsoCut_Progression) and  (abs(EG_Eta) < 1.5) and ( nIsoERXXp5EGs < 2 ) ) {
+                        if(nIsoERXXp5EGs==0) {
+                            doubleIsoXXp5_thresholdER = EG_Et;
                         }
-                        else  doubleIsoXXp10_thresholdER = EG_Et-5;
+                        else  {
+                            doubleIsoXXp5_thresholdER = std::min( EG_Et , doubleIsoXXp5_thresholdER -1 );
+                        }
+
                         nIsoERXXp5EGs+=1;
-
                     }
-
-
                 }
 
-                    if( EG_Iso_Et<=IsoCut_Progression) {
+                    if( EG_Iso_Et<=IsoCut_Progression  and nIsoEREGs < 2) {
                         
                         if( doubleIso_threshold > EG_Et ) 
                             doubleIso_threshold = EG_Et ;
@@ -281,7 +287,7 @@ void ApplyIsolation::loops() {
 
                     }
 
-                    if( EG_Iso_Et<=IsoCut_Progression and abs(EG_Eta) < 1.5 ) {
+                    if( EG_Iso_Et<=IsoCut_Progression and abs(EG_Eta) < 1.5  and nIsoEREGs < 2) {
                         if( doubleIso_thresholdER > EG_Et ) 
                             doubleIso_thresholdER = EG_Et ;
                         nIsoEREGs+=1;
@@ -298,14 +304,14 @@ void ApplyIsolation::loops() {
                         ptMap_[pt_ProgressionDIER_]->Fill(doubleIso_thresholdER);
             }
 
-            if(nIsoERXXp5EGs >=2 )
+            if(nIsoERXXp5EGs > 1 and (doubleIsoXXp5_thresholdER >=0 ) )
             {
                         ptMap_[pt_ProgressionDIXXp5ER_]->Fill(doubleIsoXXp5_thresholdER);
             }
 
-            if(nIsoERXXp10EGs >=2 )
+            if( nIsoERXXp10EGs > 1 and ( doubleIsoXXp10_thresholdER >= 0 ) )
             {
-                        ptMap_[pt_ProgressionDIXXp10ER_]->Fill(doubleIsoXXp10_thresholdER);
+                        ptMap_[pt_ProgressionDIXXp10ER_]->Fill(doubleIsoXXp10_thresholdER );
             }
         }
     }
