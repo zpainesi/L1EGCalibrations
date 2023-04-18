@@ -253,8 +253,6 @@ void ApplyIsolation::loops() {
                     }
                 }
 
-
-
                 if(nEGs >=2) {
                     if( (EG_Iso_Et<=IsoCut_Progression )  and (abs(EG_Eta) < 1.5) and (nIsoERXXp10EGs  < 2) ) {
 
@@ -413,14 +411,18 @@ void ApplyIsolation::loops() {
 
         Int_t IsoCut_Progression;
         for(UInt_t e = etMin_; e <= etMax_; e += 1) {
+
+                //Filling pt Progression for Turnon
+                TString PtPassName_= "pT_pass_option_Et" + std::to_string(e);
+                if(l1tEmuPt >= e )	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
             for (auto it :lutProgOptVec_) {
                 TString ResultProgressionName_= "LUT_Progression_" + it ;
                 TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
                 IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
-
-                //Filling pt Progression for Turnon
-                TString PtPassName_= "pT_pass_option" + it + "_Et" + std::to_string(e);
+                
+                PtPassName_= "pT_pass_option" + it + "_Et" + std::to_string(e);
                 if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression)	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
+                
 
                 //Fillling Nvtx/Eta with Iso histos
                 if(eleProbeSclEt>32) {
@@ -485,6 +487,13 @@ void ApplyIsolation::loops() {
 
     //Turnons/Nvtx_Eff/Eta_Eff  for various Ets
     for(UInt_t e = etMin_ ; e <= etMax_ ; e += 1) {
+
+            TString PtPassName_= "pT_pass_option_Et" + std::to_string(e);
+            TString turnOn_Option_="turnOn_Option_Et_" + std::to_string(e);
+            td3->cd();
+            turnOn_Map_[turnOn_Option_]=new TGraphAsymmErrors( pt_pass_Map_[PtPassName_],pT_all,"cp");
+            turnOn_Map_[turnOn_Option_]->Write();
+
         for (auto it :lutProgOptVec_) {
             outputFile_->cd();
 
@@ -644,6 +653,28 @@ void ApplyIsolation::bookHistograms() {
         }
     }
 
+       for(UInt_t e = etMin_ ; e <= etMax_ ; e += 1) {
+
+            //For pt Progression for turnons
+            TString  PtPassName_ = "pT_pass_option_Et" + std::to_string(e);
+            if(!check_pt_turn_on_dir) {
+                td2 = outputFile_->mkdir("pt_progression_for_turnon");
+                check_pt_turn_on_dir = true;
+            }
+            td2->cd();
+            TH1F*PtPass= new TH1F(PtPassName_, PtPassName_, nBins_fine,xEdges_fine);
+            pt_pass_Map_.insert(std::make_pair(PtPassName_, PtPass));
+
+            //For TurnOns
+            TString turnOn_Option_="turnOn_Option_Et_" + std::to_string(e);
+            TGraphAsymmErrors* turnOn_Option;
+            if(!check_turn_on_dir) {
+                td3 = outputFile_->mkdir("turn_on_progression");
+                check_turn_on_dir = true;
+            }
+            turnOn_Map_.insert(std::make_pair(turnOn_Option_,turnOn_Option));
+        }
+
     td2->cd();
     pT_all = new TH1F("pT_all","pT_all",nBins_fine,xEdges_fine); //pt all for turnon
 
@@ -692,7 +723,7 @@ void ApplyIsolation::bookHistograms() {
 
         TString NvtxPass_ ="Nvtx_Pass_Et_" + std::to_string(e);
         TString NvtxFail_ ="Nvtx_Fail_Et_" + std::to_string(e);
-        TString NvtxEff_ ="Nvtx_Eff_Et_" + std::to_string(e);
+        TString NvtxEff_  ="Nvtx_Eff_Et_" + std::to_string(e);
         td5->cd();
         TH1D*thNvtxP = new TH1D(NvtxPass_, NvtxPass_, 100, -0.5, 99.5);
         TH1D*thNvtxF = new TH1D(NvtxFail_, NvtxFail_, 100, -0.5, 99.5);
