@@ -146,7 +146,7 @@ void ApplyIsolation::loops() {
         nb1 = fChain1->GetEntry(jentry);
         nbytes1 += nb1;
 
-        if(jentry%1000 == 0 )
+        if(jentry%reportEvery_ == 0 )
         {
             t_end = std::chrono::high_resolution_clock::now();
             std::cout<<"Processing Entry in event loop (TurnOn) : "<<jentry<<" / "<<nEntries1_<<"  [ "<<100.0*jentry/nEntries1_<<"  % ]  "
