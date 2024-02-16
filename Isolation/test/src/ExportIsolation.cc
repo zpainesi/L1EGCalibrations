@@ -124,14 +124,20 @@ void ApplyIsolation::loops() {
     auto outputTree = fChain1->CloneTree(0);
 
     std::map<TString,float> isolationValues;
+    std::map<TString,float> isolationThresolds;
     
     for (auto it :lutProgOptVec_) {
         
         TString ResultProgressionName_= "ISO_LUT_Progression_" + it ;
         isolationValues[ResultProgressionName_] = 0.0 ;
+        isolationThresolds[ResultProgressionName_] = 0 ;
         outputTree->Branch(ResultProgressionName_ , &isolationValues[ResultProgressionName_] ,ResultProgressionName_+"/F") ;
+        outputTree->Branch(ResultProgressionName_+"_threashold" , &isolationThresolds[ResultProgressionName_] ,ResultProgressionName_+"_threashold/F") ;
 
     }
+        outputTree->Branch("in_compressediEta" , &in_compressediEta ) ;
+        outputTree->Branch("in_compressediEt" , &in_compressediEt ) ;
+        outputTree->Branch("in_compressedNTT" , &in_compressedNTT) ;
 
     Int_t IsoCut_Progression;
     Long64_t nbytes1 = 0, nb1 = 0;
@@ -171,10 +177,11 @@ void ApplyIsolation::loops() {
             for (auto it :lutProgOptVec_) {
                 TString ProgressionName_="ISO_LUT_Progression_" + it ;
                 TString ResultProgressionName_="Step2Histos/LUT_Progression_" + it ;
+                //std::cout<<ResultProgressionName_<<"\n";
                 //TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
                 TH3F* ResultProgressionName = (TH3F*)optionsFile_->Get(ResultProgressionName_.Data());
                 IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
-
+                isolationThresolds[ProgressionName_] = IsoCut_Progression ;
                 if(l1tEmuIsoEt <= IsoCut_Progression)	  isolationValues[ProgressionName_] = 1.0  ;
                 else                                      isolationValues[ProgressionName_] = 0.0  ; 
                 

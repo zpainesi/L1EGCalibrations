@@ -131,6 +131,11 @@ public :
   bool doDynamicBinning;
   std::vector<Int_t> superCompressionToDefaultCompressionMap;
   std::vector<Float_t> puRewightMap;
+
+  Int_t isoOffset;
+  Int_t ietaMinForOffset;
+  Int_t ietaMaxForOffset;
+
 };
 
 #endif

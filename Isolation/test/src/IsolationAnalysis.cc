@@ -16,7 +16,9 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
     doDynamicBinning=false;
     reportEvery=5000;
     maxEntries=-1;
-        
+    isoOffset=0;       
+    ietaMinForOffset = 1e3;
+    ietaMaxForOffset =-1e3;
     readParameters(inputFileName);
     
     puRewightMap.resize(80);
@@ -26,6 +28,11 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
     superCompressionToDefaultCompressionMap.resize(16);
                                              //0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15      
     superCompressionToDefaultCompressionMap={ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 } ;
+    if(doSuperCompression==101){
+                                             // 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 
+      superCompressionToDefaultCompressionMap={ 0,1,2,3,4,5,7,7,8,8, 8, 8, 9, 10, 11, 12};  // custom 101 scheme
+      std::cout<<"\t Loading the super compression map for custom 101 scheme ! \n";
+    }
     if(doSuperCompression==3){
                                             // 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 
       superCompressionToDefaultCompressionMap={ 0,0,1,1,2,2,3,3,4,4, 4, 5, 5, 6, 6, 7};  // 3 bit scheme
@@ -37,8 +44,8 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
       std::cout<<"\t Loading the super compression map for 2 bit compression ! \n";
     }
 
-    tmpFitMin = 14.5 ;
-    tmpFitMax = 31.5 ;
+    tmpFitMin = 10 ;
+    tmpFitMax = 27 ;
 
     if (ntupleFileName_.size() == 0) {
         std::cout << " Inputfile list missing !!!" << ntupleFileName_ << std::endl;
@@ -238,7 +245,7 @@ void IsolationAnalysis::analyse() {
                 projection_fit->SetParameter(0,0.0);
                 projection_fit->SetParameter(1,0.5);
                 projection_fit->SetParameter(2,0);
-                projection_fit->SetParLimits(1,0.0,20.0);
+                //projection_fit->SetParLimits(1,0.0,20.0);
                 projection_fit->SetParLimits(2,0.0,10.0);
 
                 projection->Fit(projection_fit,"QR");
@@ -621,7 +628,12 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                 }
                 for(Int_t k = 0 ; k < lutnTTVec_.size()-1; k++)
                 {
-                    Int_t IsoCut_Progression = eff_histo->GetBinContent(i+1,j+1, k+1);
+                    Int_t IsoCut_Progression = eff_histo->GetBinContent(i+1,j+1, k+1) ;
+                    if( ( i <= ietaMaxForOffset ) and ( i>= ietaMinForOffset) )
+                        {
+                         std::cout<<"DEF Offseting for ieta : "<<i<<" \n";
+                         IsoCut_Progression+=isoOffset;
+                        }
                     if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
                     else if(Int_Efficiency_Progression== 0) IsoCut_Progression = 0;
                     it.second->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
@@ -631,7 +643,13 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                     else if(Int_Efficiency_Progression== 0 ) IsoCut_Progression = 0 ;
                     else{
                             //IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
-                            IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  + currentFit->GetParameter(2) *k*k) , 0);
+                            IsoCut_Progression = Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  + currentFit->GetParameter(2) *k*k);
+                            if (IsoCut_Progression==0) IsoCut_Progression=1;
+                            if( ( i <= ietaMaxForOffset ) and ( i>= ietaMinForOffset) )
+                            {
+                                std::cout<<"V2 Offseting for ieta : "<<i<<" \n";
+                                IsoCut_Progression+=isoOffset;
+                            }
                            // std::cout<<"For [ "<<i<<","<<j<<" ]  nTT  = "<<k<<" : "<<
                     }
                     lutProgHistoMap_v2_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
@@ -656,7 +674,12 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                     if(Int_Efficiency_Progression==100) IsoCut_Progression      = 1000 ;
                     else if(Int_Efficiency_Progression== 0 ) IsoCut_Progression = 0 ;
                     else{
-                            IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k + currentFit->GetParameter(2) *k*k) , 0);
+                            IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k + currentFit->GetParameter(2) *k*k) , 0) ;
+                            if( ( i <= ietaMaxForOffset ) and ( i>= ietaMinForOffset) )
+                            {
+                                std::cout<<"V3 Offseting for ieta : "<<i<<" \n";
+                                IsoCut_Progression+=isoOffset;
+                            }
                     }
 
                     lutProgHistoMap_v3_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
@@ -779,6 +802,9 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
             if(key=="NtupleFileName")        ntupleFileName_= value;
             else if (key=="OutputWPStepFileName") outputWPFileName_ = value.c_str();
             else if (key=="DoSuperCompression")  doSuperCompression = atoi(value.c_str());
+            else if (key=="ietaMinForOffset")  ietaMinForOffset = atoi(value.c_str());
+            else if (key=="ietaMaxForOffset")  ietaMaxForOffset = atoi(value.c_str());
+            else if (key=="IsoOffset")  isoOffset = atoi(value.c_str());
             else if (key=="DoDynamicBinning")  doDynamicBinning = atoi(value.c_str()) > 0;
             else if (key=="OutputFileName")  outputFileName_ = value.c_str();
             else if (key=="EtLUTFileName")	readLUTTable(value,nBinsIEt, lutMapIEt_);
