@@ -55,12 +55,11 @@ make -j 4  # To generate regression.exe file
     * Run2IdLevel  (isProbeLoose from the TagAndProbe tree)
 
 2. Use the script `produceTreeWithCompressedIetaEShape.py` to compress the variables. This file uses the following .txt files containing the compressions of each variable:
-    * data/compressedSortedShapes.txt
     * data/egCompressShapesLUT_calibr_4bit_v4.txt
     * data/egCompressELUT_4bit_v4.txt
     * data/egCompressEtaLUT_4bit_v4.txt
     
-    This step will produce a new root file  which will be used for regression of caliberation LUT.
+    This step will produce a new root file  which will be used for regression of caliberation LUT .It will also make `data/compressedSortedShapes.txt`  which will later be used to decompress the shape variable.
 
 3. Setup the `regressionConfig.cfg` for regression training 
 
@@ -70,7 +69,7 @@ $ ./regression.exe regressionConfig.cfg
 ```
   This step should make a XXresultXX.root in the designated output directory in `regressionConfig.cfg`
 
-5. Use `produceCalibrationLUTwithoutShapes.py` to 
+5. Use `produceCalibrationLUTwithoutShapes.py` to  ( this file uses the `data/compressedSortedShapes.txt` produced earlier)
 ```bash
 $ python produceCalibrationLUTwithoutShapes.py    # Produce the calibration LUT without the shapes:
 ```
