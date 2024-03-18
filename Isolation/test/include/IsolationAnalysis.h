@@ -28,14 +28,14 @@ public :
   
   // Declaration of leaf types
 
-  // Int_t          et;
-  // Int_t          eta;
-  // Int_t          ntt;
-  // Int_t          iso;
-  float et;
-  float eta;
-  float ntt;
-  float iso;
+  Int_t          et;
+  Int_t          eta;
+  Int_t          ntt;
+  Int_t          iso;
+  // float et;
+  // float eta;
+  // float ntt;
+  // float iso;
   float eleProbeEta	;
   float eleProbePhi	;
   float eleTagEta   ;
