@@ -1,9 +1,9 @@
 #include "L1EGRatePlotter.h"
-#include "chrono"
 #include <iostream>
 #include <fstream>
 
 L1EGRatePlotter::L1EGRatePlotter(std::string& inputFileName){
+  nEntries_ = 1e9;
   readParameters(inputFileName);
   if (ntupleFileName_.size() == 0) {
     std::cout << " Inputfile list missing !!!" << ntupleFileName_ << std::endl;
@@ -13,8 +13,6 @@ L1EGRatePlotter::L1EGRatePlotter(std::string& inputFileName){
 
   assert(fChain);
   reportEvery_=10000;
-  nttProfileTrue=nullptr;
-  puProfileTrue=nullptr;
   nttProfile=nullptr;
   puProfile=nullptr;
   bookedHistograms_ = false;
@@ -31,20 +29,16 @@ void L1EGRatePlotter::accessTree(std::string & input_filelist) {
     fChainForPU=0;
   } else {
     //    fChain = new TChain("l1UpgradeEmuTree/L1UpgradeTree");
-    //fChain = new TChain("l1UpgradeEmuTree/L1UpgradeTree");
+    fChain = new TChain("l1UpgradeEmuTree/L1UpgradeTree");
     //fChainForPU= new TChain("l1EventTree/L1EventTree");
-    //fChain = new TChain("L1UpgradeEmuTree");
-    fChain = new TChain("L1UpgradeTree");
-    fChainForPU= new TChain("L1EventTree");
     static constexpr int BUF_SIZE = 256;
     char buf[BUF_SIZE];
     while (myFile.getline(buf, BUF_SIZE, '\n')) {  // Pops off the newline character
       std::string line(buf); 
       fChain->AddFile(line.c_str(),-1);
-      fChainForPU->AddFile(line.c_str(),-1);
-      std::cout << "Adding file " << line << " Entries " << fChain->GetEntries() << "( "<<fChainForPU->GetEntries()<<" )"<<  std::endl;
+      //fChainForPU->AddFile(line.c_str(),-1);
+      std::cout << "Adding file " << line << " Entries " << fChain->GetEntries()<<"\n";// << "( "<<fChainForPU->GetEntries()<<" )"<<  std::endl;
     }
-    std::cout<<"Total : "<<fChain->GetEntries()<<"\n";
    // fChain->Print();
   }
 }
@@ -52,7 +46,7 @@ void L1EGRatePlotter::accessTree(std::string & input_filelist) {
 void L1EGRatePlotter::loop()
 {
    if (fChain == 0) return;
-   nEntries_ = fChain->GetEntriesFast()*0 + 1e6;
+   nEntries_ = std::min(fChain->GetEntriesFast(),nEntries_);
    std::cout << " Entries " << nEntries_ << std::endl;
    Long64_t nbytes = 0, nb = 0;
    Float_t weight(0.0);
@@ -61,26 +55,33 @@ void L1EGRatePlotter::loop()
   auto t_end = std::chrono::high_resolution_clock::now();
   Long64_t evtCount(0);
 
+   //for (Long64_t jentry=0; jentry < nEntries_; jentry++) {
    for (Long64_t jentry=0; jentry < nEntries_; jentry++) {
+ 
+    if(jentry%reportEvery_ == 0 )
+      {
+        	t_end = std::chrono::high_resolution_clock::now();
+        	std::cout<<"Processing Entry in event loop (Rate) : "<<jentry<<" / "<<nEntries_<<"  [ "<<100.0*jentry/nEntries_<<"  % ]  "
+        		 << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
+        		 <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nEntries_ - jentry)/(1e-9 + jentry)* 0.001
+                 <<" evts  : "<<evtCount
+        		 <<std::endl;
+      }
       Long64_t ientry = fChain->LoadTree(jentry);
       if (ientry < 0) break;
-      Long64_t iientry = fChainForPU->LoadTree(jentry);
-      if (iientry < 0) break;
-      
+ //     Long64_t iientry = fChainForPU->LoadTree(jentry);
+ //     if (iientry < 0) break;
       
       nb = fChain->GetEntry(jentry);   nbytes += nb;
-      nb = fChainForPU->GetEntry(jentry);
-      
-      puProfileTrue->Fill(nPV_True);
-      nttProfileTrue->Fill(nTT);
-      
-      weight=0.0;
-//    if( nPV_True <= 50 and nPV_True>=44 ) { weight=1.0; evtCount++;}
+      //nb = fChainForPU->GetEntry(jentry);
+      weight=0;
+      //if( nPV_True <= 50 and nPV_True>=44 ) { weight=1.0; evtCount++;}
+      nPV_True=50;
       if( nPV_True <= 52 and nPV_True>=44 ) { weight=1.0; evtCount++;}
       else continue;
-//     if (jentry > 20) break;
+   //     if (jentry > 20) break;
       int Et_Threshold=0; 
-      int Bunches = 4;     
+      int Bunches = 2544;     
 
       number_EGsBranch->GetEntry(jentry);
       EG_ETBranch->GetEntry(jentry);
@@ -90,28 +91,15 @@ void L1EGRatePlotter::loop()
       
       //std::cout << " jentry " << jentry << " nEGs " << nEGs << " " << egEt.size() <<std::endl;
 
-   // if(run != 352912) continue;
-   // if( lumi < 100 or lumi > 124) continue;
-    if(jentry%reportEvery_ == 0 )
-      {
-        	t_end = std::chrono::high_resolution_clock::now();
-        	std::cout<<"Processing Entry in event loop (Rate) : "<<jentry<<" / "<<nEntries_<<"  [ "<<100.0*jentry/nEntries_<<"  % ]  "
-        		 << " Elapsed time : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()/1000.0
-        		 <<"  Estimated time left : "<< std::chrono::duration<double, std::milli>(t_end-t_start).count()*( nEntries_ - jentry)/(1e-9 + jentry)* 0.001
-                 <<" evts  : "<<evtCount
-        		 <<std::endl;
-            std::cout<<"\t\t Run , Lumi : "<<run<<" , "<<lumi<<"\n";
-      }
-
     nTT=0;
     if(nEGs >0) nTT=egNTT[0];
 
     for(Et_Threshold=0; Et_Threshold<=etMax_; Et_Threshold++)
-	{    
+	{  
 	  Int_t nPassed_Single = 0;
 	  Int_t nPassed_Double = 0;
 	  Int_t nPassed_TightIso_Single = 0;	  	  
-      Int_t nPassed_LooseIso_Single = 0;
+          Int_t nPassed_LooseIso_Single = 0;
 	  Int_t nPassed_LooseIso_Double = 0;
 	  bool flag_Double = false;
 	  bool flag_LooseIso_Double = false;	  
@@ -130,13 +118,9 @@ void L1EGRatePlotter::loop()
 
 		if (EG_Et >= Et_Threshold+10) flag_Double = true;
 		nPassed_Double++;
-		std::cout<<EG_Iso<<"\n";
-		if (EG_Iso==1 || EG_Iso==3) {
-            nPassed_TightIso_Single++;
-                std::cout<<" isTight \n";
-		}
-        if (EG_Iso==2 || EG_Iso==3) {
-                std::cout<<" isLoose \n";
+		
+		if (EG_Iso==1 || EG_Iso==3) nPassed_TightIso_Single++;
+		if (EG_Iso==2 || EG_Iso==3) {
 		  nPassed_LooseIso_Single++;
 		  if (EG_Et >= Et_Threshold+10) flag_LooseIso_Double = true;
 		  nPassed_LooseIso_Double++;	      
@@ -158,9 +142,9 @@ void L1EGRatePlotter::loop()
 	      if (flag) it->second->Fill(Et_Threshold);
 	    }
 	}
+     puProfile->Fill(nPV_True);
+     nttProfile->Fill(nTT);
      sumEventWeight+=weight;
-     puProfile->Fill(nPV_True,weight);
-     nttProfile->Fill(nTT,weight);
      puSum+=weight*nPV_True;
    }
 
@@ -185,8 +169,6 @@ void L1EGRatePlotter::bookHistograms()
     
   }
  
-  puProfileTrue  = new TH1F("puProfileTrue" ,"PU Profile for the Dataset ", 100, -0.5,  99.5);
-  nttProfileTrue = new TH1F("nttProfileTrue","nTT Profile for the Dataset ", 200, -0.5, 199.5);
   puProfile  = new TH1F("puProfile" ,"PU Profile for the Dataset ", 100, -0.5,  99.5);
   nttProfile = new TH1F("nttProfile","nTT Profile for the Dataset ", 200, -0.5, 199.5);
   
@@ -236,8 +218,6 @@ void L1EGRatePlotter::scaleHistograms(){
 void L1EGRatePlotter::saveHistograms() {
   if (outputFile_ && bookedHistograms_) {
     scaleHistograms();
-    puProfileTrue->Write();
-    nttProfileTrue->Write();
     puProfile->Write();
     nttProfile->Write();
     outputFile_->Write();
@@ -257,13 +237,13 @@ void L1EGRatePlotter::readParameters(const std::string jfile) {
       // enable '#' and '//' style comments
       if (line.substr(0,1) == "#" || line.substr(0,2) == "//") continue;
       std::vector<std::string> tokens;
-      std::cout<<line<<"\n";
       tokenize(line,tokens,"=");
       std::cout << tokens[0] << ":" << tokens[1] << std::endl;
       std::string key   = tokens.at(0);
       std::string value = tokens.at(1); 
       if(key=="NtupleFileName")        ntupleFileName_= value;
       else if (key=="ReportEvery")     reportEvery_ = std::stoi(value.c_str());
+      else if (key=="MaxEvents")       nEntries_  = std::stoi(value.c_str());
       else if (key=="OutputFileName")  outputFileName_ = value.c_str();
       else if (key=="EtMaxCutoff")     etMax_ = std::atoi(value.c_str());      
       else if (key=="RateHistoNames")      
@@ -304,10 +284,8 @@ void L1EGRatePlotter::readTree()
   fChain->SetBranchAddress("egBx",  &egBx, &EG_BXBranch);
   fChain->SetBranchAddress("egNTT", &egNTT);
   
-  fChainForPU->SetMakeClass(1);
-  fChainForPU->SetBranchAddress("nPV_True", &nPV_True);
-  fChainForPU->SetBranchAddress("run", &run);
-  fChainForPU->SetBranchAddress("lumi", &lumi);
+  //fChainForPU->SetMakeClass(1);
+  //fChainForPU->SetBranchAddress("nPV_True", &nPV_True);
 }
 
 void L1EGRatePlotter::tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters) {
@@ -344,3 +322,4 @@ int main(int argc,char *argv[]) {
   treeReader.saveHistograms();
   return 0;
 }
+

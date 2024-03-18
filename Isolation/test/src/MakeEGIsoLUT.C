@@ -175,13 +175,11 @@ void MakeEGIsoLUT(string option,TString prefix="",TString infilename="", bool is
         }
     }
 
-  int totIDXexpected = pow(2,etaBits) + pow(2,etBits) + pow (2, nTTBits) + pow (2, cmprEta+cmprEt+cmprnTT);
+  int totIDXexpected =  pow (2, cmprEta+cmprEt+cmprnTT) ; // +pow(2,etaBits) + pow(2,etBits) + pow (2, nTTBits) 
   cout << "TOTAL IDX " << TotalIDX << " expected: " << totIDXexpected << endl;
   cout << "Max allowed by input LUT bits: " << pow(2, totInBits) << endl;
-  if (TotalIDX >= pow(2, totInBits))
+  if (TotalIDX > pow(2, totInBits))
     {
       cout << " **** WARNING!!! too few input bits " << totInBits << " , please increase value in header" << endl;
     } 
-  
-
 }

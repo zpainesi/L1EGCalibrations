@@ -221,13 +221,15 @@ void IsolationAnalysis::analyse() {
             {
                 TString projName = "pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TH1D* projection = IsoCut_PerBin[iEff]->ProjectionZ(projName, ieta+1, ieta+1, iet+1, iet+1, "e");
-
+                if (projection->Integral() < 1)
+                {
+                    std::cout<<"Got empty projections in : eta "<<ieta<<" and et : "<<et<<" @ eff : "<<iEff<<"\n";
+                }
                 TString fitName = "fit_pz_"+to_string(iEff)+"_eta"+to_string(ieta)+"_e"+to_string(iet);
                 TF1* projection_fit = new TF1(fitName,"[0]+[1]*x", tmpFitMin, tmpFitMax);
                 projection_fit->SetParameter(0,0.0);
                 projection_fit->SetParameter(1,0.5);
                 projection_fit->SetParLimits(1,0.0,20.0);
-
                 projection->Fit(projection_fit,"QR");
                 
 
@@ -618,7 +620,9 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                     else if(Int_Efficiency_Progression== 0 ) IsoCut_Progression = 0 ;
                     else{
                             IsoCut_Progression = max(Int_t(currentFit->GetParameter(0) + currentFit->GetParameter(1) *k  ) , 0);
-                           // std::cout<<"For [ "<<i<<","<<j<<" ]  nTT  = "<<k<<" : "<<
+                             std::cout<<"For [ "<<i<<","<<j<<" ]  nTT  = "<<k<<" : "
+                                      << "Fit ( "<<currentFit->GetParameter(0)<<" ,"<<currentFit->GetParameter(1)  
+                                      <<" ) , Iso : "<<IsoCut_Progression <<"\n";
                     }
                     lutProgHistoMap_v2_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 

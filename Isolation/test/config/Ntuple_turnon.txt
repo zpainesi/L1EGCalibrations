@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/slimmedDSet_TagAndProbe_eraG_recaliberated_EGamma_ZS0p5_v5.root
+/media/aravind/E/aravind/workarea/l1egamma/TandP_EGamma0And1_2023D_reEmulated_v0_etRegressed.root
