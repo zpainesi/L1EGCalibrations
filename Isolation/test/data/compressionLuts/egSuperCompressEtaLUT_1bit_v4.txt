@@ -1,0 +1,22 @@
+# Compressed ieta 5->4 bits.
+# Index is ieta (5 bits). Compressed ieta is encoded on 4 bits
+#anything after # is ignored with the exception of the header
+#the header is first valid line starting with #<header> versionStr(unused but may be in future) nrBitsAddress nrBitsData </header>
+#<header> V4 5 4 </header>>
+
+0 0
+1 0
+2 0
+3 0
+4 0
+5 0
+6 0
+7 0
+8 1
+9 1
+10 1
+11 1
+12 1
+13 1
+14 1
+15 1
