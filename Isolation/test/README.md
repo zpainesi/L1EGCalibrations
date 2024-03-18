@@ -44,19 +44,21 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
   ```
 
   Since `step 1` takes a long time to run, is a covininat methord to do `step 1` once and reuse its output for defining the LUT histogram maps.
-
+  In this step it is possible to include a desired supercompression scheme eta. For this the eta compresion LUT need to be fixed to the targeted supercompression lut. The super compression scheme shold not be arbitrary. it shold map to one of the suprecompression scheme defined in the IsoalationAnalysis.cc file. 
+  For Step-2  the parameter `DoSuperCompression=XXX` should be set according to the step 1 configuration.
   The Configuration file is described as below :
   ```
     NtupleFileName=<file path to the list of Tag and Probe Ntuples.>
     OutputFileName=<Name of the output filename>
-    EtLUTFileName=data/compressionLuts/egCompressELUT_4bit_v4.txt
-    EtaLUTFileName=data/compressionLuts/egCompressEtaLUT_4bit_v4.txt
+    EtLUTFileName=data/compressionLuts/egCompressELUT_4bit_v4.txt 
+    EtaLUTFileName=data/compressionLuts/egCompressEtaLUT_4bit_v4.txt  <OR ANY OTHER SUPERCOMRESSION SCHEME>
     NTTLUTFileName=data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
     SCEtaLUTFileName=<Doesnot Care>
     SCNTTLUTFileName=<Doesnot Care>
     OutputWPStepFileName=<Path to the output file of step 1 , to be used if you invoke do_2 >
     MaxEntries=-1
     LUTProgressionOptions=<lut description string>
+    DoSuperCompression=2 <ONLY USED IN Step 2>
     ReportEvery=5000
   ```
   **A <lut description string> for the grid search can be obtained by using the custon script available at `misc/makeOptionsGrid.py`**
