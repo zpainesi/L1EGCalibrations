@@ -3,7 +3,6 @@ OutputFileName=test_WPFile.root
 EtLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egCompressELUT_4bit_v4.txt
 EtaLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egCompressEtaLUT_4bit_v4.txt
 NTTLUTFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
-OutputWPStepFileName=/grid_mnt/t3storage3/athachay/l1egamma/isolation/CMSSW_12_3_0_pre3/src/L1EGCalibrations/Isolation/test/CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedDefault_WPFile.root
 DoSuperCompression=0
 DoDynamicBinning=1
 MaxEntries=-1
