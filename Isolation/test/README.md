@@ -49,13 +49,13 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
   The Configuration file is described as below :
   ```
     NtupleFileName=<file path to the list of Tag and Probe Ntuples.>
-    OutputFileName=<Name of the output filename>
+    OutputFileName=<Name of the output filename>  
     EtLUTFileName=data/compressionLuts/egCompressELUT_4bit_v4.txt 
     EtaLUTFileName=data/compressionLuts/egCompressEtaLUT_4bit_v4.txt  <OR ANY OTHER SUPERCOMRESSION SCHEME>
     NTTLUTFileName=data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
     SCEtaLUTFileName=<Doesnot Care>
     SCNTTLUTFileName=<Doesnot Care>
-    OutputWPStepFileName=<Path to the output file of step 1 , to be used if you invoke do_2 >
+    OutputWPStepFileName=<Path to the output file of step 1 , to be used if you invoke do_2 > <ignored in step 1>
     MaxEntries=-1
     LUTProgressionOptions=<lut description string>
     DoSuperCompression=2 <ONLY USED IN Step 2>
