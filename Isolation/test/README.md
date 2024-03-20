@@ -44,8 +44,11 @@ You can produce the isolation LUT (text file) with the script **TO BE FILLED** .
   ```
 
   Since `step 1` takes a long time to run, is a covininat methord to do `step 1` once and reuse its output for defining the LUT histogram maps.
+  
   In this step it is possible to include a desired supercompression scheme eta. For this the eta compresion LUT need to be fixed to the targeted supercompression lut. The super compression scheme shold not be arbitrary. it shold map to one of the suprecompression scheme defined in the IsoalationAnalysis.cc file. 
-  For Step-2  the parameter `DoSuperCompression=XXX` should be set according to the step 1 configuration.
+  
+  For Step-2  the parameter `DoSuperCompression=XXX` should be set according to the step 1 configuration.Also the Eta-LUTs it shold point to shold be the prescribed 4-bit LUT (*Not the Supercompression LUT*)
+  
   The Configuration file is described as below :
   ```
     NtupleFileName=<file path to the list of Tag and Probe Ntuples.>
