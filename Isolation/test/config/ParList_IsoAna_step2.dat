@@ -1,7 +1,7 @@
 NtupleFileName=/afs/cern.ch/work/z/zpainesi/L1EGCalibrations/CMSSW_13_3_0/src/L1EGCalibrations/Isolation/test/config/Ntuple_turnon.txt
 OutputFileName=testHaris_WPFile_step2.root
 EtLUTFileName=/afs/cern.ch/work/z/zpainesi/L1EGCalibrations/CMSSW_13_3_0/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egCompressELUT_4bit_v4.txt
-EtaLUTFileName=/afs/cern.ch/work/z/zpainesi/L1EGCalibrations/CMSSW_13_3_0/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egSuperCompressEtaLUT_4bit_v4.txt
+EtaLUTFileName=/afs/cern.ch/work/z/zpainesi/L1EGCalibrations/CMSSW_13_3_0/src/L1EGCalibrations/Isolation/test/data/compressionLuts/egCompressEtaLUT_4bit_v4.txt
 NTTLUTFileName=/afs/cern.ch/work/z/zpainesi/L1EGCalibrations/CMSSW_13_3_0/src/L1EGCalibrations/Isolation/test/data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
 OutputWPStepFileName=/afs/cern.ch/work/z/zpainesi/L1EGCalibrations/CMSSW_13_3_0/src/L1EGCalibrations/Isolation/test/testHaris_WPFile_step1.root
 DoSuperCompression=2
