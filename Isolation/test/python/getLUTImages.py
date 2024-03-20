@@ -16,7 +16,7 @@ allLUTS={
     #'tight_july2022' : 'LUTs/eg_IsoLUT_tight_Opt_L281_7p5_0p9_30p0_12_Jul_2022.txt',
     #'loose_run2'     : 'LUTs/EG_LoosestIso_2018.2.txt',
     #'tight_run2'     : 'LUTs/EG_Iso_LUT_04_04_2017.2.txt',
- #   'tau_Iso_2022'   : 'LUTs/Tau_Iso_LUT_2022_calibThr1p7_rate14kHz_V11gs_effMin0p9_G3.txt',
+ #   'tau_Iso_2022'   : '/Tau_Iso_LUT_2022_calibThr1p7_rate14kHz_V11gs_effMin0p9_G3.txt',
     'egAUG_testLUT_opt125' : 'LUTs/EG_Iso_LUT_Flat_WP_125_5p0_0p7_45p0.txt',
     'egDEF_testLUT_opt125' : 'LUTs/EG_Iso_LUT_Flat_WP_125_5p0_0p7_45p0_def.txt'
 }
@@ -62,7 +62,7 @@ for ky in allLUTS:
         t.set_bbox(dict(facecolor='w',alpha=1.0, edgecolor='r'))
         plt.colorbar(c,cax=ax2)
     f.suptitle('LUT : '+ky+"\n"+fname.split('/')[-1],y=0.91)
-    fname='LUTs/'+ky+'.jpeg'
+    fname=ky+'.jpeg'
     print("Saving : ",fname)
     f.savefig(fname,bbox_inches='tight')
     #     if et > 2:
