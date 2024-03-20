@@ -611,8 +611,8 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                 for(Int_t k = 0 ; k < lutnTTVec_.size()-1; k++)
                 {
                     Int_t IsoCut_Progression = eff_histo->GetBinContent(i+1,j+1, k+1);
-                    if(Int_Efficiency_Progression==100) IsoCut_Progression = 1000;
-                    else if(Int_Efficiency_Progression== 0) IsoCut_Progression = 0;
+                    if(Int_Efficiency_Progression==100){IsoCut_Progression = 1000;std::cout<<"eff prog=100"<<std::endl}
+                    else if(Int_Efficiency_Progression== 0) {IsoCut_Progression = 0;std::cout<<"eff prog=0"<<std::endl}
                     it.second->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
                     // Filling from the Fit extrapolation
