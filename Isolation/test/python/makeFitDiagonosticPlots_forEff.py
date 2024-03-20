@@ -15,6 +15,7 @@ def main():
     parser.add_argument('--ietMin' ,help="Min value for iEt ",default=0,type=int)
     parser.add_argument('--ietaMax',help="Max value for iEta",default=15,type=int)
     parser.add_argument('--ietMax' ,help="Max value for iEt ",default=15,type=int)
+    parser.add_argument('--isQuad' ,help="Is quadratic fit ",action='store_true')
     args = parser.parse_args()
     
     inputWPFile = ROOT.TFile(args.input)
@@ -46,10 +47,14 @@ def main():
     
                 a=fit.GetParameter(0)
                 b=fit.GetParameter(1)
+                c=0.0
+                if args.isQuad:
+                    c=fit.GetParameter(1)
+
                 chi2=fit.GetChisquare()
                 ndf=fit.GetNDF()
                 hep.histplot(hist,histtype='errorbar',ax=ax)
-                y=a+b*x
+                y=a+b*x+c*x*x
                 ax.annotate(f'{ eff = }% , { ieta = } ,{ et = }'      , (0.1,0.85), xycoords='axes fraction', fontsize=17)
                 ax.annotate(f'Chi2 : {np.round(chi2,2)} , NDF : {ndf}', (0.1,0.7), xycoords='axes fraction',  fontsize=15 )
                 ax.annotate(f'{np.round(a,2)} + {np.round(b,2)} *x '  , (0.1,0.6), xycoords='axes fraction',  fontsize=15)
