@@ -2,24 +2,17 @@ import ROOT
 import matplotlib.pyplot as plt
 import numpy as np
 import json,sys,os,argparse
+"""
+Usage
+  python3 -t looeIsoDev_prelims -i EG_Iso_LUT_Flat_WP_582_10p0_0p7_40p0.txt 
 
+"""
 parser = argparse.ArgumentParser()
-parser.add_argument('-t',"--tag", help="Tag for file",default=None)
-parser.add_argument('-i',"--input", help="input file",default=None)
+parser.add_argument('-t',"--tag", help="Tag for file, this will become the name of the output jpeg")
+parser.add_argument('-i',"--input", help="input LUT file")
 args = parser.parse_args()
 
-allLUTS={
-    
-    #'loose_nov2022'  : 'LUTs/EG_Iso_LUT_Option_153_5p0_0p9_25p0_31Oct22.txt',
-    #'tight_nov2022'  : 'LUTs/EG_Iso_LUT_Option_716_15p0_0p9_37p5_31Oct22.txt',
-    #'loose_july2022' : 'LUTs/eg_IsoLUT_loose_Opt_L137_5p0_0p9_30p0_12_Jul_2022.txt',
-    #'tight_july2022' : 'LUTs/eg_IsoLUT_tight_Opt_L281_7p5_0p9_30p0_12_Jul_2022.txt',
-    #'loose_run2'     : 'LUTs/EG_LoosestIso_2018.2.txt',
-    #'tight_run2'     : 'LUTs/EG_Iso_LUT_04_04_2017.2.txt',
- #   'tau_Iso_2022'   : 'LUTs/Tau_Iso_LUT_2022_calibThr1p7_rate14kHz_V11gs_effMin0p9_G3.txt',
-    'egAUG_testLUT_opt125' : 'LUTs/EG_Iso_LUT_Flat_WP_125_5p0_0p7_45p0.txt',
-    'egDEF_testLUT_opt125' : 'LUTs/EG_Iso_LUT_Flat_WP_125_5p0_0p7_45p0_def.txt'
-}
+allLUTS={}
 if args.tag:
     allLUTS={args.tag : args.input}
 
