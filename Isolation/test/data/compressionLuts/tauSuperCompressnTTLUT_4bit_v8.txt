@@ -1,0 +1,37 @@
+# Compressed nTT 10->5 bits.
+# Index is nTT (10 bits). Compressed nTT is encoded on 5 bits
+# anything after # is ignored with the exception of the header
+# the header is first valid line starting with #<header> versionStr(unused but may be in future) nrBitsAddress nrBitsData </header>
+#<header> V8 10 5 </header>
+0 0 #nTT=0
+1 0 #nTT=1
+2 1 #nTT=2
+3 1 #nTT=3
+4 2 #nTT=4
+5 2 #nTT=5
+6 3 #nTT=6
+7 3 #nTT=7
+8 4 #nTT=8
+9 4 #nTT=9
+10 5 #nTT=10
+11 5 #nTT=11
+12 6 #nTT=12
+13 6 #nTT=13
+14 7 #nTT=14
+15 7 #nTT=15
+16 8
+17 8
+18 9
+19 9
+20 10
+21 10
+22 11
+23 11
+24 12
+25 12
+26 13
+27 13
+28 14
+29 14
+30 15
+31 15
