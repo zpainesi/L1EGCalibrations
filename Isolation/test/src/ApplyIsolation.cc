@@ -393,7 +393,7 @@ void ApplyIsolation::loops() {
                      <<std::endl;
         }
         if(!( isProbeLoose==1 && fabs(eleProbeEta) < 2.5  && sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2))>0.6)) continue;
-        pT_all->Fill(eleProbeSclEt);
+        pT_all->Fill(eleProbePt);
         if(l1tEmuRawEt < 0.) continue;
         sum++;
 
@@ -415,18 +415,18 @@ void ApplyIsolation::loops() {
 
                 //Filling pt Progression for Turnon
                 TString PtPassName_= "pT_pass_option_Et" + std::to_string(e);
-                if(l1tEmuPt >= e )	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
+                if(l1tEmuPt >= e )	  pt_pass_Map_[PtPassName_]->Fill(eleProbePt);
             for (auto it :lutProgOptVec_) {
                 TString ResultProgressionName_= "LUT_Progression_" + it ;
                 TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
                 IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
                 
                 PtPassName_= "pT_pass_option" + it + "_Et" + std::to_string(e);
-                if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression)	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
+                if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression)	  pt_pass_Map_[PtPassName_]->Fill(eleProbePt);
                 
 
                 //Fillling Nvtx/Eta with Iso histos
-                if(eleProbeSclEt>32) {
+                if(eleProbePt>32) {
                     if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression) {
                         TString NvtxPassIso_ ="Nvtx_Pass_Iso_" + it + "_Et_" + std::to_string(e);
                         TString EtaPassIso_  ="Eta_Pass_Iso_" + it + "_Et_" + std::to_string(e);
@@ -446,7 +446,7 @@ void ApplyIsolation::loops() {
                     }
                 }
 
-                if( ( eleProbeSclEt > (e-2) ) and ( eleProbeSclEt < (e+15)  ) )
+                if( ( eleProbePt > (e-2) ) and ( eleProbePt < (e+15)  ) )
                 {
                     if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression) {
                         TString nTTPassIso_  ="nTT_Pass_Iso_" + it + "_Et_" + std::to_string(e);
@@ -461,7 +461,7 @@ void ApplyIsolation::loops() {
                 }
                 
             //Fillling Nvtx/Eta no Iso histos
-            if(eleProbeSclEt>32) {
+            if(eleProbePt>32) {
                 if(l1tEmuPt >= e) {
                     TString NvtxPass_ ="Nvtx_Pass_Et_" + std::to_string(e);
                     TString EtaPass_ ="Eta_Pass_Et_" + std::to_string(e);
@@ -904,7 +904,8 @@ void ApplyIsolation::readTree() {
     fChain1->SetBranchAddress("l1tEmuNTT",&l1tEmuNTT);
     fChain1->SetBranchAddress("l1tEmuRawEt",&l1tEmuRawEt);
     fChain1->SetBranchAddress("l1tEmuTowerIEta",&l1tEmuTowerIEta);
-    fChain1->SetBranchAddress("eleProbeSclEt",&eleProbeSclEt);
+    //fChain1->SetBranchAddress("eleProbeSclEt",&eleProbeSclEt);
+    fChain1->SetBranchAddress("eleProbePt",&eleProbePt);
     fChain1->SetBranchAddress("l1tEmuIsoEt",&l1tEmuIsoEt);
 
     fChain1->SetBranchAddress("eleProbeEta",&eleProbeEta);
