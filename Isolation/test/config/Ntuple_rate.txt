@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/run3Data/l1ntuples_eraG_recaliberated_EphZB_ZS0p5_v1.root
+/grid_mnt/t3storage3/athachay/l1egamma/data/2024/EphZB_0And1_2023D_reEmulated_v0_HCALResponse_etRecaliberatedV1.root

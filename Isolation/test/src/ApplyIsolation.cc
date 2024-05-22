@@ -26,7 +26,10 @@
 #include <chrono>
 
 ApplyIsolation::ApplyIsolation(std::string& inputFileName) {
-
+    reportEvery_=1000;
+    stride=1;
+    etMax_=50;
+    etMin_=0.0;
     for(Int_t i=0 ; i<= nBins_fine; i++)
     {
         xEdges_fine[i]=0.0+i*1.0;
@@ -43,7 +46,6 @@ ApplyIsolation::ApplyIsolation(std::string& inputFileName) {
     }
 
     accessTree(ntupleFileNameRate_, ntupleFileNameTurnOn_);
-
     assert(fChain);
 
     bookedHistograms_ = false;
@@ -154,8 +156,13 @@ void ApplyIsolation::loops() {
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_end = std::chrono::high_resolution_clock::now();
     double sum_weight=0.;
+    if(reportEvery_%stride !=0 ){
+        reportEvery_=int((reportEvery_+1)/stride)*stride;
+        std::cout<<"\n reportEvery updated to : "<<reportEvery_<<"\n";
+     }
+    std::cout<<"  stride  : "<<stride<<"\n";
     for (Long64_t jentry=0; jentry < nEntries_; jentry++) {
-
+        //std::cout<<" jentry : "<<jentry<<"\n";
         Long64_t ientry = fChain->LoadTree(jentry);
         Long64_t i1entry = fChain_1->LoadTree(jentry);
 
@@ -378,8 +385,12 @@ void ApplyIsolation::loops() {
     std::cout<<"Processing a total of "<<nEntries1_<<" Entries \n";
     t_start = std::chrono::high_resolution_clock::now();
 
+    if(reportEvery_%stride !=0 ){
+        reportEvery_=int((reportEvery_+1)/stride)*stride;
+        std::cout<<"\n reportEvery updated to : "<<reportEvery_<<"\n";
+     }
     //  for (Long64_t jentry=0; jentry< 100; jentry++) {
-    for (Long64_t jentry=0; jentry< nEntries1_; jentry++) {
+    for (Long64_t jentry=0; jentry< nEntries1_; jentry+=stride) {
         Long64_t ientry = fChain1->LoadTree(jentry);
         if (ientry < 0) break;
         nb1 = fChain1->GetEntry(jentry);
@@ -395,7 +406,7 @@ void ApplyIsolation::loops() {
         }
         if(!( isProbeLoose==1 && fabs(eleProbeEta) < 2.5  && sqrt(pow(eleProbeEta-eleTagEta,2)+pow(eleProbePhi-eleTagPhi,2))>0.6)) continue;
         if(l1tEmuRawEt < 0.) continue;
-        pT_all->Fill(eleProbeSclEt);
+        pT_all->Fill(eleProbePt);
         sum++;
 
         std::map<short, short>::iterator EtaPos = lutMapEta.find(abs(short(l1tEmuTowerIEta)));
@@ -416,19 +427,18 @@ void ApplyIsolation::loops() {
 
                 //Filling pt Progression for Turnon
                 TString PtPassName_= "pT_pass_option_Et" + std::to_string(e);
-                if(l1tEmuPt >= e )	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
+                if(l1tEmuPt >= e )	  pt_pass_Map_[PtPassName_]->Fill(eleProbePt);
                 for (auto it :lutProgOptVec_) {
                 TString ResultProgressionName_= "LUT_Progression_" + it ;
                 TH3F* ResultProgressionName = (TH3F*)gDirectory->Get(ResultProgressionName_.Data());
                 IsoCut_Progression = ResultProgressionName->GetBinContent(in_compressediEta+1,in_compressediEt+1,in_compressedNTT+1);
                 
                 PtPassName_= "pT_pass_option" + it + "_Et" + std::to_string(e);
-                //std::cout<<__LINE__<<" | "<<"Et : "<<l1tEmuPt<<" l1tEmuIsoEt : "<<l1tEmuIsoEt<<" IsoCut_Progression : "<<IsoCut_Progression<<" [  "<<ResultProgressionName_ <<" ] \n"; 
-                if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression)	  pt_pass_Map_[PtPassName_]->Fill(eleProbeSclEt);
+                if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression)	  pt_pass_Map_[PtPassName_]->Fill(eleProbePt);
                 
 
                 //Fillling Nvtx/Eta with Iso histos
-                if(eleProbeSclEt>32) {
+                if(eleProbePt>32) {
                     if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression) {
                         TString NvtxPassIso_ ="Nvtx_Pass_Iso_" + it + "_Et_" + std::to_string(e);
                         TString EtaPassIso_  ="Eta_Pass_Iso_" + it + "_Et_" + std::to_string(e);
@@ -448,7 +458,7 @@ void ApplyIsolation::loops() {
                     }
                 }
 
-                if( ( eleProbeSclEt > (e-2) ) and ( eleProbeSclEt < (e+15)  ) )
+                if( ( eleProbePt > (e-2) ) and ( eleProbePt < (e+15)  ) )
                 {
                     if(l1tEmuPt >= e && l1tEmuIsoEt <= IsoCut_Progression) {
                         TString nTTPassIso_  ="nTT_Pass_Iso_" + it + "_Et_" + std::to_string(e);
@@ -463,7 +473,7 @@ void ApplyIsolation::loops() {
                 }
                 
             //Fillling Nvtx/Eta no Iso histos
-            if(eleProbeSclEt>32) {
+            if(eleProbePt>32) {
                 if(l1tEmuPt >= e) {
                     TString NvtxPass_ ="Nvtx_Pass_Et_" + std::to_string(e);
                     TString EtaPass_ ="Eta_Pass_Et_" + std::to_string(e);
@@ -557,7 +567,7 @@ void ApplyIsolation::loops() {
 void ApplyIsolation::bookHistograms() {
     outputFile_ = new TFile(outputFileName_.c_str(), "RECREATE");
     outputFile_->cd();
-
+    std::cout<<"Booking Hiistgrams ! \n";
     for (auto it : lutProgOptVec_) {
         //For Single EG pt Progression with Iso
         TString  CurrentNameHisto = "pt_Progression" + it;
@@ -693,6 +703,7 @@ void ApplyIsolation::bookHistograms() {
 
     //For Vertex/Eta + nTT
     for(UInt_t e = etMin_; e <= etMax_ ; e += 1) {
+        std::cout<<"\rAdding the Nvtx turnons for e = "<<e;
 
         if(!check_Nvtx) {
             td5 = outputFile_->mkdir("Nvtx");
@@ -865,6 +876,7 @@ void ApplyIsolation::readParameters(const std::string jfile) {
             else if (key=="NTTLUTFileName")   readLUTTable(value,nBinsNTT, lutMapNTT);
             else if (key=="nTTRange") nTTRange_ = std::stoi(value.c_str());
             else if (key=="ReportEvery")    reportEvery_ = atoi(value.c_str());
+            else if (key=="Stride")    stride = atoi(value.c_str());
             else if (key=="MaxEntriesForEfficency") maxEntriesForEfficiency_ = atoi(value.c_str());
             else if (key=="MaxEntriesForRate")   maxEntriesForRate_ = atoi(value.c_str());
             else if (key=="EtMin") etMin_ = std::stoi(value.c_str());
@@ -907,6 +919,7 @@ void ApplyIsolation::readTree() {
     fChain1->SetBranchAddress("l1tEmuRawEt",&l1tEmuRawEt);
     fChain1->SetBranchAddress("l1tEmuTowerIEta",&l1tEmuTowerIEta);
     fChain1->SetBranchAddress("eleProbeSclEt",&eleProbeSclEt);
+    fChain1->SetBranchAddress("eleProbePt",&eleProbePt);
     fChain1->SetBranchAddress("l1tEmuIsoEt",&l1tEmuIsoEt);
 
     fChain1->SetBranchAddress("eleProbeEta",&eleProbeEta);

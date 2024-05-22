@@ -15,6 +15,7 @@ IsolationAnalysis::IsolationAnalysis(const std::string& inputFileName) {
     doSuperCompression = 0 ;    
     doDynamicBinning=false;
     reportEvery=5000;
+    stride=1;
     maxEntries=-1;
     isoOffset=0;       
     ietaMinForOffset = 1e3;
@@ -126,9 +127,7 @@ void IsolationAnalysis::accessTree(std::string & input_filelist) {
 }
 
 void IsolationAnalysis::analyse() {
-
     if (fChain == 0) return;
-
     Long64_t nentries = fChain->GetEntriesFast();
     std::cout<<"Total Available Entries : "<<nentries<<std::endl;
     Long64_t nbytes = 0, nb = 0;
@@ -137,8 +136,11 @@ void IsolationAnalysis::analyse() {
 
     auto t_start = std::chrono::high_resolution_clock::now();
     auto t_end = std::chrono::high_resolution_clock::now();
-
-    for (Long64_t jentry=0; jentry<nentries; jentry++) {
+    if(reportEvery%stride !=0 ){
+        reportEvery=int((reportEvery+1)/stride)*stride;
+        std::cout<<"\n reportEvery updated to : "<<reportEvery<<"\n";
+     }
+    for (Long64_t jentry=0; jentry<nentries; jentry+=stride) {
         if (jentry < 0) break;
         nb = fChain->GetEntry(jentry);
         nbytes += nb;
@@ -158,7 +160,7 @@ void IsolationAnalysis::analyse() {
         hprof_IEt->Fill(et, iso);
         hprof_IEta->Fill(eta, iso);
         hprof_nTT->Fill(ntt, iso);
-
+        
         if(et < 0 )  continue;
         //if(Nvtx < 20 )  continue;
         //if(Nvtx > 69 )  continue;
@@ -166,7 +168,6 @@ void IsolationAnalysis::analyse() {
         //std::cout<<" PU : "<<Nvtx<<" , weight : "<<wei<<"\n";
         auto wei=1.0;
         TString Name_Histo = getHistoName(eta,et, ntt);
-        //std::cout<<__LINE__<<" | Name Histo : "<<Name_Histo<<" | eta "<<eta<<" | et "<<et<<" | ntt "<<ntt<<"\n";
         std::map<TString, TH1F*>::iterator iPos = Histos_PerBin.find(Name_Histo);
         if (iPos != Histos_PerBin.end()) iPos->second->Fill(iso,wei);
         if (eta > 31.5) {
@@ -247,10 +248,14 @@ void IsolationAnalysis::analyse() {
                 projection_fit->SetParameter(2,0);
                 //projection_fit->SetParLimits(1,0.0,20.0);
                 projection_fit->SetParLimits(2,0.0,10.0);
-
                 projection->Fit(projection_fit,"QR");
-      //          std::cout<<" 1/2/3 : "<<projection_fit->GetParameter(0)<<" / "<<projection_fit->GetParameter(1) <<" / "<<projection_fit->GetParameter(2)<<"\n";              
+                auto val = projection_fit->GetParameter(0) + projection_fit->GetParameter(1)*20 +projection_fit->GetParameter(2)*20*20;
+                if(val >  100.0)
+                {
+                     std::cout<<" >  val | "<<val<<" for : iEff : "<<iEff<<" iet :  "<<iet<<" ieta :  "<<ieta<< " prj : "<<projName<<" , "<<" fitname : "<<fitName <<" effTH3: "<<IsoCut_PerBin[iEff]->GetName()<<"\n";
+                     std::cout<<" >  1/2/3 : "<<projection_fit->GetParameter(0)<<" / "<<projection_fit->GetParameter(1) <<" / "<<projection_fit->GetParameter(2)<<"\n";              
 
+                }
                 if (doDynamicBinning){
                     if ( projection_fit->GetParameter(1) < 0 )
                      {
@@ -650,7 +655,7 @@ void IsolationAnalysis::fillLUTProgression(std::string option) {
                                 std::cout<<"V2 Offseting for ieta : "<<i<<" \n";
                                 IsoCut_Progression+=isoOffset;
                             }
-                           // std::cout<<"For [ "<<i<<","<<j<<" ]  nTT  = "<<k<<" : "<<
+                            std::cout<<"For [ eta "<<i<<", et "<<j<<"   nTT "<<k<<" eff "<<Int_Efficiency_Progression<<" ] isoCut : "<<IsoCut_Progression<<"\n";
                     }
                     lutProgHistoMap_v2_[it.first]->SetBinContent(ii+1,j+1,k+1,IsoCut_Progression);
 
@@ -818,6 +823,9 @@ void IsolationAnalysis::readParameters(const std::string jfile) {
                 for (auto it : tmp_vec) {
                     lutProgOptVec_.push_back(it);
                 }
+            }
+            else if (key=="Stride")	    {
+                stride= atoi(value.c_str());
             }
             else if (key=="ReportEvery")	    {
                 reportEvery= atoi(value.c_str());

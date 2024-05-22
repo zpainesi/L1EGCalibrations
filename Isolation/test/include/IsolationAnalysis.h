@@ -41,11 +41,12 @@ public :
   float eleTagEta   ;
   float eleTagPhi	;
   float Nvtx	;
-  //Int_t isProbeLoose;
-  float isProbeLoose;
+  Int_t isProbeLoose;
+  //float isProbeLoose;
 
   Long64_t       maxEntries;
   Int_t          reportEvery;
+  Int_t          stride;
   IsolationAnalysis(const std::string& inputFileName);
   ~IsolationAnalysis();
 

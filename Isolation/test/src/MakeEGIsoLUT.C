@@ -23,6 +23,7 @@
 
 void MakeEGIsoLUT(string option,TString prefix="",TString infilename="", bool isOption=false, bool includeCompression=false)
 {
+  std::cout<<"Loading : "<<option<<"  from "<<infilename<<"\n";
   TFile* fLUTS = new TFile( infilename );
   TH3F* LUT ;
  
@@ -34,9 +35,13 @@ void MakeEGIsoLUT(string option,TString prefix="",TString infilename="", bool is
     //TString Option="LUT_WP"+to_string(Option_);
     LUT = (TH3F*) gDirectory->Get(Option);
   }
-  if(!LUT) std::cout<<"leave";
+  if(!LUT) {
+    std::cout<<"leave";
+    exit(1);
+    }
   cout << "LUT name: " << LUT->GetName() << endl;
   cout << "Max LUT CuT: " << LUT->GetMaximum() << endl;
+  LUT->Print();
 
   //  const Float_t hardcodedIetaBins[] = {0, 6, 12, 18, 31}; //for tau
   const Float_t hardcodedIetaBins[] = {0, 5, 6, 9, 10, 12, 13, 14, 17, 18, 19, 20, 23, 24, 25, 26, 31};
@@ -44,10 +49,10 @@ void MakeEGIsoLUT(string option,TString prefix="",TString infilename="", bool is
   const Float_t hardcodedIetBins[]  = {0, 18, 20, 22, 28, 32, 37, 42, 52, 63, 73, 81, 87, 91, 111, 151, 255};
   const Float_t hardcodednTTBins[] = {0, 6, 11, 16, 21, 26, 31, 36, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86, 91, 96, 101, 106, 111, 116, 121, 126, 131, 136, 141, 146, 161, 161, 255};
 
-
   int neta = sizeof(hardcodedIetaBins) / sizeof(int) -1 ;
   int nEt  = sizeof(hardcodedIetBins) / sizeof(int)-1;
   int nnTT = sizeof(hardcodednTTBins) / sizeof(int)-1;
+  cout << "Output cmpr bins: " << neta << " " << nEt << " " << nnTT << endl;
 
   TH3F* binning = new TH3F ("binning", "binning", neta, hardcodedIetaBins, nEt, hardcodedIetBins, nnTT, hardcodednTTBins);
 
