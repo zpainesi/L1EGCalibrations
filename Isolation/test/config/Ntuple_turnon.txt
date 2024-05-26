@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/2024/TandP_EGamma0And1_V1andV2_2023D_reEmulated_v0_WithHCALResponse_recaliberated.root
+/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/athachay/crabOutputStorage/2024/files/TandP_EG1_2024D_v1_newHCAL_dcs100524.root
