@@ -1,1 +1,1 @@
-/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/zpainesi/CrabOutputStorage/TnP_ntuples/2024/hcal_and_jax19_51/TnP_Ntuple_EG0_1_2023D_v1_2_reEmu_eTRecalib.root
+/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/athachay/crabOutputStorage/2024/files/TandP_EG1_2024D_v1_newHCAL_dcs100524.root
