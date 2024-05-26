@@ -1,1 +1,1 @@
-/grid_mnt/t3storage3/athachay/l1egamma/data/2024/EphZB_0And1_2023D_reEmulated_v0_HCALResponse_etRecaliberatedV1.root
+/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/athachay/crabOutputStorage/2024/files/EphZB0_2024D_reEmulated_v1_postHCALRespDeployment.root
