@@ -1,0 +1,11 @@
+NtupleFileName=config/Ntuple_turnon.txt
+OutputFileName=testHaris_WPFile_step1.root
+EtLUTFileName=data/compressionLuts/egCompressELUT_4bit_v4.txt
+EtaLUTFileName=data/compressionLuts/egSuperCompressEtaLUT_2bit_v4.txt
+NTTLUTFileName=data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
+OutputWPStepFileName=CalibFiles/HistgramFile_step1step2_caloParams_V6_ZS0p0_slimmedDefault_WPFile.root #not for step1
+DoSuperCompression=2 #for the step2
+DoDynamicBinning=0
+MaxEntries=-1
+LUTProgressionOptions=582_10p0_0p7_40p0:10.0:0.7:40.0,1290_20p0_0p7_40p0:20.0:0.7:40.0,582_8p0_0p7_40p0:8.0:0.7:40.0,1290_18p0_0p7_40p0:18.0:0.7:40.0,7_10p0_0p80_40p0:10.0:0.80:40.0,7_10p0_0p82_40p0:10.0:0.82:40.0,8_10p0_0p84_40p0:10.0:0.84:40.0,7_10p0_0p72_40p0:10.0:0.72:40.0,7_10p0_0p74_40p0:10.0:0.74:40.0,8_10p0_0p76_40p0:10.0:0.76:40.0
+ReportEvery=5000
