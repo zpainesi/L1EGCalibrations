@@ -1,8 +1,8 @@
 NtupleFileNameTurnOn=config/Ntuple_turnon.txt
 NtupleFileNameRate=config/Ntuple_rate.txt
-OptionsFileName=HistgramFile_step2_Options.root
+OptionsFileName=testHaris_WPFile_step2.root
 #PUReweightingHistFile=CalibFiles/ratio_file.root
-OutputFileName=HistgramFile_step3step4_HCALRecalib.root
+OutputFileName=HistgramFile_step3step4_newHCALresponse.root
 EtLUTFileName=data/compressionLuts/egCompressELUT_4bit_v4.txt
 EtaLUTFileName=data/compressionLuts/egCompressEtaLUT_4bit_v4.txt
 NTTLUTFileName=data/compressionLuts/tauCompressnTTLUT_5bit_v8.txt
