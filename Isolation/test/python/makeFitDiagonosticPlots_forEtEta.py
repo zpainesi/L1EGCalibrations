@@ -12,6 +12,7 @@ def main():
     parser.add_argument('-d',"--dest", help="output destination prefix ",default='./')
     parser.add_argument("--eta", help="eta bin to make the plot for",default='0')
     parser.add_argument("--et" , help="et  bin to make the plot for",default='8')
+    parser.add_argument('--isQuad' ,help="Is quadratic fit ",action='store_true')
     args = parser.parse_args()
     
     inputWPFile = ROOT.TFile(args.input)
@@ -41,13 +42,17 @@ def main():
                 print(hist,fit)
                 a=fit.GetParameter(0)
                 b=fit.GetParameter(1)
+                c=0.0
+                if args.isQuad:
+                    c=fit.GetParameter(2)
+                    
                 chi2=fit.GetChisquare()
                 ndf=fit.GetNDF()
                 hep.histplot(hist,histtype='errorbar',ax=ax)
-                y=a+b*x
+                y=a+b*x+c*x*x
                 ax.annotate(f'{ eff = }% , { ieta = } ,{ et = }'      , (0.1,0.85), xycoords='axes fraction', fontsize=17)
                 ax.annotate(f'Chi2 : {np.round(chi2,2)} , NDF : {ndf}', (0.1,0.7), xycoords='axes fraction',  fontsize=15 )
-                ax.annotate(f'{np.round(a,2)} + {np.round(b,2)} *x '  , (0.1,0.6), xycoords='axes fraction',  fontsize=15)
+                ax.annotate(f'{np.round(a,2)} + {np.round(b,2)} *x + {np.round(c,2)} *x^2'  , (0.1,0.6), xycoords='axes fraction',  fontsize=15)
                 ax.plot(x,y,c='r')
                 axid+=1
                 if axid==25 :
