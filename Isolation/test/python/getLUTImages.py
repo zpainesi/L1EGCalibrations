@@ -8,7 +8,7 @@ Usage
 
 """
 parser = argparse.ArgumentParser()
-parser.add_argument('-t',"--tag", help="Tag for file, this will become the name of the output jpeg")
+parser.add_argument('-t',"--tag", help="Tag for file, this will become the name of the output png")
 parser.add_argument('-i',"--input", help="input LUT file")
 args = parser.parse_args()
 
@@ -55,7 +55,7 @@ for ky in allLUTS:
         t.set_bbox(dict(facecolor='w',alpha=1.0, edgecolor='r'))
         plt.colorbar(c,cax=ax2)
     f.suptitle('LUT : '+ky+"\n"+fname.split('/')[-1],y=0.91)
-    fname=ky+'.jpeg'
+    fname=ky+'.png'
     print("Saving : ",fname)
     f.savefig(fname,bbox_inches='tight')
     #     if et > 2:
